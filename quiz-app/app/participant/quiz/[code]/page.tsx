@@ -186,13 +186,13 @@ export default function ParticipantQuiz() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{playerName}</h1>
-            <p className="text-gray-600 dark:text-gray-400">Quiz Code: {quizCode}</p>
+            <h1 className="text-2xl font-bold text-glow">{playerName}</h1>
+            <p className="text-balance">Quiz Code: {quizCode}</p>
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2">
             #{playerStats.position}

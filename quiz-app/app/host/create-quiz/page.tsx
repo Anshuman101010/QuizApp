@@ -74,7 +74,7 @@ export default function CreateQuiz() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="ghost" onClick={() => router.back()}>
@@ -82,8 +82,8 @@ export default function CreateQuiz() {
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create New Quiz</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <h1 className="text-3xl font-bold text-glow">Create New Quiz</h1>
+            <p className="mt-2 text-balance">
               Design your quiz with multiple question types and advanced settings
             </p>
           </div>

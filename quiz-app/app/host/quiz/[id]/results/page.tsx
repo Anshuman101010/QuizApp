@@ -227,23 +227,18 @@ export default function QuizResults() {
           <TabsContent value="overview" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Final Leaderboard</CardTitle>
-                <CardDescription>Complete ranking of all participants</CardDescription>
+                <CardTitle className="text-glow">Final Leaderboard</CardTitle>
+                <CardDescription className="text-balance">Complete ranking of all participants</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {participants.map((participant, index) => (
                     <div
                       key={participant.id}
-                      className={`flex items-center gap-4 p-4 rounded-lg border ${
-                        index === 0
-                          ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
-                          : index === 1
-                            ? "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
-                            : index === 2
-                              ? "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800"
-                              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                      }`}
+                      className={
+                        `flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md shadow-xl transition-all` +
+                        (index === 0 ? " ring-2 ring-yellow-400/40" : index === 1 ? " ring-2 ring-gray-400/30" : index === 2 ? " ring-2 ring-orange-400/30" : "")
+                      }
                     >
                       <div
                         className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${

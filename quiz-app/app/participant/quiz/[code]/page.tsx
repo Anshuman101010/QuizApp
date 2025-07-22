@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Trophy, CheckCircle, XCircle } from "lucide-react"
-import { useParams, useSearchParams } from "next/navigation"
+import { useParams, useSearchParams, useRouter } from "next/navigation"
+import { toast } from "@/hooks/use-toast"
 
 interface Question {
   id: string
@@ -29,6 +30,7 @@ interface PlayerStats {
 export default function ParticipantQuiz() {
   const params = useParams()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const playerName = searchParams.get("name") || "Anonymous"
   const quizCode = params.code as string
 
@@ -49,6 +51,12 @@ export default function ParticipantQuiz() {
     totalAnswered: 0,
     correctAnswers: 0,
   })
+
+  const [proctorViolations, setProctorViolations] = useState(0)
+  const [showProctorModal, setShowProctorModal] = useState(false)
+  const [proctorTimer, setProctorTimer] = useState(10)
+  const proctorIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const violationTriggeredRef = useRef(false)
 
   // Mock current question
   const mockQuestion: Question = {
@@ -185,8 +193,124 @@ export default function ParticipantQuiz() {
     }, 3000)
   }
 
+  useEffect(() => {
+    // Request fullscreen when quiz starts
+    if (gameState === "active") {
+      const elem = document.documentElement
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen()
+      } else if ((elem as any).webkitRequestFullscreen) {
+        (elem as any).webkitRequestFullscreen()
+      } else if ((elem as any).msRequestFullscreen) {
+        (elem as any).msRequestFullscreen()
+      }
+    }
+    // Exit fullscreen when quiz ends
+    if (gameState === "completed" || gameState === "waiting") {
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      }
+    }
+  }, [gameState])
+
+  // Proctoring event handler
+  useEffect(() => {
+    function triggerProctorViolation() {
+      if (violationTriggeredRef.current) return; // Prevent double trigger
+      violationTriggeredRef.current = true;
+      setProctorViolations((prev) => {
+        if (prev >= 2) {
+          router.replace("/participant/quiz/disqualified");
+          return prev + 1
+        } else {
+          setShowProctorModal(true)
+          return prev + 1
+        }
+      })
+    }
+    function handleVisibilityChange() {
+      if (document.visibilityState === "hidden" && gameState === "active") {
+        triggerProctorViolation()
+      }
+    }
+    function handleBlur() {
+      if (gameState === "active") {
+        triggerProctorViolation()
+      }
+    }
+    function handleFullscreenChange() {
+      if (!document.fullscreenElement && gameState === "active") {
+        triggerProctorViolation()
+      }
+    }
+    window.addEventListener("blur", handleBlur)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    return () => {
+      window.removeEventListener("blur", handleBlur)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
+    }
+  }, [gameState])
+
+  // Proctoring modal logic (force quit site when timer runs out or after 2 warnings)
+  useEffect(() => {
+    if (showProctorModal) {
+      setProctorTimer(10)
+      if (proctorIntervalRef.current) clearInterval(proctorIntervalRef.current)
+      proctorIntervalRef.current = setInterval(() => {
+        setProctorTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(proctorIntervalRef.current!)
+            setShowProctorModal(false)
+            // Force quit site when timer runs out
+            router.replace("/participant/quiz/disqualified");
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    } else {
+      if (proctorIntervalRef.current) {
+        clearInterval(proctorIntervalRef.current)
+      }
+      violationTriggeredRef.current = false; // Allow future triggers
+    }
+    return () => {
+      if (proctorIntervalRef.current) {
+        clearInterval(proctorIntervalRef.current)
+      }
+    }
+  }, [showProctorModal, proctorViolations])
+
+  // Resume exam handler
+  function handleResumeExam() {
+    setShowProctorModal(false)
+    // Re-enter fullscreen
+    const elem = document.documentElement
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen()
+    } else if ((elem as any).webkitRequestFullscreen) {
+      (elem as any).webkitRequestFullscreen()
+    } else if ((elem as any).msRequestFullscreen) {
+      (elem as any).msRequestFullscreen()
+    }
+  }
+
   return (
     <div className="min-h-screen">
+      {showProctorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8 text-center max-w-md mx-auto">
+            <h2 className="text-2xl font-bold mb-4 text-red-600">Proctoring Violation</h2>
+            <p className="mb-4">
+              You exited fullscreen or switched tabs/windows.<br />
+              You must resume the exam within <span className="font-bold">{proctorTimer}</span> seconds or the exam will close.
+            </p>
+            <Button onClick={handleResumeExam} className="mt-2">Resume Exam</Button>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

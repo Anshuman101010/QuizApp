@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Play, BarChart3, Settings, Users, Trophy } from "lucide-react"
@@ -18,26 +18,29 @@ interface Quiz {
 
 export default function HostDashboard() {
   const router = useRouter()
-  const [quizzes] = useState<Quiz[]>([
-    {
-      id: "1",
-      title: "General Knowledge Quiz",
-      description: "Test your knowledge across various topics",
-      questions: 15,
-      participants: 0,
-      status: "draft",
-      createdAt: "2024-01-15",
-    },
-    {
-      id: "2",
-      title: "Science & Technology",
-      description: "Advanced questions on science and tech",
-      questions: 20,
-      participants: 24,
-      status: "completed",
-      createdAt: "2024-01-10",
-    },
-  ])
+  const [quizzes, setQuizzes] = useState<Quiz[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchQuizzes() {
+      setLoading(true)
+      const res = await fetch("/api/quizzes")
+      const data = await res.json()
+      setQuizzes(
+        (data.quizzes || []).map((q: any) => ({
+          id: q.id,
+          title: q.title,
+          description: q.description,
+          questions: q.questions.length,
+          participants: 0, // You can update this if you have participant data
+          status: q.status || "draft",
+          createdAt: q.created_at ? q.created_at.split("T")[0] : "",
+        }))
+      )
+      setLoading(false)
+    }
+    fetchQuizzes()
+  }, [])
 
   const handleCreateQuiz = () => {
     router.push("/host/create-quiz")
@@ -136,52 +139,58 @@ export default function HostDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {quizzes.map((quiz) => (
-                <div
-                  key={quiz.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg">{quiz.title}</h3>
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          quiz.status === "active"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                            : quiz.status === "completed"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                              : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-                        }`}
-                      >
-                        {quiz.status}
-                      </span>
+              {loading ? (
+                <div>Loading quizzes...</div>
+              ) : quizzes.length === 0 ? (
+                <div>No quizzes found.</div>
+              ) : (
+                quizzes.map((quiz) => (
+                  <div
+                    key={quiz.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold text-lg">{quiz.title}</h3>
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            quiz.status === "active"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                              : quiz.status === "completed"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                          }`}
+                        >
+                          {quiz.status}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-400 mb-2">{quiz.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                        <span>{quiz.questions} questions</span>
+                        <span>{quiz.participants} participants</span>
+                        <span>Created {quiz.createdAt}</span>
+                      </div>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 mb-2">{quiz.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      <span>{quiz.questions} questions</span>
-                      <span>{quiz.participants} participants</span>
-                      <span>Created {quiz.createdAt}</span>
+                    <div className="flex items-center gap-2">
+                      {quiz.status === "draft" && (
+                        <Button onClick={() => handleStartQuiz(quiz.id)}>
+                          <Play className="w-4 h-4 mr-2" />
+                          Start
+                        </Button>
+                      )}
+                      {quiz.status === "completed" && (
+                        <Button variant="outline" onClick={() => handleViewResults(quiz.id)}>
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                          Results
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon">
+                        <Settings className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {quiz.status === "draft" && (
-                      <Button onClick={() => handleStartQuiz(quiz.id)}>
-                        <Play className="w-4 h-4 mr-2" />
-                        Start
-                      </Button>
-                    )}
-                    {quiz.status === "completed" && (
-                      <Button variant="outline" onClick={() => handleViewResults(quiz.id)}>
-                        <BarChart3 className="w-4 h-4 mr-2" />
-                        Results
-                      </Button>
-                    )}
-                    <Button variant="ghost" size="icon">
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

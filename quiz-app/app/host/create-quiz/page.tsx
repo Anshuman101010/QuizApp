@@ -67,11 +67,51 @@ export default function CreateQuiz() {
     setQuestions(questions.map((q) => (q.id === id ? { ...q, ...updates } : q)))
   }
 
-  const handleSaveQuiz = () => {
-    // Save quiz logic here
-    console.log("Saving quiz:", { quizTitle, quizDescription, questions, negativeMarking, teamMode })
-    router.push("/host/dashboard")
-  }
+  const handleSaveQuiz = async () => {
+    // TODO: Replace with actual user ID from auth/session
+    const userId = 1; // Change this to the logged-in user's ID
+    try {
+      const formattedQuestions = questions.map((q) => {
+        let formattedCorrectAnswer: string | boolean;
+        if (q.type === "multiple-choice") {
+          // Use the string value of the selected option
+          formattedCorrectAnswer = (q.options && typeof q.correctAnswer === "number") ? q.options[q.correctAnswer] : "";
+        } else if (q.type === "true-false") {
+          // Convert string 'true'/'false' to boolean
+          formattedCorrectAnswer = q.correctAnswer === "true";
+        } else {
+          // Short answer: use as string
+          formattedCorrectAnswer = String(q.correctAnswer ?? "");
+        }
+        return {
+          ...q,
+          type:
+            q.type === "multiple-choice"
+              ? "multiple_choice"
+              : q.type === "true-false"
+              ? "true_false"
+              : "short_answer",
+          correctAnswer: formattedCorrectAnswer,
+        };
+      });
+      const res = await fetch('/api/quizzes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: quizTitle,
+          description: quizDescription,
+          negative_marking: negativeMarking,
+          team_mode: teamMode,
+          questions: formattedQuestions,
+          userId,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to create quiz');
+      router.push('/host/dashboard');
+    } catch (err) {
+      alert('Error creating quiz.');
+    }
+  };
 
   return (
     <div className="min-h-screen">

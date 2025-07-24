@@ -37,6 +37,94 @@ strong, .font-bold {
   color: hsl(var(--foreground));
 }
 
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 2.5s linear infinite;
+}
+
+.app-title {
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), background-position 0.7s cubic-bezier(0.4,0,0.2,1);
+  background-size: 200% 200%;
+  background-position: left center;
+  position: relative;
+  cursor: pointer;
+}
+.app-title:hover {
+  transform: scale(1.04);
+  background-position: right center;
+}
+.app-title::after {
+  content: "";
+  display: block;
+  margin: 0 auto;
+  width: 0%;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #facc15, #ec4899, #a21caf);
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.app-title:hover::after {
+  width: 80%;
+}
+
+.pro-title {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), filter 0.5s cubic-bezier(0.4,0,0.2,1), background-position 2s cubic-bezier(0.4,0,0.2,1);
+  background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--foreground)));
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  filter: drop-shadow(0 2px 16px hsl(var(--accent) / 0.10));
+  will-change: transform, filter, background-position;
+  transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1);
+  cursor: pointer;
+  position: relative;
+  letter-spacing: 0.02em;
+}
+.pro-title:hover {
+  background-position: 100% 50%;
+  filter: drop-shadow(0 4px 32px hsl(var(--accent) / 0.18)) drop-shadow(0 0 24px hsl(var(--accent) / 0.18));
+  animation: pro-glow-pulse 1.8s infinite alternate;
+}
+@keyframes pro-glow-pulse {
+  0% { filter: drop-shadow(0 4px 32px hsl(var(--accent) / 0.18)) drop-shadow(0 0 24px hsl(var(--accent) / 0.18)); }
+  100% { filter: drop-shadow(0 8px 48px hsl(var(--accent) / 0.28)) drop-shadow(0 0 48px hsl(var(--accent) / 0.28)); }
+}
+.pro-title-text {
+  display: inline-block;
+  transition: text-shadow 0.4s cubic-bezier(0.4,0,0.2,1);
+  text-shadow: 0 2px 16px hsl(var(--accent) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.18);
+}
+.pro-title:hover .pro-title-text {
+  text-shadow: 0 4px 32px hsl(var(--accent) / 0.18), 0 2px 8px hsl(var(--foreground) / 0.22);
+}
+.pro-underline {
+  bottom: -0.5rem;
+  height: 1.2rem;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0.85;
+}
+.group:hover .pro-underline {
+  opacity: 1;
+}
+.pro-underline-path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1);
+  stroke: hsl(var(--accent));
+  stroke-width: 3.5;
+  filter: drop-shadow(0 2px 8px hsl(var(--accent) / 0.18));
+}
+.group:hover .pro-underline-path {
+  stroke-dashoffset: 0;
+}
+#one-chance-tilt {
+  display: inline-block;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%; /* white */

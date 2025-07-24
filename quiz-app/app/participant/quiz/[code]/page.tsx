@@ -315,7 +315,10 @@ export default function ParticipantQuiz() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-glow">{playerName}</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg flex items-center gap-2 animate-pulse">
+              <Trophy className="w-7 h-7 text-yellow-400 animate-bounce" />
+              <span>{playerName}</span>
+            </h1>
             <p className="text-balance">Quiz Code: {quizCode}</p>
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2">

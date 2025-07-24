@@ -7,10 +7,39 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Users, Trophy, BarChart3, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useRef } from "react"
 
 export default function HomePage() {
   const [joinCode, setJoinCode] = useState("")
   const router = useRouter()
+  const tiltRef = useRef<HTMLDivElement>(null)
+
+  // 3D tilt effect handlers
+  const handleTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = tiltRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const px = x / rect.width
+    const py = y / rect.height
+    const tiltX = (py - 0.5) * 18 // max 18deg
+    const tiltY = (px - 0.5) * -18
+    const h1 = el.querySelector('.pro-title') as HTMLElement
+    if (h1) {
+      h1.style.setProperty('--tilt-x', `${tiltX}deg`)
+      h1.style.setProperty('--tilt-y', `${tiltY}deg`)
+    }
+  }
+  const resetTilt = () => {
+    const el = tiltRef.current
+    if (!el) return
+    const h1 = el.querySelector('.pro-title') as HTMLElement
+    if (h1) {
+      h1.style.setProperty('--tilt-x', `0deg`)
+      h1.style.setProperty('--tilt-y', `0deg`)
+    }
+  }
 
   const handleHostLogin = () => {
     router.push("/host/dashboard")
@@ -26,7 +55,37 @@ export default function HomePage() {
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">QuizIT</h1>
+          <div
+            className="relative inline-block group"
+            id="one-chance-tilt"
+            ref={tiltRef}
+            style={{ perspective: '600px' }}
+            onMouseMove={handleTilt}
+            onMouseLeave={resetTilt}
+          >
+            <h1
+              className="app-title pro-title text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent drop-shadow-2xl mb-2"
+              tabIndex={0}
+            >
+              <span className="pro-title-text">One Chance</span>
+            </h1>
+            <svg
+              className="pro-underline absolute left-1/2 -translate-x-1/2 w-[90%] h-6 pointer-events-none"
+              viewBox="0 0 300 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ color: 'hsl(var(--accent))' }}
+            >
+              <path
+                className="pro-underline-path"
+                d="M20 18 Q 150 28 280 18"
+                stroke="currentColor"
+                strokeWidth="3.5"
+                fill="transparent"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Create engaging quizzes with real-time participation, advanced scoring, and comprehensive analytics
           </p>

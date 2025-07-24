@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'quiz app',
@@ -27,11 +28,13 @@ export default function RootLayout({
           alignItems: 'center',
           justifyContent: 'flex-start',
         }}>
-          <img
-            src="/college_logo.png"
-            alt="NMIMS Logo"
-            style={{ height: 56, width: 'auto', marginLeft: 24, marginRight: 16, objectFit: 'contain', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
-          />
+          <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src="/college_logo.png"
+              alt="NMIMS Logo"
+              style={{ height: 56, width: 'auto', marginLeft: 24, marginRight: 16, objectFit: 'contain', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+            />
+          </Link>
         </header>
         <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
       </body>

@@ -9,6 +9,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  webpack(config, { isServer }) {
+    if (isServer) {
+      (async () => {
+        const { execSync } = await import('child_process');
+        execSync('node ./postbuild.js');
+      })();
+    }
+    return config;
+  },
 }
 
 export default nextConfig

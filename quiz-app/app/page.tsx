@@ -32,6 +32,9 @@ export default function SignInPage() {
       }
       const data = await res.json()
       if (data.success) {
+        if (data.id) {
+          localStorage.setItem("userId", data.id.toString());
+        }
         router.push("/dashboard")
       } else {
         setError("Invalid username or password.")

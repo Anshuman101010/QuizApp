@@ -265,7 +265,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/hjbevsdknad/generated/prisma",
+      "value": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/mkjnbhgvfc/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -283,11 +283,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/hjbevsdknad/prisma/schema.prisma",
+    "sourceFilePath": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/mkjnbhgvfc/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.12.0",

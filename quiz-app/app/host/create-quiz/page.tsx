@@ -68,8 +68,12 @@ export default function CreateQuiz() {
   }
 
   const handleSaveQuiz = async () => {
-    // TODO: Replace with actual user ID from auth/session
-    const userId = 1; // Change this to the logged-in user's ID
+    // Get userId from localStorage (set after login)
+    const userId = Number(localStorage.getItem("userId"));
+    if (!userId) {
+      alert("User not logged in. Please log in again.");
+      return;
+    }
     try {
       const formattedQuestions = questions.map((q) => {
         let formattedCorrectAnswer: string | boolean;

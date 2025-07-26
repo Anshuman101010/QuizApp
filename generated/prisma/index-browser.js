@@ -168,6 +168,7 @@ exports.Prisma.Quiz_sessionsScalarFieldEnum = {
   id: 'id',
   quiz_id: 'quiz_id',
   host_id: 'host_id',
+  code: 'code',
   status: 'status',
   started_at: 'started_at',
   ended_at: 'ended_at'
@@ -227,6 +228,10 @@ exports.Prisma.questionsOrderByRelevanceFieldEnum = {
   correct_answer: 'correct_answer',
   category: 'category',
   media_url: 'media_url'
+};
+
+exports.Prisma.quiz_sessionsOrderByRelevanceFieldEnum = {
+  code: 'code'
 };
 
 exports.Prisma.quizzesOrderByRelevanceFieldEnum = {

@@ -62,8 +62,25 @@ export default function HostDashboard() {
     router.push("/host/create-quiz")
   }
 
-  const handleStartQuiz = (quizId: string) => {
-    router.push(`/host/quiz/${quizId}/session`)
+  const handleStartQuiz = async (quizId: string) => {
+    // Get hostId from local/session storage
+    const hostId = Number(localStorage.getItem("userId"))
+    if (!hostId) {
+      alert("No host user ID found. Please log in again.")
+      return
+    }
+    const res = await fetch("/api/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quizId, hostId }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      // Redirect to session page with ?code=SESSIONCODE
+      router.push(`/host/quiz/${quizId}/session?code=${data.session.code}`)
+    } else {
+      alert("Failed to start session")
+    }
   }
 
   const handleViewResults = (quizId: string) => {
@@ -188,7 +205,7 @@ export default function HostDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {quiz.status === "draft" && (
+                      {quiz.status === "active" && (
                         <Button onClick={() => handleStartQuiz(quiz.id)}>
                           <Play className="w-4 h-4 mr-2" />
                           Start

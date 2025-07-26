@@ -29,13 +29,24 @@ export default function JoinQuiz() {
 
   const handleJoinQuiz = async () => {
     if (!playerName.trim()) return
-
     setIsJoining(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Redirect to quiz interface
-    router.push(`/participant/quiz/${quizCode}?name=${encodeURIComponent(playerName)}`)
+    try {
+      const res = await fetch("/api/sessions/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: quizCode, username: playerName })
+      })
+      if (!res.ok) {
+        setIsJoining(false)
+        alert("Failed to join session: " + (await res.text()))
+        return
+      }
+      // Redirect to quiz interface
+      router.push(`/participant/quiz/${quizCode}?name=${encodeURIComponent(playerName)}`)
+    } catch (err) {
+      setIsJoining(false)
+      alert("Network error: " + err)
+    }
   }
 
   return (

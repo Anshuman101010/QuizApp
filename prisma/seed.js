@@ -1,6 +1,7 @@
 console.log('--- JS SEED SCRIPT STARTED ---');
 require('dotenv').config();
 const { PrismaClient } = require('../generated/prisma');
+const bcrypt = require('bcrypt');
 
 const prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] });
 
@@ -16,10 +17,11 @@ async function main() {
   const createdUsers = [];
   for (const user of users) {
     try {
+      const hashedPassword = await bcrypt.hash('password123', 10)
       const created = await prisma.users.create({
         data: {
           username: user.username,
-          password: 'password123',
+          password: hashedPassword,
           email: user.email,
           role: 'host',
         },

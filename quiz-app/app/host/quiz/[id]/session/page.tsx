@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Play, Pause, SkipForward, Trophy, Clock, BarChart3 } from "lucide-react"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 
 interface Participant {
   id: string
@@ -30,16 +30,46 @@ interface Question {
 
 export default function QuizSession() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const [sessionStatus, setSessionStatus] = useState<"waiting" | "active" | "paused" | "completed">("waiting")
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [timeRemaining, setTimeRemaining] = useState(30)
-  const [participants, setParticipants] = useState<Participant[]>([
-    { id: "1", name: "Alice Johnson", score: 850, streak: 3, accuracy: 85, answered: true },
-    { id: "2", name: "Bob Smith", score: 720, streak: 1, accuracy: 72, answered: true },
-    { id: "3", name: "Carol Davis", score: 680, streak: 0, accuracy: 68, answered: false },
-    { id: "4", name: "David Wilson", score: 590, streak: 2, accuracy: 59, answered: true },
-    { id: "5", name: "Eva Brown", score: 540, streak: 0, accuracy: 54, answered: false },
-  ])
+  const [participants, setParticipants] = useState<Participant[]>([])
+  const [joinCode, setJoinCode] = useState<string>("")
+  const [sessionId, setSessionId] = useState<number | null>(null)
+
+  // Fetch session and participants on mount
+  useEffect(() => {
+    async function fetchSession() {
+      // Assume quiz id is params.id
+      const res = await fetch(`/api/sessions?code=${searchParams.get("code")}`)
+      if (res.ok) {
+        const data = await res.json()
+        setJoinCode(data.session.code)
+        setSessionId(data.session.id)
+        setSessionStatus(data.session.status)
+        // Fetch participants
+        const pres = await fetch(`/api/sessions/participants?code=${data.session.code}`)
+        if (pres.ok) {
+          const pdata = await pres.json()
+          setParticipants(
+            pdata.participants.map((p: any) => ({
+              id: p.users.id,
+              name: p.users.username,
+              score: p.score,
+              streak: p.streak,
+              accuracy: p.accuracy,
+              answered: false // TODO: update with real answer status
+            }))
+          )
+        }
+      }
+    }
+    fetchSession()
+    // Poll for new participants every 2 seconds
+    const interval = setInterval(fetchSession, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
   const questions: Question[] = [
     {
@@ -62,7 +92,6 @@ export default function QuizSession() {
   ]
 
   const currentQuestion = questions[currentQuestionIndex]
-  const joinCode = "ABC123"
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -76,9 +105,17 @@ export default function QuizSession() {
     return () => clearInterval(interval)
   }, [sessionStatus, timeRemaining])
 
-  const handleStartSession = () => {
+  const handleStartSession = async () => {
     setSessionStatus("active")
     setTimeRemaining(currentQuestion.timeLimit)
+    // Update session status in backend
+    if (joinCode) {
+      await fetch("/api/sessions/status", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: joinCode, status: "active" })
+      })
+    }
   }
 
   const handlePauseSession = () => {

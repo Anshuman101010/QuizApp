@@ -16,6 +16,7 @@ interface Question {
   options?: string[]
   timeLimit: number
   points: number
+  correct_answer?: string | number
 }
 
 interface PlayerStats {
@@ -58,15 +59,58 @@ export default function ParticipantQuiz() {
   const proctorIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const violationTriggeredRef = useRef(false)
 
-  // Mock current question
-  const mockQuestion: Question = {
-    id: "1",
-    question: "What is the capital of France?",
-    type: "multiple-choice",
-    options: ["London", "Berlin", "Paris", "Madrid"],
-    timeLimit: 30,
-    points: 100,
-  }
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [questionIndex, setQuestionIndex] = useState(0)
+
+  // Fetch questions for this session on mount
+  useEffect(() => {
+    async function fetchQuestions() {
+      const res = await fetch(`/api/sessions/questions?code=${quizCode}`)
+      if (res.ok) {
+        const data = await res.json()
+        setQuestions(data.questions)
+        setCurrentQuestion(data.questions[0] || null)
+        setQuestionIndex(0)
+      } else {
+        toast({ title: 'Failed to load questions', description: 'Please try again.' })
+      }
+    }
+    fetchQuestions()
+  }, [quizCode])
+
+  // When moving to next question, update currentQuestion
+  useEffect(() => {
+    if (questions.length > 0 && questionIndex < questions.length) {
+      setCurrentQuestion(questions[questionIndex])
+      setTimeRemaining(questions[questionIndex].timeLimit)
+    }
+  }, [questionIndex, questions])
+
+  useEffect(() => {
+    // Simulate receiving question from host
+    if (gameState === "waiting" && questions.length > 0 && questionIndex < questions.length) {
+      setTimeout(() => {
+        setCurrentQuestion(questions[questionIndex])
+        setGameState("active")
+        setTimeRemaining(questions[questionIndex].timeLimit)
+      }, 2000)
+    }
+    if (gameState === "waiting" && questionIndex >= questions.length) {
+      setGameState("completed")
+    }
+  }, [gameState, questions, questionIndex])
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    if (gameState === "active" && timeRemaining > 0) {
+      interval = setInterval(() => {
+        setTimeRemaining((prev) => prev - 1)
+      }, 1000)
+    } else if (timeRemaining === 0 && gameState === "active") {
+      handleTimeUp()
+    }
+    return () => clearInterval(interval)
+  }, [gameState, timeRemaining])
 
   const usePowerUp = (powerUp: string) => {
     if (powerUps[powerUp as keyof typeof powerUps] <= 0 || gameState !== "active") return
@@ -89,29 +133,6 @@ export default function ParticipantQuiz() {
     }
   }
 
-  useEffect(() => {
-    // Simulate receiving question from host
-    if (gameState === "waiting") {
-      setTimeout(() => {
-        setCurrentQuestion(mockQuestion)
-        setGameState("active")
-        setTimeRemaining(mockQuestion.timeLimit)
-      }, 2000)
-    }
-  }, [gameState])
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout
-    if (gameState === "active" && timeRemaining > 0) {
-      interval = setInterval(() => {
-        setTimeRemaining((prev) => prev - 1)
-      }, 1000)
-    } else if (timeRemaining === 0 && gameState === "active") {
-      handleTimeUp()
-    }
-    return () => clearInterval(interval)
-  }, [gameState, timeRemaining])
-
   const handleAnswerSelect = (answer: string | number) => {
     if (gameState !== "active") return
     setSelectedAnswer(answer)
@@ -119,11 +140,16 @@ export default function ParticipantQuiz() {
 
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null || gameState !== "active") return
-
     setGameState("answered")
-
-    // Check if answer is correct (mock logic)
-    const correct = selectedAnswer === 2 // Paris is index 2
+    // Check if answer is correct (real logic)
+    let correct = false
+    if (currentQuestion?.type === "multiple-choice") {
+      correct = selectedAnswer === currentQuestion.options?.findIndex(opt => opt === currentQuestion.correct_answer)
+    } else if (currentQuestion?.type === "true-false") {
+      correct = selectedAnswer === currentQuestion.correct_answer
+    } else if (currentQuestion?.type === "short-answer") {
+      correct = String(selectedAnswer).trim().toLowerCase() === String(currentQuestion.correct_answer).trim().toLowerCase()
+    }
     setIsCorrect(correct)
     setShowFeedback(true)
 
@@ -170,6 +196,7 @@ export default function ParticipantQuiz() {
       setGameState("waiting")
       setSelectedAnswer(null)
       setCurrentQuestion(null)
+      setQuestionIndex(qi => qi + 1)
     }, 3000)
   }
 
@@ -295,6 +322,15 @@ export default function ParticipantQuiz() {
     } else if ((elem as any).msRequestFullscreen) {
       (elem as any).msRequestFullscreen()
     }
+  }
+
+  // Only show game content if questions are loaded
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl text-gray-500">Waiting for host to start the quiz or loading questions...</div>
+      </div>
+    )
   }
 
   return (

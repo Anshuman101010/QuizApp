@@ -5864,6 +5864,7 @@ export namespace Prisma {
     id: number | null
     quiz_id: number | null
     host_id: number | null
+    code: string | null
     status: $Enums.quiz_sessions_status | null
     started_at: Date | null
     ended_at: Date | null
@@ -5873,6 +5874,7 @@ export namespace Prisma {
     id: number | null
     quiz_id: number | null
     host_id: number | null
+    code: string | null
     status: $Enums.quiz_sessions_status | null
     started_at: Date | null
     ended_at: Date | null
@@ -5882,6 +5884,7 @@ export namespace Prisma {
     id: number
     quiz_id: number
     host_id: number
+    code: number
     status: number
     started_at: number
     ended_at: number
@@ -5905,6 +5908,7 @@ export namespace Prisma {
     id?: true
     quiz_id?: true
     host_id?: true
+    code?: true
     status?: true
     started_at?: true
     ended_at?: true
@@ -5914,6 +5918,7 @@ export namespace Prisma {
     id?: true
     quiz_id?: true
     host_id?: true
+    code?: true
     status?: true
     started_at?: true
     ended_at?: true
@@ -5923,6 +5928,7 @@ export namespace Prisma {
     id?: true
     quiz_id?: true
     host_id?: true
+    code?: true
     status?: true
     started_at?: true
     ended_at?: true
@@ -6019,6 +6025,7 @@ export namespace Prisma {
     id: number
     quiz_id: number
     host_id: number
+    code: string
     status: $Enums.quiz_sessions_status | null
     started_at: Date | null
     ended_at: Date | null
@@ -6047,6 +6054,7 @@ export namespace Prisma {
     id?: boolean
     quiz_id?: boolean
     host_id?: boolean
+    code?: boolean
     status?: boolean
     started_at?: boolean
     ended_at?: boolean
@@ -6062,12 +6070,13 @@ export namespace Prisma {
     id?: boolean
     quiz_id?: boolean
     host_id?: boolean
+    code?: boolean
     status?: boolean
     started_at?: boolean
     ended_at?: boolean
   }
 
-  export type quiz_sessionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quiz_id" | "host_id" | "status" | "started_at" | "ended_at", ExtArgs["result"]["quiz_sessions"]>
+  export type quiz_sessionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quiz_id" | "host_id" | "code" | "status" | "started_at" | "ended_at", ExtArgs["result"]["quiz_sessions"]>
   export type quiz_sessionsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quizzes?: boolean | quizzesDefaultArgs<ExtArgs>
     users?: boolean | usersDefaultArgs<ExtArgs>
@@ -6086,6 +6095,7 @@ export namespace Prisma {
       id: number
       quiz_id: number
       host_id: number
+      code: string
       status: $Enums.quiz_sessions_status | null
       started_at: Date | null
       ended_at: Date | null
@@ -6464,6 +6474,7 @@ export namespace Prisma {
     readonly id: FieldRef<"quiz_sessions", 'Int'>
     readonly quiz_id: FieldRef<"quiz_sessions", 'Int'>
     readonly host_id: FieldRef<"quiz_sessions", 'Int'>
+    readonly code: FieldRef<"quiz_sessions", 'String'>
     readonly status: FieldRef<"quiz_sessions", 'quiz_sessions_status'>
     readonly started_at: FieldRef<"quiz_sessions", 'DateTime'>
     readonly ended_at: FieldRef<"quiz_sessions", 'DateTime'>
@@ -10146,6 +10157,7 @@ export namespace Prisma {
     id: 'id',
     quiz_id: 'quiz_id',
     host_id: 'host_id',
+    code: 'code',
     status: 'status',
     started_at: 'started_at',
     ended_at: 'ended_at'
@@ -10232,6 +10244,13 @@ export namespace Prisma {
   };
 
   export type questionsOrderByRelevanceFieldEnum = (typeof questionsOrderByRelevanceFieldEnum)[keyof typeof questionsOrderByRelevanceFieldEnum]
+
+
+  export const quiz_sessionsOrderByRelevanceFieldEnum: {
+    code: 'code'
+  };
+
+  export type quiz_sessionsOrderByRelevanceFieldEnum = (typeof quiz_sessionsOrderByRelevanceFieldEnum)[keyof typeof quiz_sessionsOrderByRelevanceFieldEnum]
 
 
   export const quizzesOrderByRelevanceFieldEnum: {
@@ -10646,6 +10665,7 @@ export namespace Prisma {
     id?: IntFilter<"quiz_sessions"> | number
     quiz_id?: IntFilter<"quiz_sessions"> | number
     host_id?: IntFilter<"quiz_sessions"> | number
+    code?: StringFilter<"quiz_sessions"> | string
     status?: Enumquiz_sessions_statusNullableFilter<"quiz_sessions"> | $Enums.quiz_sessions_status | null
     started_at?: DateTimeNullableFilter<"quiz_sessions"> | Date | string | null
     ended_at?: DateTimeNullableFilter<"quiz_sessions"> | Date | string | null
@@ -10658,16 +10678,19 @@ export namespace Prisma {
     id?: SortOrder
     quiz_id?: SortOrder
     host_id?: SortOrder
+    code?: SortOrder
     status?: SortOrderInput | SortOrder
     started_at?: SortOrderInput | SortOrder
     ended_at?: SortOrderInput | SortOrder
     quizzes?: quizzesOrderByWithRelationInput
     users?: usersOrderByWithRelationInput
     session_participants?: session_participantsOrderByRelationAggregateInput
+    _relevance?: quiz_sessionsOrderByRelevanceInput
   }
 
   export type quiz_sessionsWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    code?: string
     AND?: quiz_sessionsWhereInput | quiz_sessionsWhereInput[]
     OR?: quiz_sessionsWhereInput[]
     NOT?: quiz_sessionsWhereInput | quiz_sessionsWhereInput[]
@@ -10679,12 +10702,13 @@ export namespace Prisma {
     quizzes?: XOR<QuizzesScalarRelationFilter, quizzesWhereInput>
     users?: XOR<UsersScalarRelationFilter, usersWhereInput>
     session_participants?: Session_participantsListRelationFilter
-  }, "id">
+  }, "id" | "code">
 
   export type quiz_sessionsOrderByWithAggregationInput = {
     id?: SortOrder
     quiz_id?: SortOrder
     host_id?: SortOrder
+    code?: SortOrder
     status?: SortOrderInput | SortOrder
     started_at?: SortOrderInput | SortOrder
     ended_at?: SortOrderInput | SortOrder
@@ -10702,6 +10726,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"quiz_sessions"> | number
     quiz_id?: IntWithAggregatesFilter<"quiz_sessions"> | number
     host_id?: IntWithAggregatesFilter<"quiz_sessions"> | number
+    code?: StringWithAggregatesFilter<"quiz_sessions"> | string
     status?: Enumquiz_sessions_statusNullableWithAggregatesFilter<"quiz_sessions"> | $Enums.quiz_sessions_status | null
     started_at?: DateTimeNullableWithAggregatesFilter<"quiz_sessions"> | Date | string | null
     ended_at?: DateTimeNullableWithAggregatesFilter<"quiz_sessions"> | Date | string | null
@@ -11239,6 +11264,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsCreateInput = {
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -11251,6 +11277,7 @@ export namespace Prisma {
     id?: number
     quiz_id: number
     host_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -11258,6 +11285,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsUpdateInput = {
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11270,6 +11298,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     quiz_id?: IntFieldUpdateOperationsInput | number
     host_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11280,12 +11309,14 @@ export namespace Prisma {
     id?: number
     quiz_id: number
     host_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
   }
 
   export type quiz_sessionsUpdateManyMutationInput = {
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11295,6 +11326,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     quiz_id?: IntFieldUpdateOperationsInput | number
     host_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12007,10 +12039,17 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type quiz_sessionsOrderByRelevanceInput = {
+    fields: quiz_sessionsOrderByRelevanceFieldEnum | quiz_sessionsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
   export type quiz_sessionsCountOrderByAggregateInput = {
     id?: SortOrder
     quiz_id?: SortOrder
     host_id?: SortOrder
+    code?: SortOrder
     status?: SortOrder
     started_at?: SortOrder
     ended_at?: SortOrder
@@ -12026,6 +12065,7 @@ export namespace Prisma {
     id?: SortOrder
     quiz_id?: SortOrder
     host_id?: SortOrder
+    code?: SortOrder
     status?: SortOrder
     started_at?: SortOrder
     ended_at?: SortOrder
@@ -12035,6 +12075,7 @@ export namespace Prisma {
     id?: SortOrder
     quiz_id?: SortOrder
     host_id?: SortOrder
+    code?: SortOrder
     status?: SortOrder
     started_at?: SortOrder
     ended_at?: SortOrder
@@ -14025,6 +14066,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsCreateWithoutQuizzesInput = {
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14035,6 +14077,7 @@ export namespace Prisma {
   export type quiz_sessionsUncheckedCreateWithoutQuizzesInput = {
     id?: number
     host_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14165,6 +14208,7 @@ export namespace Prisma {
     id?: IntFilter<"quiz_sessions"> | number
     quiz_id?: IntFilter<"quiz_sessions"> | number
     host_id?: IntFilter<"quiz_sessions"> | number
+    code?: StringFilter<"quiz_sessions"> | string
     status?: Enumquiz_sessions_statusNullableFilter<"quiz_sessions"> | $Enums.quiz_sessions_status | null
     started_at?: DateTimeNullableFilter<"quiz_sessions"> | Date | string | null
     ended_at?: DateTimeNullableFilter<"quiz_sessions"> | Date | string | null
@@ -14236,6 +14280,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsCreateWithoutSession_participantsInput = {
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14247,6 +14292,7 @@ export namespace Prisma {
     id?: number
     quiz_id: number
     host_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14313,6 +14359,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsUpdateWithoutSession_participantsInput = {
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14324,6 +14371,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     quiz_id?: IntFieldUpdateOperationsInput | number
     host_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14395,6 +14443,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsCreateWithoutUsersInput = {
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14405,6 +14454,7 @@ export namespace Prisma {
   export type quiz_sessionsUncheckedCreateWithoutUsersInput = {
     id?: number
     quiz_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14698,6 +14748,7 @@ export namespace Prisma {
   export type quiz_sessionsCreateManyQuizzesInput = {
     id?: number
     host_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14775,6 +14826,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsUpdateWithoutQuizzesInput = {
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14785,6 +14837,7 @@ export namespace Prisma {
   export type quiz_sessionsUncheckedUpdateWithoutQuizzesInput = {
     id?: IntFieldUpdateOperationsInput | number
     host_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14794,6 +14847,7 @@ export namespace Prisma {
   export type quiz_sessionsUncheckedUpdateManyWithoutQuizzesInput = {
     id?: IntFieldUpdateOperationsInput | number
     host_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14856,6 +14910,7 @@ export namespace Prisma {
   export type quiz_sessionsCreateManyUsersInput = {
     id?: number
     quiz_id: number
+    code: string
     status?: $Enums.quiz_sessions_status | null
     started_at?: Date | string | null
     ended_at?: Date | string | null
@@ -14914,6 +14969,7 @@ export namespace Prisma {
   }
 
   export type quiz_sessionsUpdateWithoutUsersInput = {
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14924,6 +14980,7 @@ export namespace Prisma {
   export type quiz_sessionsUncheckedUpdateWithoutUsersInput = {
     id?: IntFieldUpdateOperationsInput | number
     quiz_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14933,6 +14990,7 @@ export namespace Prisma {
   export type quiz_sessionsUncheckedUpdateManyWithoutUsersInput = {
     id?: IntFieldUpdateOperationsInput | number
     quiz_id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
     status?: NullableEnumquiz_sessions_statusFieldUpdateOperationsInput | $Enums.quiz_sessions_status | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ended_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

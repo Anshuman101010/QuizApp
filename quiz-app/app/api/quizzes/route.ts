@@ -49,8 +49,19 @@ export async function POST(req: NextRequest) {
 // GET all quizzes for dashboard
 export async function GET(req: NextRequest) {
   try {
-    // Optionally, filter by user_id if needed (e.g., from query params or session)
+    // Get user ID from query parameters
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    // Filter quizzes by user_id
     const quizzes = await prisma.quizzes.findMany({
+      where: {
+        user_id: parseInt(userId),
+      },
       include: {
         questions: true,
       },

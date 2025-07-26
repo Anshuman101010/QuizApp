@@ -24,8 +24,24 @@ export default function HostDashboard() {
   useEffect(() => {
     async function fetchQuizzes() {
       setLoading(true)
-      const res = await fetch("/api/quizzes")
+      // Get user ID from localStorage
+      const userId = localStorage.getItem("userId")
+      
+      if (!userId) {
+        console.error("No user ID found")
+        setLoading(false)
+        return
+      }
+
+      const res = await fetch(`/api/quizzes?userId=${userId}`)
       const data = await res.json()
+      
+      if (data.error) {
+        console.error("Error fetching quizzes:", data.error)
+        setLoading(false)
+        return
+      }
+
       setQuizzes(
         (data.quizzes || []).map((q: any) => ({
           id: q.id,

@@ -265,7 +265,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/mkjnbhgvfc/generated/prisma",
+      "value": "C:\\Users\\anshu\\OneDrive\\Desktop\\SE_PROJECT\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -274,7 +274,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       },
       {
@@ -283,7 +283,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/mkjnbhgvfc/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\anshu\\OneDrive\\Desktop\\SE_PROJECT\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -344,6 +344,10 @@ warnEnvConflicts({
 const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "query_engine-windows.dll.node");
+path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");

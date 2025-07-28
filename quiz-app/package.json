@@ -7,7 +7,12 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "prisma:seed": "ts-node --project ../prisma/tsconfig.json ../prisma/seed.ts"
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "ts-node --project ../prisma/tsconfig.json ../prisma/seed.ts",
+    "db:setup": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
+    "setup": "npm install && npm run db:setup",
+    "postinstall": "npm run prisma:generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -41,6 +46,7 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@types/three": "^0.178.1",
     "autoprefixer": "^10.4.20",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",

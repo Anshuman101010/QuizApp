@@ -27,8 +27,6 @@ A real-time quiz application built with Next.js, Prisma, and MySQL. Features inc
    Create a `.env` file in the `quiz-app` directory:
    ```env
    DATABASE_URL="mysql://username:password@localhost:3306/NMIMS_QUIZ"
-   NEXTAUTH_SECRET="your-secret-key-here"
-   NEXTAUTH_URL="http://localhost:3000"
    ```
 
 4. **Set up the database**
@@ -203,9 +201,9 @@ This project is part of the SE (Software Engineering) course at NMIMS.
 
 ## 👨‍💻 Team
 
-- **Angshuman Chakravertty** - Lead Developer
-- **Anshuman** - Backend Developer  
-- **Rayyan** - Frontend Developer
+- **Angshuman Chakravertty**
+- **Anshuman**   
+- **Rayyan** 
 
 ---
 

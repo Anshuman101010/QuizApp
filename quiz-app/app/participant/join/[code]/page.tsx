@@ -52,6 +52,14 @@ export default function JoinQuiz() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent drop-shadow-2xl mb-2">
+            One Chance
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300">
+            Join Quiz Session
+          </p>
+        </div>
         <Card className="border-2 border-blue-200 dark:border-blue-800 shadow-xl">
           <CardHeader className="text-center">
             <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">

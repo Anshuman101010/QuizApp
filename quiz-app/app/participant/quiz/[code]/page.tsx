@@ -61,6 +61,7 @@ export default function ParticipantQuiz() {
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [questionIndex, setQuestionIndex] = useState(0)
+  const [participants, setParticipants] = useState<Array<{id: string, name: string, score: number}>>([])
 
   // Fetch questions for this session on mount
   useEffect(() => {
@@ -76,6 +77,27 @@ export default function ParticipantQuiz() {
       }
     }
     fetchQuestions()
+  }, [quizCode])
+
+  // Fetch participants for this session
+  useEffect(() => {
+    async function fetchParticipants() {
+      const res = await fetch(`/api/sessions/participants?code=${quizCode}`)
+      if (res.ok) {
+        const data = await res.json()
+        setParticipants(
+          data.participants.map((p: any) => ({
+            id: p.users.id.toString(),
+            name: p.users.username,
+            score: p.score || 0
+          }))
+        )
+      }
+    }
+    fetchParticipants()
+    // Poll for new participants every 3 seconds
+    const interval = setInterval(fetchParticipants, 3000)
+    return () => clearInterval(interval)
   }, [quizCode])
 
   // When moving to next question, update currentQuestion
@@ -327,8 +349,59 @@ export default function ParticipantQuiz() {
   // Only show game content if questions are loaded
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-500">Waiting for host to start the quiz or loading questions...</div>
+      <div className="min-h-screen">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg flex items-center gap-2 animate-pulse">
+              <Trophy className="w-7 h-7 text-yellow-400 animate-bounce" />
+              <span>{playerName}</span>
+            </h1>
+            <p className="text-balance">Quiz Code: {quizCode}</p>
+          </div>
+          
+          <div className="max-w-2xl mx-auto">
+            <Card className="text-center">
+              <CardContent className="p-8">
+                <div className="animate-pulse">
+                  <Trophy className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <h2 className="text-xl font-semibold mb-2">Loading quiz...</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Please wait while we load the quiz questions.
+                  </p>
+                  
+                  {/* Participants List */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-4">Participants ({participants.length})</h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {participants.length > 0 ? (
+                        participants.map((participant, index) => (
+                          <div
+                            key={participant.id}
+                            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                {index + 1}
+                              </div>
+                              <span className="font-medium">{participant.name}</span>
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                              {participant.score} pts
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-gray-500 dark:text-gray-400 py-4">
+                          No participants yet...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     )
   }
@@ -353,9 +426,9 @@ export default function ParticipantQuiz() {
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg flex items-center gap-2 animate-pulse">
               <Trophy className="w-7 h-7 text-yellow-400 animate-bounce" />
-              <span>{playerName}</span>
+              <span>One Chance</span>
             </h1>
-            <p className="text-balance">Quiz Code: {quizCode}</p>
+            <p className="text-balance">Player: {playerName} | Quiz Code: {quizCode}</p>
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2">
             #{playerStats.position}
@@ -435,122 +508,187 @@ export default function ParticipantQuiz() {
               <CardContent className="p-8">
                 <div className="animate-pulse">
                   <Trophy className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <h2 className="text-xl font-semibold mb-2">Waiting for next question...</h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Get ready! The host will start the next question soon.
+                  <h2 className="text-xl font-semibold mb-2">Waiting for host to start...</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Get ready! The host will start the quiz soon.
                   </p>
+                  
+                  {/* Participants List */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-4">Participants ({participants.length})</h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {participants.length > 0 ? (
+                        participants.map((participant, index) => (
+                          <div
+                            key={participant.id}
+                            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                {index + 1}
+                              </div>
+                              <span className="font-medium">{participant.name}</span>
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                              {participant.score} pts
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-gray-500 dark:text-gray-400 py-4">
+                          No participants yet...
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           )}
 
           {(gameState === "active" || gameState === "answered") && currentQuestion && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Question</CardTitle>
-                  <div className="flex items-center gap-4">
-                    {activePowerUp === "doublePoints" && <Badge className="bg-yellow-500">2x Points Active!</Badge>}
-                    <div className="flex items-center gap-2 text-lg font-bold">
-                      <Clock className="w-5 h-5" />
-                      {timeRemaining}s
-                    </div>
-                  </div>
-                </div>
-                <Progress value={(timeRemaining / currentQuestion.timeLimit) * 100} className="h-2" />
-              </CardHeader>
-              <CardContent>
-                {!showFeedback ? (
-                  <div className="space-y-6">
-                    <p className="text-lg font-medium">{currentQuestion.question}</p>
-
-                    {currentQuestion.type === "multiple-choice" && (
-                      <div className="space-y-3">
-                        {currentQuestion.options?.map((option, index) => (
-                          <Button
-                            key={index}
-                            variant={selectedAnswer === index ? "default" : "outline"}
-                            className="w-full justify-start text-left h-auto p-4"
-                            onClick={() => handleAnswerSelect(index)}
-                            disabled={gameState === "answered"}
-                          >
-                            <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
-                            {option}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
-
-                    {currentQuestion.type === "true-false" && (
-                      <div className="grid grid-cols-2 gap-4">
-                        <Button
-                          variant={selectedAnswer === "true" ? "default" : "outline"}
-                          className="h-16 text-lg"
-                          onClick={() => handleAnswerSelect("true")}
-                          disabled={gameState === "answered"}
-                        >
-                          True
-                        </Button>
-                        <Button
-                          variant={selectedAnswer === "false" ? "default" : "outline"}
-                          className="h-16 text-lg"
-                          onClick={() => handleAnswerSelect("false")}
-                          disabled={gameState === "answered"}
-                        >
-                          False
-                        </Button>
-                      </div>
-                    )}
-
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Quiz Content */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        Points: {currentQuestion.points}
-                        {activePowerUp === "doublePoints" && " × 2"}
+                      <CardTitle className="text-xl">Question</CardTitle>
+                      <div className="flex items-center gap-4">
+                        {activePowerUp === "doublePoints" && <Badge className="bg-yellow-500">2x Points Active!</Badge>}
+                        <div className="flex items-center gap-2 text-lg font-bold">
+                          <Clock className="w-5 h-5" />
+                          {timeRemaining}s
+                        </div>
                       </div>
-                      <Button
-                        onClick={handleSubmitAnswer}
-                        disabled={selectedAnswer === null || gameState === "answered"}
-                        size="lg"
-                      >
-                        Submit Answer
-                      </Button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center space-y-4">
-                    <div
-                      className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${
-                        isCorrect ? "bg-green-100 dark:bg-green-900" : "bg-red-100 dark:bg-red-900"
-                      }`}
-                    >
-                      {isCorrect ? (
-                        <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+                    <Progress value={(timeRemaining / currentQuestion.timeLimit) * 100} className="h-2" />
+                  </CardHeader>
+                  <CardContent>
+                    {!showFeedback ? (
+                      <div className="space-y-6">
+                        <p className="text-lg font-medium">{currentQuestion.question}</p>
+
+                        {currentQuestion.type === "multiple-choice" && (
+                          <div className="space-y-3">
+                            {currentQuestion.options?.map((option, index) => (
+                              <Button
+                                key={index}
+                                variant={selectedAnswer === index ? "default" : "outline"}
+                                className="w-full justify-start text-left h-auto p-4"
+                                onClick={() => handleAnswerSelect(index)}
+                                disabled={gameState === "answered"}
+                              >
+                                <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
+                                {option}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+
+                        {currentQuestion.type === "true-false" && (
+                          <div className="grid grid-cols-2 gap-4">
+                            <Button
+                              variant={selectedAnswer === "true" ? "default" : "outline"}
+                              className="h-16 text-lg"
+                              onClick={() => handleAnswerSelect("true")}
+                              disabled={gameState === "answered"}
+                            >
+                              True
+                            </Button>
+                            <Button
+                              variant={selectedAnswer === "false" ? "default" : "outline"}
+                              className="h-16 text-lg"
+                              onClick={() => handleAnswerSelect("false")}
+                              disabled={gameState === "answered"}
+                            >
+                              False
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            Points: {currentQuestion.points}
+                            {activePowerUp === "doublePoints" && " × 2"}
+                          </div>
+                          <Button
+                            onClick={handleSubmitAnswer}
+                            disabled={selectedAnswer === null || gameState === "answered"}
+                            size="lg"
+                          >
+                            Submit Answer
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center space-y-4">
+                        <div
+                          className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${
+                            isCorrect ? "bg-green-100 dark:bg-green-900" : "bg-red-100 dark:bg-red-900"
+                          }`}
+                        >
+                          {isCorrect ? (
+                            <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+                          ) : (
+                            <XCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
+                          )}
+                        </div>
+                        <h3 className="text-xl font-semibold">
+                          {isCorrect ? "Correct!" : "Incorrect"}
+                        </h3>
+                        {isCorrect && (
+                          <div className="space-y-2">
+                            <p className="text-lg">
+                              +{Math.floor(currentQuestion.points * (1 + playerStats.streak * 0.1))} points
+                            </p>
+                            {playerStats.streak > 1 && (
+                              <p className="text-sm text-orange-600">🔥 Streak bonus: {playerStats.streak}x</p>
+                            )}
+                          </div>
+                        )}
+                        <p className="text-gray-600 dark:text-gray-400">Waiting for next question...</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Participants Sidebar */}
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Participants ({participants.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                      {participants.length > 0 ? (
+                        participants.map((participant, index) => (
+                          <div
+                            key={participant.id}
+                            className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                {index + 1}
+                              </div>
+                              <span className="text-sm font-medium truncate">{participant.name}</span>
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                              {participant.score} pts
+                            </div>
+                          </div>
+                        ))
                       ) : (
-                        <XCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
+                        <div className="text-gray-500 dark:text-gray-400 py-4 text-center text-sm">
+                          No participants yet...
+                        </div>
                       )}
                     </div>
-                    <h3
-                      className={`text-2xl font-bold ${
-                        isCorrect ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                      }`}
-                    >
-                      {isCorrect ? "Correct!" : "Incorrect!"}
-                    </h3>
-                    {isCorrect && (
-                      <div className="space-y-2">
-                        <p className="text-lg">
-                          +{Math.floor(currentQuestion.points * (1 + playerStats.streak * 0.1))} points
-                        </p>
-                        {playerStats.streak > 1 && (
-                          <p className="text-sm text-orange-600">🔥 Streak bonus: {playerStats.streak}x</p>
-                        )}
-                      </div>
-                    )}
-                    <p className="text-gray-600 dark:text-gray-400">Waiting for next question...</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           )}
         </div>
       </div>

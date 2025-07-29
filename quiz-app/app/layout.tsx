@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Link from 'next/link'
+import { PageTransition } from '@/components/ui/page-transition'
 
 export const metadata: Metadata = {
   title: 'quiz app',
@@ -28,7 +29,7 @@ export default function RootLayout({
           alignItems: 'center',
           justifyContent: 'flex-start',
         }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center' }}>
             <img
               src="/college_logo.png"
               alt="NMIMS Logo"
@@ -36,7 +37,9 @@ export default function RootLayout({
             />
           </Link>
         </header>
-        <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
+        <PageTransition>
+          <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
+        </PageTransition>
       </body>
     </html>
   )

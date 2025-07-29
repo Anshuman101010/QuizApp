@@ -269,7 +269,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/SE_Project/generated/prisma",
+      "value": "/Users/angshumansmac/Downloads/gbhgvb/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -287,12 +287,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/angshumansmac/Desktop/BTECH/Sem5/SE/SE_Project/prisma/schema.prisma",
+    "sourceFilePath": "/Users/angshumansmac/Downloads/gbhgvb/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "schemaEnvPath": "../../quiz-app/.env"
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.12.0",

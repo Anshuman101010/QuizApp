@@ -2,35 +2,56 @@
 
 A real-time quiz application built with Next.js, Prisma, and MySQL. Features include live participant tracking, session management, and comprehensive analytics.
 
-## 🚀 Quick Start
+## 🚀 Quick Start (After Pulling from GitHub)
 
 ### Prerequisites
 - Node.js 18+ 
 - MySQL 8.0+
 - npm or pnpm
 
-### Installation
+### One-Command Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Ganglet/One_Chance_SE_Project.git
-   cd One_Chance_SE_Project
-   ```
+**For Unix/Linux/macOS:**
+```bash
+cd quiz-app
+chmod +x setup.sh
+./setup.sh
+```
 
-2. **Install dependencies**
+**For Windows:**
+```cmd
+cd quiz-app
+setup.bat
+```
+
+**Alternative (using npm):**
+```bash
+cd quiz-app
+npm run dev:setup
+```
+
+### Manual Setup (if automated setup fails)
+
+1. **Install dependencies**
    ```bash
    cd quiz-app
    npm install
    ```
 
-3. **Set up environment variables**
+2. **Set up environment variables**
    Create a `.env` file in the `quiz-app` directory:
    ```env
-   DATABASE_URL="mysql://username:password@localhost:3306/NMIMS_QUIZ"
+   DATABASE_URL="mysql://root:YOUR_MYSQL_PASSWORD@localhost:3306/NMIMS_QUIZ"
+   NEXTAUTH_SECRET="your-secret-key-here"
+   NEXTAUTH_URL="http://localhost:3000"
    ```
+   **Important:** Replace `YOUR_MYSQL_PASSWORD` with your actual MySQL root password.
 
-4. **Set up the database**
+3. **Set up the database**
    ```bash
+   # Create database
+   mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS NMIMS_QUIZ;"
+   
    # Generate Prisma client
    npm run prisma:generate
    
@@ -41,27 +62,13 @@ A real-time quiz application built with Next.js, Prisma, and MySQL. Features inc
    npm run prisma:seed
    ```
 
-5. **Start the development server**
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-6. **Open your browser**
+5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 🔧 One-Command Setup
-
-For new team members, run this single command to set up everything:
-
-```bash
-cd quiz-app && npm run setup
-```
-
-This will:
-- Install all dependencies
-- Generate Prisma client
-- Run database migrations
-- Seed the database with sample data
 
 ## 👥 Default Users
 
@@ -85,6 +92,8 @@ One_Chance_SE_Project/
 │   ├── components/           # UI components
 │   ├── lib/                  # Database utilities
 │   ├── hooks/               # Custom React hooks
+│   ├── setup.sh             # Unix/Linux setup script
+│   ├── setup.bat            # Windows setup script
 │   └── public/              # Static assets
 ├── prisma/                  # Database schema and migrations
 │   ├── schema.prisma        # Database schema
@@ -98,32 +107,52 @@ One_Chance_SE_Project/
 ### For Hosts
 - Create and manage quizzes
 - Real-time session control
-- Participant tracking
-- Analytics and reporting
-- Question management
+- Live participant tracking
+- Comprehensive analytics
+- Session management
 
 ### For Participants
-- Join quizzes with codes
-- Real-time participant list
-- Live leaderboard
-- Power-ups and bonuses
-- Proctoring features
+- Join sessions with codes
+- Real-time quiz participation
+- Live scoring and feedback
+- Performance tracking
 
-## 🔄 Database Setup
+## 🔧 Troubleshooting
 
-### MySQL Setup
-1. Create a MySQL database named `NMIMS_QUIZ`
-2. Update the `DATABASE_URL` in your `.env` file
-3. Run migrations: `npm run prisma:migrate`
+### Common Issues
 
-### Troubleshooting Database Issues
-- **Connection refused**: Check if MySQL is running
-- **Access denied**: Verify username/password in DATABASE_URL
-- **Database doesn't exist**: Create the database first
+1. **Database Connection Error**
+   - Make sure MySQL is running
+   - Verify your password in the `.env` file
+   - Check if the database exists: `mysql -u root -p -e "SHOW DATABASES;"`
+
+2. **bcrypt Module Error**
+   - The project now uses `bcryptjs` instead of `bcrypt` to avoid native binary issues
+   - This is automatically handled in the setup scripts
+
+3. **Prisma Schema Not Found**
+   - The schema is located in `../prisma/schema.prisma`
+   - This is automatically configured in the package.json scripts
+
+4. **Port Already in Use**
+   - Kill existing processes: `pkill -f "next dev"`
+   - Or use a different port: `npm run dev -- -p 3001`
+
+### Reset Everything
+
+If you need to start fresh:
+```bash
+cd quiz-app
+rm -rf node_modules .next
+rm .env
+npm install
+./setup.sh  # or setup.bat on Windows
+```
 
 ## 🛠️ Development
 
 ### Available Scripts
+
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run start` - Start production server
@@ -131,80 +160,34 @@ One_Chance_SE_Project/
 - `npm run prisma:generate` - Generate Prisma client
 - `npm run prisma:migrate` - Run database migrations
 - `npm run prisma:seed` - Seed database with sample data
-- `npm run db:setup` - Complete database setup
-- `npm run setup` - Complete project setup
+- `npm run setup` - Full setup (install + database)
+- `npm run dev:setup` - Setup + start dev server
 
-### Cross-Platform Compatibility
-- ✅ macOS
-- ✅ Windows
-- ✅ Linux
-- ✅ All seed scripts work on all platforms
+### Environment Variables
 
-## 🐛 Troubleshooting
+Required environment variables in `.env`:
+- `DATABASE_URL` - MySQL connection string
+- `NEXTAUTH_SECRET` - Secret for NextAuth.js
+- `NEXTAUTH_URL` - Your application URL
 
-### Common Issues
+## 📝 Recent Fixes
 
-1. **"Module not found" errors**
-   ```bash
-   npm install
-   npm run prisma:generate
-   ```
+This project has been updated to handle common setup issues:
 
-2. **Database connection issues**
-   - Verify MySQL is running
-   - Check DATABASE_URL in .env
-   - Ensure database exists
-
-3. **Seed script fails**
-   ```bash
-   npm run prisma:generate
-   npm run prisma:seed
-   ```
-
-4. **Port already in use**
-   ```bash
-   # Kill process on port 3000
-   lsof -ti:3000 | xargs kill -9
-   ```
-
-### Windows-Specific Issues
-- Use `npm` instead of `pnpm` if you encounter issues
-- Ensure MySQL service is running
-- Check Windows firewall settings
-
-## 📝 Environment Variables
-
-Create a `.env` file in the `quiz-app` directory:
-
-```env
-# Database
-DATABASE_URL="mysql://username:password@localhost:3306/NMIMS_QUIZ"
-
-# NextAuth
-NEXTAUTH_SECRET="your-secret-key-here"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Optional: Custom port
-PORT=3000
-```
+1. **Fixed bcrypt native binary issues** - Now uses `bcryptjs`
+2. **Fixed Prisma schema location** - Properly configured paths
+3. **Added comprehensive setup scripts** - One-command setup
+4. **Improved error handling** - Better error messages and guidance
+5. **Added environment validation** - Checks for prerequisites
 
 ## 🤝 Contributing
 
-1. Create a feature branch
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
-This project is part of the SE (Software Engineering) course at NMIMS.
-
-## 👨‍💻 Team
-
-- **Angshuman Chakravertty**
-- **Anshuman**   
-- **Rayyan** 
-
----
-
-**Note**: This project is designed to work seamlessly across all platforms. If you encounter any issues, please check the troubleshooting section above. 
+This project is licensed under the MIT License. 

@@ -1,7 +1,7 @@
 console.log('--- SEED SCRIPT STARTED ---')
 import 'dotenv/config'
 import { PrismaClient } from '../generated/prisma'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] })
 

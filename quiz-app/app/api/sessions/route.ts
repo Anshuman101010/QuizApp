@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Quiz not found' }, { status: 404 })
   }
   if (quiz.status !== 'active') {
-    return NextResponse.json({ error: 'Quiz is not active' }, { status: 400 })
+    return NextResponse.json({ error: 'Quiz is not active. Please activate the quiz first.' }, { status: 400 })
   }
   // Validate host exists
   const host = await prisma.users.findUnique({ where: { id: hostId } })

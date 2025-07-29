@@ -153,8 +153,11 @@ enum users_role {
 
 enum quizzes_status {
   draft
+  inactive
   active
+  stopped
   completed
+  terminated
 }
 
 enum questions_media_type {

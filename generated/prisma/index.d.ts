@@ -86,8 +86,11 @@ export type users_role = (typeof users_role)[keyof typeof users_role]
 
 export const quizzes_status: {
   draft: 'draft',
+  inactive: 'inactive',
   active: 'active',
-  completed: 'completed'
+  stopped: 'stopped',
+  completed: 'completed',
+  terminated: 'terminated'
 };
 
 export type quizzes_status = (typeof quizzes_status)[keyof typeof quizzes_status]

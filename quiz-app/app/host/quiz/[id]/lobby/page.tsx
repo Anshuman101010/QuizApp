@@ -115,6 +115,52 @@ export default function HostLobby() {
     }
   }
 
+  const handleStopQuiz = async () => {
+    if (!joinCode) return
+    
+    if (!confirm("Are you sure you want to stop this quiz session? You can restart it later from the dashboard.")) {
+      return
+    }
+    
+    try {
+      // First, get the quiz ID from the session
+      const sessionRes = await fetch(`/api/sessions?code=${joinCode}`)
+      if (!sessionRes.ok) {
+        throw new Error("Failed to fetch session details")
+      }
+      const sessionData = await sessionRes.json()
+      const quizId = sessionData.session.quiz_id
+
+      // Update session status to completed
+      const sessionUpdateRes = await fetch("/api/sessions/status", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: joinCode, status: "completed" })
+      })
+      
+      if (!sessionUpdateRes.ok) {
+        throw new Error("Failed to update session status")
+      }
+
+      // Update quiz status to stopped
+      const quizUpdateRes = await fetch(`/api/quizzes/${quizId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "stopped" })
+      })
+      
+      if (!quizUpdateRes.ok) {
+        console.warn("Failed to update quiz status, but session was stopped")
+      }
+      
+      // Redirect back to host dashboard
+      router.push("/host/dashboard")
+    } catch (error) {
+      console.error("Error stopping quiz:", error)
+      alert("Failed to stop quiz")
+    }
+  }
+
   const handleTerminateQuiz = async () => {
     if (!joinCode) return
     
@@ -123,19 +169,38 @@ export default function HostLobby() {
     }
     
     try {
+      // First, get the quiz ID from the session
+      const sessionRes = await fetch(`/api/sessions?code=${joinCode}`)
+      if (!sessionRes.ok) {
+        throw new Error("Failed to fetch session details")
+      }
+      const sessionData = await sessionRes.json()
+      const quizId = sessionData.session.quiz_id
+
       // Update session status to completed
-      const res = await fetch("/api/sessions/status", {
+      const sessionUpdateRes = await fetch("/api/sessions/status", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: joinCode, status: "completed" })
       })
       
-      if (res.ok) {
-        // Redirect back to host dashboard
-        router.push("/host/dashboard")
-      } else {
-        alert("Failed to terminate quiz")
+      if (!sessionUpdateRes.ok) {
+        throw new Error("Failed to update session status")
       }
+
+      // Update quiz status to terminated
+      const quizUpdateRes = await fetch(`/api/quizzes/${quizId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "terminated" })
+      })
+      
+      if (!quizUpdateRes.ok) {
+        console.warn("Failed to update quiz status, but session was terminated")
+      }
+      
+      // Redirect back to host dashboard
+      router.push("/host/dashboard")
     } catch (error) {
       console.error("Error terminating quiz:", error)
       alert("Failed to terminate quiz")
@@ -355,6 +420,16 @@ export default function HostLobby() {
                   </Button>
                   
                   <Button 
+                    onClick={handleStopQuiz} 
+                    variant="outline" 
+                    className="w-full transition-element"
+                    size="lg"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Stop Quiz
+                  </Button>
+
+                  <Button 
                     onClick={handleTerminateQuiz} 
                     variant="destructive" 
                     className="w-full transition-element"
@@ -372,7 +447,8 @@ export default function HostLobby() {
                     <li>• Share the join code with participants</li>
                     <li>• Wait for participants to join</li>
                     <li>• Click "Start Quiz" when ready</li>
-                    <li>• Use "Terminate Quiz" to end early</li>
+                    <li>• Use "Stop Quiz" to pause and restart later</li>
+                    <li>• Use "Terminate Quiz" to end permanently</li>
                   </ul>
                 </div>
               </CardContent>

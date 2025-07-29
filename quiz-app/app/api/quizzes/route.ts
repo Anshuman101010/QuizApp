@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         negative_marking: negativeMarking,
         team_mode: teamMode,
         user_id: userId,
-        status: 'active', // Ensure new quizzes are active by default
+        status: 'inactive', // New quizzes start as inactive
         questions: {
           create: questions.map((q: any) => ({
             type: q.type,

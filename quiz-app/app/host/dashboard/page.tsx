@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Play, BarChart3, Settings, Users, Trophy, HelpCircle, CheckCircle } from "lucide-react"
+import { Plus, Play, BarChart3, Settings, Users, Trophy, HelpCircle, CheckCircle, RotateCcw, Circle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 
@@ -13,7 +13,7 @@ interface Quiz {
   description: string
   questions: number
   participants: number
-  status: "draft" | "active" | "completed"
+  status: "inactive" | "active" | "stopped" | "completed" | "terminated"
   createdAt: string
 }
 
@@ -21,6 +21,7 @@ export default function HostDashboard() {
   const router = useRouter()
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
   const [loading, setLoading] = useState(true)
+  const [updatingQuiz, setUpdatingQuiz] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchQuizzes() {
@@ -43,17 +44,18 @@ export default function HostDashboard() {
         return
       }
 
-      setQuizzes(
-        (data.quizzes || []).map((q: any) => ({
-          id: q.id,
-          title: q.title,
-          description: q.description,
-          questions: q.questions.length,
-          participants: 0, // You can update this if you have participant data
-          status: q.status || "draft",
-          createdAt: q.created_at ? q.created_at.split("T")[0] : "",
-        }))
-      )
+      // Process quizzes - properly map status values
+      const processedQuizzes = (data.quizzes || []).map((q: any) => ({
+        id: q.id,
+        title: q.title,
+        description: q.description,
+        questions: q.questions.length,
+        participants: 0, // You can update this if you have participant data
+        status: q.status || "inactive", // Use the actual status from database
+        createdAt: q.created_at ? q.created_at.split("T")[0] : "",
+      }))
+
+      setQuizzes(processedQuizzes)
       setLoading(false)
     }
     fetchQuizzes()
@@ -64,28 +66,155 @@ export default function HostDashboard() {
   }
 
   const handleStartQuiz = async (quizId: string) => {
-    // Get hostId from local/session storage
-    const hostId = Number(localStorage.getItem("userId"))
-    if (!hostId) {
-      alert("No host user ID found. Please log in again.")
-      return
+    setUpdatingQuiz(quizId)
+    try {
+      // Get hostId from local/session storage
+      const hostId = Number(localStorage.getItem("userId"))
+      if (!hostId) {
+        alert("No host user ID found. Please log in again.")
+        return
+      }
+
+      // First, update quiz status to active
+      const updateRes = await fetch(`/api/quizzes/${quizId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "active" }),
+      })
+
+      if (!updateRes.ok) {
+        throw new Error("Failed to update quiz status")
+      }
+
+      // Then create a session
+      const sessionRes = await fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quizId, hostId }),
+      })
+
+      if (sessionRes.ok) {
+        const data = await sessionRes.json()
+        // Update local state
+        setQuizzes(prev => prev.map(q => 
+          q.id === quizId ? { ...q, status: "active" } : q
+        ))
+        // Redirect to lobby page with ?code=SESSIONCODE
+        router.push(`/host/quiz/${quizId}/lobby?code=${data.session.code}`)
+      } else {
+        // If session creation fails, revert quiz status
+        await fetch(`/api/quizzes/${quizId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "inactive" }),
+        })
+        alert("Failed to start session")
+      }
+    } catch (error) {
+      console.error("Error starting quiz:", error)
+      alert("Failed to start quiz")
+    } finally {
+      setUpdatingQuiz(null)
     }
-    const res = await fetch("/api/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quizId, hostId }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      // Redirect to lobby page with ?code=SESSIONCODE
-      router.push(`/host/quiz/${quizId}/lobby?code=${data.session.code}`)
-    } else {
-      alert("Failed to start session")
+  }
+
+  const handleStopQuiz = async (quizId: string) => {
+    setUpdatingQuiz(quizId)
+    try {
+      const res = await fetch(`/api/quizzes/${quizId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "stopped" }),
+      })
+
+      if (res.ok) {
+        // Update local state
+        setQuizzes(prev => prev.map(q => 
+          q.id === quizId ? { ...q, status: "stopped" } : q
+        ))
+      } else {
+        alert("Failed to stop quiz")
+      }
+    } catch (error) {
+      console.error("Error stopping quiz:", error)
+      alert("Failed to stop quiz")
+    } finally {
+      setUpdatingQuiz(null)
+    }
+  }
+
+  const handleRestartQuiz = async (quizId: string) => {
+    setUpdatingQuiz(quizId)
+    try {
+      const res = await fetch(`/api/quizzes/${quizId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "inactive" }),
+      })
+
+      if (res.ok) {
+        // Update local state
+        setQuizzes(prev => prev.map(q => 
+          q.id === quizId ? { ...q, status: "inactive" } : q
+        ))
+      } else {
+        alert("Failed to restart quiz")
+      }
+    } catch (error) {
+      console.error("Error restarting quiz:", error)
+      alert("Failed to restart quiz")
+    } finally {
+      setUpdatingQuiz(null)
     }
   }
 
   const handleViewResults = (quizId: string) => {
     router.push(`/host/quiz/${quizId}/results`)
+  }
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "active":
+        return "default"
+      case "inactive":
+        return "secondary"
+      case "stopped":
+        return "outline"
+      case "terminated":
+        return "destructive"
+      default:
+        return "secondary"
+    }
+  }
+
+  const getStatusBadgeStyle = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700"
+      case "inactive":
+        return "bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200 border-slate-200 dark:border-slate-700"
+      case "stopped":
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border-amber-200 dark:border-amber-700"
+      case "terminated":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-red-200 dark:border-red-700"
+      default:
+        return "bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200 border-slate-200 dark:border-slate-700"
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "text-emerald-600 dark:text-emerald-400"
+      case "inactive":
+        return "text-slate-600 dark:text-slate-400"
+      case "stopped":
+        return "text-amber-600 dark:text-amber-400"
+      case "terminated":
+        return "text-red-600 dark:text-red-400"
+      default:
+        return "text-slate-600 dark:text-slate-400"
+    }
   }
 
   return (
@@ -126,8 +255,8 @@ export default function HostDashboard() {
                     {quizzes.filter(q => q.status === "active").length}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center scale-in">
-                  <Play className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center scale-in">
+                  <Play className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
               </div>
             </CardContent>
@@ -136,13 +265,13 @@ export default function HostDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Questions</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Stopped Quizzes</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {quizzes.reduce((sum, q) => sum + q.questions, 0)}
+                    {quizzes.filter(q => q.status === "stopped").length}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center scale-in">
-                  <HelpCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900 rounded-lg flex items-center justify-center scale-in">
+                  <RotateCcw className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                 </div>
               </div>
             </CardContent>
@@ -151,13 +280,13 @@ export default function HostDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Terminated</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {quizzes.filter(q => q.status === "completed").length}
+                    {quizzes.filter(q => q.status === "terminated").length}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center scale-in">
-                  <CheckCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center scale-in">
+                  <CheckCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
               </div>
             </CardContent>
@@ -219,22 +348,68 @@ export default function HostDashboard() {
                         <span>{quiz.questions} questions</span>
                         <span>{quiz.participants} participants</span>
                         <span>Created {quiz.createdAt}</span>
-                        <Badge variant={quiz.status === "active" ? "default" : "secondary"}>
+                        <Badge className={`${getStatusBadgeStyle(quiz.status)} border`}>
                           {quiz.status}
                         </Badge>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {quiz.status === "active" && (
-                        <Button onClick={() => handleStartQuiz(quiz.id)} className="transition-element">
-                          <Play className="w-4 h-4 mr-2" />
+                      {quiz.status === "inactive" && (
+                        <Button 
+                          onClick={() => handleStartQuiz(quiz.id)} 
+                          className="transition-element"
+                          disabled={updatingQuiz === quiz.id}
+                        >
+                          {updatingQuiz === quiz.id ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          ) : (
+                            <Play className="w-4 h-4 mr-2" />
+                          )}
                           Start
                         </Button>
                       )}
-                      {quiz.status === "completed" && (
-                        <Button variant="outline" onClick={() => handleViewResults(quiz.id)} className="transition-element">
-                          <BarChart3 className="w-4 h-4 mr-2" />
-                          Results
+                      {quiz.status === "active" && (
+                        <>
+                          <Button 
+                            onClick={() => handleStartQuiz(quiz.id)} 
+                            className="transition-element"
+                            disabled={updatingQuiz === quiz.id}
+                          >
+                            {updatingQuiz === quiz.id ? (
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                            ) : (
+                              <Play className="w-4 h-4 mr-2" />
+                            )}
+                            Continue
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => handleStopQuiz(quiz.id)} 
+                            className="transition-element"
+                            disabled={updatingQuiz === quiz.id}
+                          >
+                            {updatingQuiz === quiz.id ? (
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                            ) : (
+                              <RotateCcw className="w-4 h-4 mr-2" />
+                            )}
+                            Stop
+                          </Button>
+                        </>
+                      )}
+                      {quiz.status === "stopped" && (
+                        <Button 
+                          variant="outline"
+                          onClick={() => handleRestartQuiz(quiz.id)} 
+                          className="transition-element"
+                          disabled={updatingQuiz === quiz.id}
+                        >
+                          {updatingQuiz === quiz.id ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          ) : (
+                            <RotateCcw className="w-4 h-4 mr-2" />
+                          )}
+                          Restart
                         </Button>
                       )}
                       <Button variant="ghost" size="icon" className="transition-element">

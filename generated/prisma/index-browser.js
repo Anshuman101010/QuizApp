@@ -267,8 +267,11 @@ exports.quiz_sessions_status = exports.$Enums.quiz_sessions_status = {
 
 exports.quizzes_status = exports.$Enums.quizzes_status = {
   draft: 'draft',
+  inactive: 'inactive',
   active: 'active',
-  completed: 'completed'
+  stopped: 'stopped',
+  completed: 'completed',
+  terminated: 'terminated'
 };
 
 exports.users_role = exports.$Enums.users_role = {

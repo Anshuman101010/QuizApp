@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Trophy, CheckCircle, XCircle } from "lucide-react"
+import { Clock, Trophy, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 import { useParams, useSearchParams, useRouter } from "next/navigation"
 import { toast } from "@/hooks/use-toast"
 
@@ -62,6 +62,11 @@ export default function ParticipantQuiz() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [questionIndex, setQuestionIndex] = useState(0)
   const [participants, setParticipants] = useState<Array<{id: string, name: string, score: number}>>([])
+  
+  // New state for quiz termination
+  const [showTerminationModal, setShowTerminationModal] = useState(false)
+  const [sessionStatus, setSessionStatus] = useState<string>("waiting")
+  const [connectionStatus, setConnectionStatus] = useState<"connecting" | "connected" | "disconnected">("connecting")
 
   // Fetch questions for this session on mount
   useEffect(() => {
@@ -99,6 +104,133 @@ export default function ParticipantQuiz() {
     const interval = setInterval(fetchParticipants, 3000)
     return () => clearInterval(interval)
   }, [quizCode])
+
+  // Real-time session status monitoring using Server-Sent Events
+  useEffect(() => {
+    let eventSource: EventSource | null = null
+    let reconnectAttempts = 0
+    const maxReconnectAttempts = 5
+    const baseDelay = 1000 // 1 second
+
+    const setupEventSource = () => {
+      try {
+        console.log('Setting up SSE connection for session:', quizCode)
+        setConnectionStatus("connecting")
+        eventSource = new EventSource(`/api/sessions/events?code=${quizCode}`)
+
+        eventSource.onopen = () => {
+          console.log('SSE connection established')
+          setConnectionStatus("connected")
+          reconnectAttempts = 0 // Reset reconnect attempts on successful connection
+        }
+
+        eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data)
+            console.log('SSE event received:', data)
+
+            if (data.type === 'session_update') {
+              const sessionStatus = data.session.status
+              const quizStatus = data.session.quiz_status
+              
+              console.log(`Session status: ${sessionStatus}, Quiz status: ${quizStatus}`)
+              setSessionStatus(sessionStatus)
+              
+              // Check for termination conditions
+              if ((sessionStatus === "completed" || quizStatus === "terminated") && !showTerminationModal) {
+                console.log("Quiz terminated detected via SSE! Showing termination modal...")
+                setShowTerminationModal(true)
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                  console.log("Redirecting to dashboard...")
+                  router.push("/dashboard")
+                }, 2000)
+              }
+            } else if (data.type === 'error') {
+              console.error('SSE error:', data.message)
+              setConnectionStatus("disconnected")
+            }
+          } catch (error) {
+            console.error('Error parsing SSE data:', error)
+          }
+        }
+
+        eventSource.onerror = (error) => {
+          console.error('SSE connection error:', error)
+          setConnectionStatus("disconnected")
+          
+          // Attempt to reconnect with exponential backoff
+          if (reconnectAttempts < maxReconnectAttempts) {
+            const delay = baseDelay * Math.pow(2, reconnectAttempts)
+            console.log(`Attempting to reconnect in ${delay}ms (attempt ${reconnectAttempts + 1}/${maxReconnectAttempts})`)
+            
+            setTimeout(() => {
+              if (eventSource) {
+                eventSource.close()
+                reconnectAttempts++
+                setupEventSource()
+              }
+            }, delay)
+          } else {
+            console.log('Max reconnection attempts reached, falling back to polling')
+            setupPolling()
+          }
+        }
+      } catch (error) {
+        console.error('Error setting up SSE:', error)
+        setConnectionStatus("disconnected")
+        // Fallback to polling if SSE fails
+        console.log('Falling back to polling...')
+        setupPolling()
+      }
+    }
+
+    // Fallback polling function
+    const setupPolling = () => {
+      console.log('Using polling fallback for session status')
+      setConnectionStatus("disconnected")
+      
+      const checkSessionStatus = async () => {
+        try {
+          const res = await fetch(`/api/sessions?code=${quizCode}`)
+          if (res.ok) {
+            const data = await res.json()
+            const status = data.session.status
+            console.log(`Polling - Session status: ${status}`)
+            setSessionStatus(status)
+            
+            if (status === "completed" && !showTerminationModal) {
+              console.log("Quiz terminated detected via polling! Showing termination modal...")
+              setShowTerminationModal(true)
+              setTimeout(() => {
+                console.log("Redirecting to dashboard...")
+                router.push("/dashboard")
+              }, 2000)
+            }
+          }
+        } catch (error) {
+          console.error("Error polling session status:", error)
+        }
+      }
+
+      // Check immediately and then every 1 second
+      checkSessionStatus()
+      const interval = setInterval(checkSessionStatus, 1000)
+      
+      return () => clearInterval(interval)
+    }
+
+    // Start SSE connection
+    setupEventSource()
+
+    // Cleanup function
+    return () => {
+      if (eventSource) {
+        console.log('Closing SSE connection')
+        eventSource.close()
+      }
+    }
+  }, [quizCode, showTerminationModal, router])
 
   // When moving to next question, update currentQuestion
   useEffect(() => {
@@ -420,6 +552,21 @@ export default function ParticipantQuiz() {
           </div>
         </div>
       )}
+      {showTerminationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8 text-center max-w-md mx-auto">
+            <AlertTriangle className="w-16 h-16 text-red-600 mb-4" />
+            <h2 className="text-2xl font-bold mb-4 text-red-600">Quiz Terminated</h2>
+            <p className="mb-4">
+              The quiz has been terminated by the host. You will be redirected to the dashboard in 2 seconds.
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              If you are not redirected, please click the button below.
+            </p>
+            <Button onClick={() => router.push("/dashboard")} className="mt-2">Go to Dashboard</Button>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -429,6 +576,31 @@ export default function ParticipantQuiz() {
               <span>One Chance</span>
             </h1>
             <p className="text-balance">Player: {playerName} | Quiz Code: {quizCode}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Session Status: <span className="font-medium capitalize">{sessionStatus}</span>
+              <span className="ml-4">
+                Connection: 
+                <span className={`ml-1 font-medium ${
+                  connectionStatus === "connected" ? "text-green-600" :
+                  connectionStatus === "connecting" ? "text-yellow-600" :
+                  "text-red-600"
+                }`}>
+                  {connectionStatus === "connected" ? "🟢 Live" :
+                   connectionStatus === "connecting" ? "🟡 Connecting..." :
+                   "🔴 Disconnected"}
+                </span>
+                {connectionStatus === "disconnected" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 h-6 px-2 text-xs"
+                    onClick={() => window.location.reload()}
+                  >
+                    Refresh
+                  </Button>
+                )}
+              </span>
+            </p>
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2">
             #{playerStats.position}

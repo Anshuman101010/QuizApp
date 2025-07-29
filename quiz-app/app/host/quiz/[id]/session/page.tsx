@@ -37,21 +37,55 @@ export default function QuizSession() {
   const [participants, setParticipants] = useState<Participant[]>([])
   const [joinCode, setJoinCode] = useState<string>("")
   const [sessionId, setSessionId] = useState<number | null>(null)
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Fetch session and participants on mount
+  // Fetch session, participants, and questions on mount
   useEffect(() => {
     async function fetchSession() {
-      // Assume quiz id is params.id
-      const res = await fetch(`/api/sessions?code=${searchParams.get("code")}`)
-      if (res.ok) {
+      try {
+        const code = searchParams.get("code")
+        if (!code) {
+          setError("No session code provided")
+          setLoading(false)
+          return
+        }
+
+        console.log("Fetching session with code:", code)
+        console.log("Current URL:", window.location.href)
+        
+        // Fetch session details
+        const sessionUrl = `/api/sessions?code=${code}`
+        console.log("Fetching session from:", sessionUrl)
+        
+        const res = await fetch(sessionUrl)
+        console.log("Session response status:", res.status)
+        console.log("Session response ok:", res.ok)
+        
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}))
+          console.error("Session fetch error:", errorData)
+          throw new Error(`Failed to fetch session: ${res.status} ${errorData.error || res.statusText}`)
+        }
+        
         const data = await res.json()
+        console.log("Session data:", data)
+        
         setJoinCode(data.session.code)
         setSessionId(data.session.id)
         setSessionStatus(data.session.status)
+        
         // Fetch participants
-        const pres = await fetch(`/api/sessions/participants?code=${data.session.code}`)
+        const participantsUrl = `/api/sessions/participants?code=${data.session.code}`
+        console.log("Fetching participants from:", participantsUrl)
+        
+        const pres = await fetch(participantsUrl)
+        console.log("Participants response status:", pres.status)
+        
         if (pres.ok) {
           const pdata = await pres.json()
+          console.log("Participants data:", pdata)
           setParticipants(
             pdata.participants.map((p: any) => ({
               id: p.users.id,
@@ -62,34 +96,57 @@ export default function QuizSession() {
               answered: false // TODO: update with real answer status
             }))
           )
+        } else {
+          console.error("Failed to fetch participants:", pres.status, pres.statusText)
         }
+
+        // Fetch questions for this session
+        const questionsUrl = `/api/sessions/questions?code=${data.session.code}`
+        console.log("Fetching questions from:", questionsUrl)
+        
+        const qres = await fetch(questionsUrl)
+        console.log("Questions response status:", qres.status)
+        console.log("Questions response ok:", qres.ok)
+        
+        if (qres.ok) {
+          const qdata = await qres.json()
+          console.log("Questions data:", qdata)
+          console.log("Number of questions:", qdata.questions?.length || 0)
+          
+          // Transform the database questions to match our interface
+          const transformedQuestions: Question[] = qdata.questions.map((q: any) => ({
+            id: q.id.toString(),
+            question: q.question,
+            type: q.type === 'multiple_choice' ? 'multiple-choice' : 
+                  q.type === 'true_false' ? 'true-false' : 'short-answer',
+            options: q.options?.map((opt: any) => opt.option_text) || [],
+            correctAnswer: q.correct_answer || '',
+            timeLimit: q.time_limit || 30,
+            points: q.points || 100,
+          }))
+          console.log("Transformed questions:", transformedQuestions)
+          setQuestions(transformedQuestions)
+        } else {
+          const errorData = await qres.json().catch(() => ({}))
+          console.error("Failed to fetch questions:", qres.status, errorData)
+          throw new Error(`Failed to fetch questions: ${qres.status} ${errorData.error || qres.statusText}`)
+        }
+        
+        setLoading(false)
+        setError(null)
+        console.log("Session fetch completed successfully")
+      } catch (err) {
+        console.error("Error in fetchSession:", err)
+        setError(err instanceof Error ? err.message : "An unknown error occurred")
+        setLoading(false)
       }
     }
+    
     fetchSession()
     // Poll for new participants every 2 seconds
     const interval = setInterval(fetchSession, 2000)
     return () => clearInterval(interval)
-  }, [])
-
-  const questions: Question[] = [
-    {
-      id: "1",
-      question: "What is the capital of France?",
-      type: "multiple-choice",
-      options: ["London", "Berlin", "Paris", "Madrid"],
-      correctAnswer: 2,
-      timeLimit: 30,
-      points: 100,
-    },
-    {
-      id: "2",
-      question: "The Earth is flat.",
-      type: "true-false",
-      correctAnswer: "false",
-      timeLimit: 20,
-      points: 100,
-    },
-  ]
+  }, [searchParams])
 
   const currentQuestion = questions[currentQuestionIndex]
 
@@ -107,7 +164,7 @@ export default function QuizSession() {
 
   const handleStartSession = async () => {
     setSessionStatus("active")
-    setTimeRemaining(currentQuestion.timeLimit)
+    setTimeRemaining(currentQuestion?.timeLimit || 30)
     // Update session status in backend
     if (joinCode) {
       await fetch("/api/sessions/status", {
@@ -138,7 +195,43 @@ export default function QuizSession() {
   }
 
   const answeredCount = participants.filter((p) => p.answered).length
-  const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100
+  const progressPercentage = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
+          <p className="mt-4 text-lg">Loading quiz session...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Error Loading Session</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">No Questions Found</h1>
+          <p className="text-gray-600 dark:text-gray-400">This quiz doesn't have any questions yet.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -201,7 +294,7 @@ export default function QuizSession() {
             </Card>
 
             {/* Current Question */}
-            {sessionStatus !== "waiting" && (
+            {sessionStatus !== "waiting" && currentQuestion && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -218,9 +311,9 @@ export default function QuizSession() {
                   <div className="space-y-4">
                     <p className="text-lg font-medium">{currentQuestion.question}</p>
 
-                    {currentQuestion.type === "multiple-choice" && (
+                    {currentQuestion.type === "multiple-choice" && currentQuestion.options && (
                       <div className="grid grid-cols-2 gap-3">
-                        {currentQuestion.options?.map((option, index) => (
+                        {currentQuestion.options.map((option, index) => (
                           <div key={index} className="p-3 border rounded-lg bg-gray-50 dark:bg-gray-800">
                             <span className="font-medium">{String.fromCharCode(65 + index)}.</span> {option}
                           </div>
@@ -263,17 +356,17 @@ export default function QuizSession() {
                         {answeredCount} / {participants.length}
                       </span>
                     </div>
-                    <Progress value={(answeredCount / participants.length) * 100} className="h-2" />
+                    <Progress value={participants.length > 0 ? (answeredCount / participants.length) * 100 : 0} className="h-2" />
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
                         <p className="text-2xl font-bold text-green-600">
-                          {Math.round((answeredCount / participants.length) * 100)}%
+                          {participants.length > 0 ? Math.round((answeredCount / participants.length) * 100) : 0}%
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Responded</p>
                       </div>
                       <div>
                         <p className="text-2xl font-bold text-blue-600">
-                          {Math.round((timeRemaining / currentQuestion.timeLimit) * 100)}%
+                          {currentQuestion ? Math.round((timeRemaining / currentQuestion.timeLimit) * 100) : 0}%
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Time Left</p>
                       </div>

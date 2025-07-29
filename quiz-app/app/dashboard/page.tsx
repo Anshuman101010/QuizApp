@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Users, Trophy, BarChart3, Zap } from "lucide-react"
+import { Users, Trophy, BarChart3, Zap, Clock, UserCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useRef } from "react"
 
@@ -159,20 +159,20 @@ export default function DashboardRoute() {
         {/* Features Section */}
         <div className="mt-16 max-w-6xl mx-auto">
           <div className="text-center mb-12 fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Why Choose One Chance?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Quiz App Features</h2>
             <p className="text-lg text-gray-600 dark:text-gray-400">
-              Experience the next generation of interactive learning and assessment
+              Experience our comprehensive quiz platform with powerful hosting and participation tools
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center fade-in-up" style={{ animationDelay: '0.5s' }}>
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 scale-in">
-                <Zap className="w-8 h-8 text-white" />
+                <Users className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Real-time Interaction</h3>
+              <h3 className="text-xl font-semibold mb-2">Host & Participate</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Live participation with instant feedback and dynamic leaderboards
+                Create custom quizzes as a host or join existing sessions as a participant with unique join codes
               </p>
             </div>
 
@@ -180,9 +180,9 @@ export default function DashboardRoute() {
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 scale-in">
                 <BarChart3 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Advanced Analytics</h3>
+              <h3 className="text-xl font-semibold mb-2">Live Lobby System</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Comprehensive insights into performance, trends, and engagement
+                Real-time participant management with live lobby where hosts can see who joined and start/terminate sessions
               </p>
             </div>
 
@@ -190,9 +190,41 @@ export default function DashboardRoute() {
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 scale-in">
                 <Trophy className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Competitive Edge</h3>
+              <h3 className="text-xl font-semibold mb-2">Multiple Question Types</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Gamified experience with streaks, achievements, and rankings
+                Support for multiple choice and true/false questions with customizable time limits and scoring
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mt-8">
+            <div className="text-center fade-in-up" style={{ animationDelay: '0.8s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 scale-in">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Session Management</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Full control over quiz sessions with waiting, active, and completed states for organized gameplay
+              </p>
+            </div>
+
+            <div className="text-center fade-in-up" style={{ animationDelay: '0.9s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 scale-in">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Instant Results</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                View quiz results, participant scores, and performance analytics after session completion
+              </p>
+            </div>
+
+            <div className="text-center fade-in-up" style={{ animationDelay: '1.0s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 scale-in">
+                <UserCheck className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">User Management</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Separate host and participant roles with secure authentication and session tracking
               </p>
             </div>
           </div>

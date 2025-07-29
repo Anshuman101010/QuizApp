@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Play, Pause, SkipForward, Trophy, Clock, BarChart3 } from "lucide-react"
+import { Trophy, BarChart3 } from "lucide-react"
 import { useParams, useSearchParams } from "next/navigation"
 
 interface Participant {
@@ -32,8 +32,6 @@ export default function QuizSession() {
   const params = useParams()
   const searchParams = useSearchParams()
   const [sessionStatus, setSessionStatus] = useState<"waiting" | "active" | "paused" | "completed">("waiting")
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [timeRemaining, setTimeRemaining] = useState(30)
   const [participants, setParticipants] = useState<Participant[]>([])
   const [joinCode, setJoinCode] = useState<string>("")
   const [sessionId, setSessionId] = useState<number | null>(null)
@@ -148,54 +146,7 @@ export default function QuizSession() {
     return () => clearInterval(interval)
   }, [searchParams])
 
-  const currentQuestion = questions[currentQuestionIndex]
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout
-    if (sessionStatus === "active" && timeRemaining > 0) {
-      interval = setInterval(() => {
-        setTimeRemaining((prev) => prev - 1)
-      }, 1000)
-    } else if (timeRemaining === 0 && sessionStatus === "active") {
-      handleNextQuestion()
-    }
-    return () => clearInterval(interval)
-  }, [sessionStatus, timeRemaining])
-
-  const handleStartSession = async () => {
-    setSessionStatus("active")
-    setTimeRemaining(currentQuestion?.timeLimit || 30)
-    // Update session status in backend
-    if (joinCode) {
-      await fetch("/api/sessions/status", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: joinCode, status: "active" })
-      })
-    }
-  }
-
-  const handlePauseSession = () => {
-    setSessionStatus("paused")
-  }
-
-  const handleResumeSession = () => {
-    setSessionStatus("active")
-  }
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1)
-      setTimeRemaining(questions[currentQuestionIndex + 1].timeLimit)
-      // Reset participant answered status
-      setParticipants((prev) => prev.map((p) => ({ ...p, answered: false })))
-    } else {
-      setSessionStatus("completed")
-    }
-  }
-
   const answeredCount = participants.filter((p) => p.answered).length
-  const progressPercentage = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
 
   if (loading) {
     return (
@@ -248,139 +199,98 @@ export default function QuizSession() {
             <Badge variant="outline" className="text-lg px-4 py-2">
               {participants.length} Participants
             </Badge>
-            {sessionStatus === "waiting" && (
-              <Button onClick={handleStartSession} size="lg">
-                <Play className="w-5 h-5 mr-2" />
-                Start Quiz
-              </Button>
-            )}
-            {sessionStatus === "active" && (
-              <div className="flex gap-2">
-                <Button onClick={handlePauseSession} variant="outline">
-                  <Pause className="w-4 h-4 mr-2" />
-                  Pause
-                </Button>
-                <Button onClick={handleNextQuestion}>
-                  <SkipForward className="w-4 h-4 mr-2" />
-                  Next
-                </Button>
-              </div>
-            )}
-            {sessionStatus === "paused" && (
-              <Button onClick={handleResumeSession}>
-                <Play className="w-4 h-4 mr-2" />
-                Resume
-              </Button>
-            )}
           </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Progress */}
+            {/* Questions Preview */}
             <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium">
-                    Question {currentQuestionIndex + 1} of {questions.length}
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {Math.round(progressPercentage)}% Complete
-                  </span>
+              <CardHeader>
+                <CardTitle className="text-xl">Quiz Questions Preview</CardTitle>
+                <CardDescription>All questions in this quiz</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {questions.map((question, index) => (
+                    <div key={question.id} className="border rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="secondary">Question {index + 1}</Badge>
+                        <Badge variant="outline">{question.type}</Badge>
+                        <Badge variant="outline">{question.points} pts</Badge>
+                      </div>
+                      <p className="text-lg font-medium mb-3">{question.question}</p>
+                      
+                      {question.type === "multiple-choice" && question.options && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {question.options.map((option, optIndex) => (
+                            <div key={optIndex} className="p-2 border rounded bg-gray-50 dark:bg-gray-800">
+                              <span className="font-medium">{String.fromCharCode(65 + optIndex)}.</span> {option}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {question.type === "true-false" && (
+                        <div className="flex gap-4">
+                          <div className="flex-1 p-2 border rounded bg-gray-50 dark:bg-gray-800 text-center">True</div>
+                          <div className="flex-1 p-2 border rounded bg-gray-50 dark:bg-gray-800 text-center">False</div>
+                        </div>
+                      )}
+
+                      <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                        <span>Time Limit: {question.timeLimit}s</span>
+                        {question.correctAnswer && (
+                          <span className="ml-4">Correct Answer: {question.correctAnswer}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <Progress value={progressPercentage} className="h-2" />
               </CardContent>
             </Card>
 
-            {/* Current Question */}
-            {sessionStatus !== "waiting" && currentQuestion && (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Current Question</CardTitle>
-                    {sessionStatus === "active" && (
-                      <div className="flex items-center gap-2 text-lg font-bold">
-                        <Clock className="w-5 h-5" />
-                        {timeRemaining}s
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-lg font-medium">{currentQuestion.question}</p>
-
-                    {currentQuestion.type === "multiple-choice" && currentQuestion.options && (
-                      <div className="grid grid-cols-2 gap-3">
-                        {currentQuestion.options.map((option, index) => (
-                          <div key={index} className="p-3 border rounded-lg bg-gray-50 dark:bg-gray-800">
-                            <span className="font-medium">{String.fromCharCode(65 + index)}.</span> {option}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {currentQuestion.type === "true-false" && (
-                      <div className="flex gap-4">
-                        <div className="flex-1 p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 text-center">True</div>
-                        <div className="flex-1 p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 text-center">
-                          False
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>Points: {currentQuestion.points}</span>
-                      <span>Time Limit: {currentQuestion.timeLimit}s</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Response Stats */}
-            {sessionStatus === "active" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
-                    Response Statistics
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span>Responses Received</span>
-                      <span className="font-bold">
-                        {answeredCount} / {participants.length}
-                      </span>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  Response Statistics
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>Responses Received</span>
+                    <span className="font-bold">
+                      {answeredCount} / {participants.length}
+                    </span>
+                  </div>
+                  <Progress value={participants.length > 0 ? (answeredCount / participants.length) * 100 : 0} className="h-2" />
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-2xl font-bold text-green-600">
+                        {participants.length > 0 ? Math.round((answeredCount / participants.length) * 100) : 0}%
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Responded</p>
                     </div>
-                    <Progress value={participants.length > 0 ? (answeredCount / participants.length) * 100 : 0} className="h-2" />
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <p className="text-2xl font-bold text-green-600">
-                          {participants.length > 0 ? Math.round((answeredCount / participants.length) * 100) : 0}%
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Responded</p>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {currentQuestion ? Math.round((timeRemaining / currentQuestion.timeLimit) * 100) : 0}%
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Time Left</p>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-purple-600">
-                          {participants.reduce((sum, p) => sum + p.streak, 0)}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Total Streaks</p>
-                      </div>
+                    <div>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {participants.length}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Total Participants</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {participants.reduce((sum, p) => sum + p.streak, 0)}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Total Streaks</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Leaderboard */}

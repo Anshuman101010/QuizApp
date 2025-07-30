@@ -328,14 +328,16 @@ export default function ParticipantLobby() {
                             </span>
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900 dark:text-white">
-                              {participant.name}
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                {participant.name}
+                              </span>
                               {participant.name === playerName && (
-                                <Badge variant="secondary" className="ml-2 text-xs">
+                                <Badge variant="secondary" className="text-xs">
                                   You
                                 </Badge>
                               )}
-                            </p>
+                            </div>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
                               Joined {new Date(participant.joinedAt).toLocaleTimeString()}
                             </p>

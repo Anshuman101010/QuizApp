@@ -141,7 +141,8 @@ export default function QuizSession() {
     }
     
     fetchSession()
-    // Poll for new participants every 2 seconds
+    
+    // Poll for session updates every 2 seconds
     const interval = setInterval(fetchSession, 2000)
     return () => clearInterval(interval)
   }, [searchParams])

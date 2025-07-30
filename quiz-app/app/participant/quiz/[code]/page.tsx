@@ -68,16 +68,95 @@ export default function ParticipantQuiz() {
   const [sessionStatus, setSessionStatus] = useState<string>("waiting")
   const [connectionStatus, setConnectionStatus] = useState<"connecting" | "connected" | "disconnected">("connecting")
 
+  // Check if participant is already in session
+  useEffect(() => {
+    async function checkSessionStatus() {
+      try {
+        const res = await fetch(`/api/sessions?code=${quizCode}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Session info:", data.session)
+          
+          // Check if current user is already a participant
+          const isParticipant = data.session.session_participants?.some((p: any) => 
+            p.users && p.users.username === playerName
+          ) || false
+          
+          if (!isParticipant) {
+            console.log("User not in session, attempting to join...")
+            // Try to join the session
+            const joinRes = await fetch('/api/sessions/join', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code: quizCode, username: playerName })
+            })
+            
+            if (joinRes.ok) {
+              console.log("Successfully joined session")
+            } else {
+              const errorData = await joinRes.json().catch(() => ({}))
+              console.log("Join error:", errorData)
+              // If session has already started, that's okay - we can still participate
+              if (errorData.error === 'Session has already started') {
+                console.log("Session already started, but continuing...")
+              } else {
+                toast({ title: 'Failed to join session', description: errorData.error || 'Please try again.' })
+              }
+            }
+          } else {
+            console.log("User already in session")
+          }
+        }
+      } catch (error) {
+        console.error("Error checking session status:", error)
+      }
+    }
+    
+    checkSessionStatus()
+  }, [quizCode, playerName])
+
   // Fetch questions for this session on mount
   useEffect(() => {
     async function fetchQuestions() {
-      const res = await fetch(`/api/sessions/questions?code=${quizCode}`)
-      if (res.ok) {
-        const data = await res.json()
-        setQuestions(data.questions)
-        setCurrentQuestion(data.questions[0] || null)
-        setQuestionIndex(0)
-      } else {
+      try {
+        const res = await fetch(`/api/sessions/questions?code=${quizCode}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Fetched questions:", data.questions)
+          
+          // Process questions to match the expected format
+          const processedQuestions = data.questions.map((q: any) => {
+            console.log("Processing question:", q)
+            console.log("Question options:", q.options)
+            
+            // Sort options by option_index to maintain order
+            const sortedOptions = q.options ? q.options.sort((a: any, b: any) => a.option_index - b.option_index) : []
+            console.log("Sorted options:", sortedOptions)
+            
+            const processedQuestion = {
+              id: q.id.toString(),
+              question: q.question,
+              type: q.type,
+              options: sortedOptions.map((opt: any) => opt.option_text),
+              timeLimit: q.time_limit || 30,
+              points: q.points || 100,
+              correct_answer: q.correct_answer
+            }
+            
+            console.log("Processed question:", processedQuestion)
+            return processedQuestion
+          })
+          
+          console.log("Processed questions:", processedQuestions)
+          setQuestions(processedQuestions)
+        } else {
+          console.error("Failed to fetch questions:", res.status, res.statusText)
+          const errorData = await res.json().catch(() => ({}))
+          console.error("Error data:", errorData)
+          toast({ title: 'Failed to load questions', description: errorData.error || 'Please try again.' })
+        }
+      } catch (error) {
+        console.error("Error fetching questions:", error)
         toast({ title: 'Failed to load questions', description: 'Please try again.' })
       }
     }
@@ -87,16 +166,23 @@ export default function ParticipantQuiz() {
   // Fetch participants for this session
   useEffect(() => {
     async function fetchParticipants() {
-      const res = await fetch(`/api/sessions/participants?code=${quizCode}`)
-      if (res.ok) {
-        const data = await res.json()
-        setParticipants(
-          data.participants.map((p: any) => ({
-            id: p.users.id.toString(),
-            name: p.users.username,
-            score: p.score || 0
-          }))
-        )
+      try {
+        const res = await fetch(`/api/sessions/participants?code=${quizCode}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Fetched participants:", data.participants)
+          setParticipants(
+            data.participants.map((p: any) => ({
+              id: p.users.id.toString(),
+              name: p.users.username,
+              score: p.score || 0
+            }))
+          )
+        } else {
+          console.error("Failed to fetch participants:", res.status, res.statusText)
+        }
+      } catch (error) {
+        console.error("Error fetching participants:", error)
       }
     }
     fetchParticipants()
@@ -135,6 +221,18 @@ export default function ParticipantQuiz() {
               
               console.log(`Session status: ${sessionStatus}, Quiz status: ${quizStatus}`)
               setSessionStatus(sessionStatus)
+              
+              // Start the quiz when session becomes active
+              if (sessionStatus === "active" && gameState === "waiting" && questions.length > 0) {
+                console.log("Session is now active, starting quiz...")
+                console.log("Current state:", { sessionStatus, gameState, questionsLength: questions.length, questionIndex })
+                setCurrentQuestion(questions[0])
+                setGameState("active")
+                setTimeRemaining(questions[0].timeLimit)
+                setQuestionIndex(0)
+              } else {
+                console.log("Not starting quiz:", { sessionStatus, gameState, questionsLength: questions.length })
+              }
               
               // Check for termination conditions
               if ((sessionStatus === "completed" || quizStatus === "terminated") && !showTerminationModal) {
@@ -199,6 +297,18 @@ export default function ParticipantQuiz() {
             console.log(`Polling - Session status: ${status}`)
             setSessionStatus(status)
             
+            // Start the quiz when session becomes active
+            if (status === "active" && gameState === "waiting" && questions.length > 0) {
+              console.log("Session is now active (polling), starting quiz...")
+              console.log("Current state:", { status, gameState, questionsLength: questions.length, questionIndex })
+              setCurrentQuestion(questions[0])
+              setGameState("active")
+              setTimeRemaining(questions[0].timeLimit)
+              setQuestionIndex(0)
+            } else {
+              console.log("Not starting quiz (polling):", { status, gameState, questionsLength: questions.length })
+            }
+            
             if (status === "completed" && !showTerminationModal) {
               console.log("Quiz terminated detected via polling! Showing termination modal...")
               setShowTerminationModal(true)
@@ -230,29 +340,48 @@ export default function ParticipantQuiz() {
         eventSource.close()
       }
     }
-  }, [quizCode, showTerminationModal, router])
+  }, [quizCode, showTerminationModal, router, gameState, questions])
 
   // When moving to next question, update currentQuestion
   useEffect(() => {
-    if (questions.length > 0 && questionIndex < questions.length) {
-      setCurrentQuestion(questions[questionIndex])
-      setTimeRemaining(questions[questionIndex].timeLimit)
+    console.log("Question progression useEffect triggered:", { questionIndex, questionsLength: questions.length, gameState })
+    if (questions.length > 0 && questionIndex < questions.length && gameState === "waiting") {
+      console.log(`Moving to question ${questionIndex + 1}/${questions.length}`)
+      const question = questions[questionIndex]
+      console.log("Setting current question:", question)
+      setCurrentQuestion(question)
+      setTimeRemaining(question.timeLimit)
+      setGameState("active")
     }
-  }, [questionIndex, questions])
+  }, [questionIndex, questions, gameState])
 
-  useEffect(() => {
-    // Simulate receiving question from host
-    if (gameState === "waiting" && questions.length > 0 && questionIndex < questions.length) {
+  // Handle next question manually
+  const handleNextQuestion = () => {
+    console.log("handleNextQuestion called, current questionIndex:", questionIndex)
+    if (questionIndex < questions.length - 1) {
+      const nextIndex = questionIndex + 1
+      console.log(`Manually moving to next question: ${nextIndex + 1}/${questions.length}`)
+      setQuestionIndex(nextIndex)
+      setGameState("waiting")
+      setSelectedAnswer(null)
+      setCurrentQuestion(null)
+      setShowFeedback(false)
+      setIsCorrect(false)
+      
+      // Set the next question after a brief delay
       setTimeout(() => {
-        setCurrentQuestion(questions[questionIndex])
-        setGameState("active")
-        setTimeRemaining(questions[questionIndex].timeLimit)
-      }, 2000)
-    }
-    if (gameState === "waiting" && questionIndex >= questions.length) {
+        if (nextIndex < questions.length) {
+          console.log("Setting next question:", questions[nextIndex])
+          setCurrentQuestion(questions[nextIndex])
+          setGameState("active")
+          setTimeRemaining(questions[nextIndex].timeLimit)
+        }
+      }, 100)
+    } else {
+      console.log("All questions completed!")
       setGameState("completed")
     }
-  }, [gameState, questions, questionIndex])
+  }
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -290,20 +419,29 @@ export default function ParticipantQuiz() {
   const handleAnswerSelect = (answer: string | number) => {
     if (gameState !== "active") return
     setSelectedAnswer(answer)
+    
+    // Immediately submit answer without delay, passing the answer directly
+    handleSubmitAnswer(answer)
   }
 
-  const handleSubmitAnswer = () => {
-    if (selectedAnswer === null || gameState !== "active") return
+  const handleSubmitAnswer = (answer?: string | number) => {
+    const answerToUse = answer !== undefined ? answer : selectedAnswer
+    if (answerToUse === null || gameState !== "active") return
     setGameState("answered")
-    // Check if answer is correct (real logic)
+    
+    // Check if answer is correct
     let correct = false
-    if (currentQuestion?.type === "multiple-choice") {
-      correct = selectedAnswer === currentQuestion.options?.findIndex(opt => opt === currentQuestion.correct_answer)
-    } else if (currentQuestion?.type === "true-false") {
-      correct = selectedAnswer === currentQuestion.correct_answer
-    } else if (currentQuestion?.type === "short-answer") {
-      correct = String(selectedAnswer).trim().toLowerCase() === String(currentQuestion.correct_answer).trim().toLowerCase()
+    if (currentQuestion?.type === "multiple-choice" || currentQuestion?.type === "multiple_choice") {
+      // For multiple choice, selectedAnswer is the index, correct_answer is the text
+      const selectedOption = currentQuestion.options?.[answerToUse as number]
+      correct = selectedOption === currentQuestion.correct_answer
+    } else if (currentQuestion?.type === "true-false" || currentQuestion?.type === "true_false") {
+      correct = answerToUse === currentQuestion.correct_answer
+    } else if (currentQuestion?.type === "short-answer" || currentQuestion?.type === "short_answer") {
+      correct = String(answerToUse).trim().toLowerCase() === String(currentQuestion.correct_answer).trim().toLowerCase()
     }
+    
+    console.log("Answer check:", { answerToUse, correct_answer: currentQuestion?.correct_answer, correct })
     setIsCorrect(correct)
     setShowFeedback(true)
 
@@ -344,17 +482,22 @@ export default function ParticipantQuiz() {
       }))
     }
 
-    // Show results for 3 seconds then wait for next question
+    // Show feedback for 1 second then automatically move to next question
     setTimeout(() => {
       setShowFeedback(false)
-      setGameState("waiting")
       setSelectedAnswer(null)
-      setCurrentQuestion(null)
-      setQuestionIndex(qi => qi + 1)
-    }, 3000)
+      
+      // Automatically move to next question immediately
+      if (questionIndex < questions.length - 1) {
+        handleNextQuestion()
+      } else {
+        setGameState("completed")
+      }
+    }, 1000)
   }
 
   const handleTimeUp = () => {
+    console.log("Time's up! Moving to next question...")
     setGameState("answered")
     setIsCorrect(false)
     setShowFeedback(true)
@@ -366,73 +509,129 @@ export default function ParticipantQuiz() {
       accuracy: Math.round((prev.correctAnswers / (prev.totalAnswered + 1)) * 100),
     }))
 
+    // Show feedback for 1 second then automatically move to next question
     setTimeout(() => {
       setShowFeedback(false)
-      setGameState("waiting")
       setSelectedAnswer(null)
-      setCurrentQuestion(null)
-    }, 3000)
+      
+      // Automatically move to next question immediately
+      setTimeout(() => {
+        if (questionIndex < questions.length - 1) {
+          handleNextQuestion()
+        } else {
+          setGameState("completed")
+        }
+      }, 1000)
+    }, 1000)
   }
 
   useEffect(() => {
     // Request fullscreen when quiz starts
     if (gameState === "active") {
-      const elem = document.documentElement
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen()
-      } else if ((elem as any).webkitRequestFullscreen) {
-        (elem as any).webkitRequestFullscreen()
-      } else if ((elem as any).msRequestFullscreen) {
-        (elem as any).msRequestFullscreen()
+      const requestFullscreen = async () => {
+        try {
+          const elem = document.documentElement
+          if (elem.requestFullscreen) {
+            await elem.requestFullscreen()
+          } else if ((elem as any).webkitRequestFullscreen) {
+            await (elem as any).webkitRequestFullscreen()
+          } else if ((elem as any).msRequestFullscreen) {
+            await (elem as any).msRequestFullscreen()
+          }
+        } catch (error) {
+          console.log("Fullscreen request failed:", error)
+          // Don't show error to user, just continue without fullscreen
+        }
       }
+      
+      // Add a small delay to ensure the page is fully loaded
+      setTimeout(requestFullscreen, 500)
     }
     // Exit fullscreen when quiz ends
     if (gameState === "completed" || gameState === "waiting") {
       if (document.fullscreenElement) {
-        document.exitFullscreen()
+        document.exitFullscreen().catch(console.log)
       }
     }
   }, [gameState])
 
   // Proctoring event handler
   useEffect(() => {
+    let fullscreenRequestInProgress = false
+    
     function triggerProctorViolation() {
-      if (violationTriggeredRef.current) return; // Prevent double trigger
+      if (violationTriggeredRef.current || fullscreenRequestInProgress) return; // Prevent double trigger
       violationTriggeredRef.current = true;
+      
+      console.log("Proctoring violation detected!")
       setProctorViolations((prev) => {
-        if (prev >= 2) {
+        const newCount = prev + 1
+        console.log(`Violation count: ${newCount}`)
+        
+        if (newCount >= 3) {
+          console.log("Max violations reached, redirecting to disqualified page")
           router.replace("/participant/quiz/disqualified");
-          return prev + 1
+          return newCount
         } else {
+          console.log("Showing proctor modal")
           setShowProctorModal(true)
-          return prev + 1
+          return newCount
         }
       })
     }
+    
     function handleVisibilityChange() {
       if (document.visibilityState === "hidden" && gameState === "active") {
+        console.log("Tab/window hidden - proctoring violation")
         triggerProctorViolation()
       }
     }
+    
     function handleBlur() {
       if (gameState === "active") {
+        console.log("Window lost focus - proctoring violation")
         triggerProctorViolation()
       }
     }
+    
     function handleFullscreenChange() {
-      if (!document.fullscreenElement && gameState === "active") {
-        triggerProctorViolation()
+      // Add a small delay to prevent false triggers during fullscreen entry
+      setTimeout(() => {
+        if (!document.fullscreenElement && gameState === "active" && !fullscreenRequestInProgress) {
+          console.log("Exited fullscreen - proctoring violation")
+          triggerProctorViolation()
+        }
+      }, 500)
+    }
+    
+    // Start proctoring immediately when quiz becomes active
+    if (gameState === "active") {
+      console.log("Starting proctoring system for quiz...")
+      
+      // Set flag when requesting fullscreen
+      fullscreenRequestInProgress = true
+      setTimeout(() => {
+        fullscreenRequestInProgress = false
+        console.log("Fullscreen establishment period ended, proctoring fully active")
+      }, 2000) // Allow 2 seconds for fullscreen to be established
+      
+      // Add event listeners immediately
+      window.addEventListener("blur", handleBlur)
+      document.addEventListener("visibilitychange", handleVisibilityChange)
+      document.addEventListener("fullscreenchange", handleFullscreenChange)
+      
+      console.log("Proctoring event listeners added")
+      
+      return () => {
+        console.log("Removing proctoring event listeners")
+        window.removeEventListener("blur", handleBlur)
+        document.removeEventListener("visibilitychange", handleVisibilityChange)
+        document.removeEventListener("fullscreenchange", handleFullscreenChange)
       }
+    } else {
+      console.log("Quiz not active, proctoring disabled. Game state:", gameState)
     }
-    window.addEventListener("blur", handleBlur)
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-    document.addEventListener("fullscreenchange", handleFullscreenChange)
-    return () => {
-      window.removeEventListener("blur", handleBlur)
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-      document.removeEventListener("fullscreenchange", handleFullscreenChange)
-    }
-  }, [gameState])
+  }, [gameState, router])
 
   // Proctoring modal logic (force quit site when timer runs out or after 2 warnings)
   useEffect(() => {
@@ -468,14 +667,22 @@ export default function ParticipantQuiz() {
   function handleResumeExam() {
     setShowProctorModal(false)
     // Re-enter fullscreen
-    const elem = document.documentElement
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen()
-    } else if ((elem as any).webkitRequestFullscreen) {
-      (elem as any).webkitRequestFullscreen()
-    } else if ((elem as any).msRequestFullscreen) {
-      (elem as any).msRequestFullscreen()
+    const requestFullscreen = async () => {
+      try {
+        const elem = document.documentElement
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen()
+        } else if ((elem as any).webkitRequestFullscreen) {
+          await (elem as any).webkitRequestFullscreen()
+        } else if ((elem as any).msRequestFullscreen) {
+          await (elem as any).msRequestFullscreen()
+        }
+      } catch (error) {
+        console.log("Fullscreen request failed on resume:", error)
+        // Continue without fullscreen if permission denied
+      }
     }
+    requestFullscreen()
   }
 
   // Only show game content if questions are loaded
@@ -544,9 +751,12 @@ export default function ParticipantQuiz() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8 text-center max-w-md mx-auto">
             <h2 className="text-2xl font-bold mb-4 text-red-600">Proctoring Violation</h2>
-            <p className="mb-4">
+            <p className="mb-2">
               You exited fullscreen or switched tabs/windows.<br />
-              You must resume the exam within <span className="font-bold">{proctorTimer}</span> seconds or the exam will close.
+              <span className="text-sm text-gray-600">Violation {proctorViolations} of 3</span>
+            </p>
+            <p className="mb-4 text-sm">
+              You must resume the exam within <span className="font-bold text-red-600">{proctorTimer}</span> seconds or the exam will close.
             </p>
             <Button onClick={handleResumeExam} className="mt-2">Resume Exam</Button>
           </div>
@@ -725,46 +935,55 @@ export default function ParticipantQuiz() {
                 <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-xl">Question</CardTitle>
+                      <CardTitle className="text-xl">Question {questionIndex + 1} of {questions.length}</CardTitle>
                       <div className="flex items-center gap-4">
                         {activePowerUp === "doublePoints" && <Badge className="bg-yellow-500">2x Points Active!</Badge>}
-                        <div className="flex items-center gap-2 text-lg font-bold">
-                          <Clock className="w-5 h-5" />
-                          {timeRemaining}s
-                        </div>
+                        {gameState === "active" && (
+                          <div className="flex items-center gap-2 text-lg font-bold">
+                            <Clock className="w-5 h-5" />
+                            {timeRemaining}s
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <Progress value={(timeRemaining / currentQuestion.timeLimit) * 100} className="h-2" />
+                    {gameState === "active" && (
+                      <Progress value={(timeRemaining / currentQuestion.timeLimit) * 100} className="h-2" />
+                    )}
                   </CardHeader>
                   <CardContent>
                     {!showFeedback ? (
                       <div className="space-y-6">
                         <p className="text-lg font-medium">{currentQuestion.question}</p>
 
-                        {currentQuestion.type === "multiple-choice" && (
+                        {currentQuestion.type === "multiple-choice" || currentQuestion.type === "multiple_choice" ? (
                           <div className="space-y-3">
-                            {currentQuestion.options?.map((option, index) => (
-                              <Button
-                                key={index}
-                                variant={selectedAnswer === index ? "default" : "outline"}
-                                className="w-full justify-start text-left h-auto p-4"
-                                onClick={() => handleAnswerSelect(index)}
-                                disabled={gameState === "answered"}
-                              >
-                                <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
-                                {option}
-                              </Button>
-                            ))}
+                            {currentQuestion.options && currentQuestion.options.length > 0 ? (
+                              currentQuestion.options.map((option, index) => (
+                                <Button
+                                  key={index}
+                                  variant={selectedAnswer === index ? "default" : "outline"}
+                                  className="w-full justify-start text-left h-auto p-4"
+                                  onClick={() => handleAnswerSelect(index)}
+                                  disabled={gameState !== "active"}
+                                >
+                                  <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
+                                  {option}
+                                </Button>
+                              ))
+                            ) : (
+                              <div className="text-center py-4 text-gray-500">
+                                <p>No options available for this question.</p>
+                                <p className="text-sm">Please contact the host.</p>
+                              </div>
+                            )}
                           </div>
-                        )}
-
-                        {currentQuestion.type === "true-false" && (
+                        ) : currentQuestion.type === "true-false" || currentQuestion.type === "true_false" ? (
                           <div className="grid grid-cols-2 gap-4">
                             <Button
                               variant={selectedAnswer === "true" ? "default" : "outline"}
                               className="h-16 text-lg"
                               onClick={() => handleAnswerSelect("true")}
-                              disabled={gameState === "answered"}
+                              disabled={gameState !== "active"}
                             >
                               True
                             </Button>
@@ -772,10 +991,25 @@ export default function ParticipantQuiz() {
                               variant={selectedAnswer === "false" ? "default" : "outline"}
                               className="h-16 text-lg"
                               onClick={() => handleAnswerSelect("false")}
-                              disabled={gameState === "answered"}
+                              disabled={gameState !== "active"}
                             >
                               False
                             </Button>
+                          </div>
+                        ) : currentQuestion.type === "short-answer" || currentQuestion.type === "short_answer" ? (
+                          <div className="space-y-3">
+                            <input
+                              type="text"
+                              placeholder="Enter your answer..."
+                              value={selectedAnswer as string || ""}
+                              onChange={(e) => handleAnswerSelect(e.target.value)}
+                              disabled={gameState !== "active"}
+                              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+                            />
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-gray-500">
+                            <p>Unknown question type: {currentQuestion.type}</p>
                           </div>
                         )}
 
@@ -784,13 +1018,6 @@ export default function ParticipantQuiz() {
                             Points: {currentQuestion.points}
                             {activePowerUp === "doublePoints" && " × 2"}
                           </div>
-                          <Button
-                            onClick={handleSubmitAnswer}
-                            disabled={selectedAnswer === null || gameState === "answered"}
-                            size="lg"
-                          >
-                            Submit Answer
-                          </Button>
                         </div>
                       </div>
                     ) : (
@@ -819,7 +1046,7 @@ export default function ParticipantQuiz() {
                             )}
                           </div>
                         )}
-                        <p className="text-gray-600 dark:text-gray-400">Waiting for next question...</p>
+                        <p className="text-gray-600 dark:text-gray-400">Moving to next question...</p>
                       </div>
                     )}
                   </CardContent>
@@ -861,6 +1088,47 @@ export default function ParticipantQuiz() {
                 </Card>
               </div>
             </div>
+          )}
+
+          {gameState === "completed" && (
+            <Card className="text-center">
+              <CardContent className="p-8">
+                <div className="space-y-6">
+                  <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold">Quiz Completed!</h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Congratulations! You have completed all questions.
+                  </p>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-md mx-auto">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">{playerStats.score}</div>
+                      <div className="text-sm text-gray-600">Total Score</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">{playerStats.correctAnswers}</div>
+                      <div className="text-sm text-gray-600">Correct</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-600">{playerStats.accuracy}%</div>
+                      <div className="text-sm text-gray-600">Accuracy</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">{playerStats.streak}</div>
+                      <div className="text-sm text-gray-600">Best Streak</div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4">
+                    <Button onClick={() => router.push("/dashboard")}>
+                      Return to Dashboard
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

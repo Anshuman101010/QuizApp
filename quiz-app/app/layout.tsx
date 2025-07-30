@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
   title: 'quiz app',
@@ -40,6 +41,7 @@ export default function RootLayout({
         <PageTransition>
           <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
         </PageTransition>
+        <Toaster />
       </body>
     </html>
   )

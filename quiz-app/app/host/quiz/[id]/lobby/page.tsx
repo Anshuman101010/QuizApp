@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Users, Play, X, Clock, Trophy, UserCheck, UserX } from "lucide-react"
+import { Users, Play, X, Trophy, Clock, UserCheck, UserX } from "lucide-react"
 import { useParams, useSearchParams, useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 interface Participant {
   id: string
@@ -19,6 +20,7 @@ export default function HostLobby() {
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { toast } = useToast()
   const [participants, setParticipants] = useState<Participant[]>([])
   const [joinCode, setJoinCode] = useState<string>("")
   const [sessionId, setSessionId] = useState<number | null>(null)
@@ -212,7 +214,10 @@ export default function HostLobby() {
       // Try using the modern clipboard API
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(joinCode)
-        alert("Join code copied to clipboard!")
+        toast({
+          title: "Code copied!",
+          description: "Join code has been copied to clipboard.",
+        })
       } else {
         // Fallback for older browsers or non-HTTPS
         const textArea = document.createElement("textarea")
@@ -226,19 +231,30 @@ export default function HostLobby() {
         
         try {
           document.execCommand('copy')
-          alert("Join code copied to clipboard!")
+          toast({
+            title: "Code copied!",
+            description: "Join code has been copied to clipboard.",
+          })
         } catch (err) {
           console.error('Fallback copy failed:', err)
-          // Final fallback - show the code in an alert
-          alert(`Join code: ${joinCode}\n\nPlease copy this code manually.`)
+          // Final fallback - show the code in a toast
+          toast({
+            title: "Copy failed",
+            description: `Join code: ${joinCode}\n\nPlease copy this code manually.`,
+            variant: "destructive",
+          })
         }
         
         document.body.removeChild(textArea)
       }
     } catch (err) {
       console.error('Copy failed:', err)
-      // Show the code in an alert as final fallback
-      alert(`Join code: ${joinCode}\n\nPlease copy this code manually.`)
+      // Show the code in a toast as final fallback
+      toast({
+        title: "Copy failed",
+        description: `Join code: ${joinCode}\n\nPlease copy this code manually.`,
+        variant: "destructive",
+      })
     }
   }
 

@@ -86,12 +86,13 @@ export default function QuizSession() {
           console.log("Participants data:", pdata)
           setParticipants(
             pdata.participants.map((p: any) => ({
-              id: p.users.id,
+              id: p.user_id.toString(),
               name: p.users.username,
-              score: p.score,
-              streak: p.streak,
-              accuracy: p.accuracy,
-              answered: false // TODO: update with real answer status
+              score: p.score || 0,
+              streak: p.streak || 0,
+              accuracy: p.accuracy || 0,
+              answered: p.answered || false,
+              timeRemaining: undefined // We'll implement this later
             }))
           )
         } else {
@@ -142,8 +143,8 @@ export default function QuizSession() {
     
     fetchSession()
     
-    // Poll for session updates every 2 seconds
-    const interval = setInterval(fetchSession, 2000)
+    // Poll for session updates every 1 second for real-time updates
+    const interval = setInterval(fetchSession, 1000)
     return () => clearInterval(interval)
   }, [searchParams])
 

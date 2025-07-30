@@ -44,6 +44,8 @@ export default function ParticipantQuiz() {
   const [isCorrect, setIsCorrect] = useState(false)
   const [powerUps, setPowerUps] = useState({ fiftyFifty: 1, extraTime: 1, doublePoints: 1 })
   const [activePowerUp, setActivePowerUp] = useState<string | null>(null)
+  // State to track which options are hidden by fiftyFifty
+  const [hiddenOptions, setHiddenOptions] = useState<number[]>([])
 
   const [playerStats, setPlayerStats] = useState<PlayerStats>({
     score: 0,
@@ -359,7 +361,7 @@ export default function ParticipantQuiz() {
     }
   }, [quizCode, showTerminationModal, router, gameState, questions])
 
-  // When moving to next question, update currentQuestion
+  // When moving to next question, update currentQuestion and reset hidden options
   useEffect(() => {
     console.log("Question progression useEffect triggered:", { questionIndex, questionsLength: questions.length, gameState })
     if (questions.length > 0 && questionIndex < questions.length && gameState === "waiting") {
@@ -369,6 +371,8 @@ export default function ParticipantQuiz() {
       setCurrentQuestion(question)
       setTimeRemaining(question.timeLimit)
       setGameState("active")
+      setHiddenOptions([])
+      setActivePowerUp(null)
     }
   }, [questionIndex, questions, gameState])
 
@@ -417,6 +421,7 @@ export default function ParticipantQuiz() {
         correctAnswers: playerStats.correctAnswers,
         totalAnswered: playerStats.totalAnswered + 1,
         accuracy: Math.round((playerStats.correctAnswers / (playerStats.totalAnswered + 1)) * 100),
+        position: playerStats.position,
       }
       setPlayerStats(newStats)
       updateParticipantStats(newStats)
@@ -468,9 +473,24 @@ export default function ParticipantQuiz() {
     }))
 
     switch (powerUp) {
-      case "fiftyFifty":
-        // Remove two wrong answers (mock implementation)
+      case "fiftyFifty": {
+        // Remove two wrong answers
+        if (currentQuestion && currentQuestion.options && typeof currentQuestion.correct_answer !== "undefined") {
+          const correctIdx = typeof currentQuestion.correct_answer === "number"
+            ? currentQuestion.correct_answer
+            : currentQuestion.options.findIndex(
+                (opt) => opt === currentQuestion.correct_answer
+              )
+          // Get all incorrect option indices
+          const incorrectIndices = currentQuestion.options
+            .map((_, idx) => idx)
+            .filter((idx) => idx !== correctIdx)
+          // Randomly pick two to hide
+          const shuffled = incorrectIndices.sort(() => 0.5 - Math.random())
+          setHiddenOptions(shuffled.slice(0, 2))
+        }
         break
+      }
       case "extraTime":
         setTimeRemaining((prev) => prev + 15)
         break
@@ -483,7 +503,9 @@ export default function ParticipantQuiz() {
   const handleAnswerSelect = (answer: string | number) => {
     if (gameState !== "active") return
     setSelectedAnswer(answer)
-    
+    // Reset hidden options and double points after answer
+    setHiddenOptions([])
+    setActivePowerUp(null)
     // Immediately submit answer without delay, passing the answer directly
     handleSubmitAnswer(answer)
   }
@@ -535,6 +557,7 @@ export default function ParticipantQuiz() {
         correctAnswers: playerStats.correctAnswers + 1,
         totalAnswered: playerStats.totalAnswered + 1,
         accuracy: Math.round(((playerStats.correctAnswers + 1) / (playerStats.totalAnswered + 1)) * 100),
+        position: playerStats.position,
       }
 
       setPlayerStats(newStats)
@@ -548,6 +571,7 @@ export default function ParticipantQuiz() {
         correctAnswers: playerStats.correctAnswers,
         totalAnswered: playerStats.totalAnswered + 1,
         accuracy: Math.round((playerStats.correctAnswers / (playerStats.totalAnswered + 1)) * 100),
+        position: playerStats.position,
       }
 
       setPlayerStats(newStats)
@@ -641,6 +665,7 @@ export default function ParticipantQuiz() {
       correctAnswers: playerStats.correctAnswers,
       totalAnswered: playerStats.totalAnswered + 1,
       accuracy: Math.round((playerStats.correctAnswers / (playerStats.totalAnswered + 1)) * 100),
+      position: playerStats.position,
     }
 
     setPlayerStats(newStats)
@@ -1003,7 +1028,7 @@ export default function ParticipantQuiz() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPowerUps((prev) => ({ ...prev, fiftyFifty: prev.fiftyFifty - 1 }))}
+                    onClick={() => usePowerUp("fiftyFifty")}
                     disabled={powerUps.fiftyFifty <= 0 || gameState !== "active"}
                   >
                     50/50 ({powerUps.fiftyFifty})
@@ -1011,7 +1036,7 @@ export default function ParticipantQuiz() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPowerUps((prev) => ({ ...prev, extraTime: prev.extraTime - 1 }))}
+                    onClick={() => usePowerUp("extraTime")}
                     disabled={powerUps.extraTime <= 0 || gameState !== "active"}
                   >
                     +Time ({powerUps.extraTime})
@@ -1019,7 +1044,7 @@ export default function ParticipantQuiz() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setActivePowerUp("doublePoints")}
+                    onClick={() => usePowerUp("doublePoints")}
                     disabled={powerUps.doublePoints <= 0 || gameState !== "active"}
                     className={activePowerUp === "doublePoints" ? "bg-yellow-100 dark:bg-yellow-900" : ""}
                   >
@@ -1106,16 +1131,18 @@ export default function ParticipantQuiz() {
                             <div className="space-y-3">
                               {currentQuestion.options && currentQuestion.options.length > 0 ? (
                                 currentQuestion.options.map((option, index) => (
-                                  <Button
-                                    key={index}
-                                    variant={selectedAnswer === index ? "default" : "outline"}
-                                    className="w-full justify-start text-left h-auto p-4"
-                                    onClick={() => handleAnswerSelect(index)}
-                                    disabled={gameState !== "active"}
-                                  >
-                                    <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
-                                    {option}
-                                  </Button>
+                                  hiddenOptions.includes(index) ? null : (
+                                    <Button
+                                      key={index}
+                                      variant={selectedAnswer === index ? "default" : "outline"}
+                                      className="w-full justify-start text-left h-auto p-4"
+                                      onClick={() => handleAnswerSelect(index)}
+                                      disabled={gameState !== "active"}
+                                    >
+                                      <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
+                                      {option}
+                                    </Button>
+                                  )
                                 ))
                               ) : (
                                 <div className="text-center py-4 text-gray-500">

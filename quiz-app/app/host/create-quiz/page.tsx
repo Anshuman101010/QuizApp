@@ -104,8 +104,8 @@ export default function CreateQuiz() {
         body: JSON.stringify({
           title: quizTitle,
           description: quizDescription,
-          negative_marking: negativeMarking,
-          team_mode: teamMode,
+          negativeMarking, // camelCase
+          teamMode,        // camelCase
           questions: formattedQuestions,
           userId,
         }),

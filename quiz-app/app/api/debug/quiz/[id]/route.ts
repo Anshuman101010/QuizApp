@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../../lib/db'
+import { prisma } from '@/lib/db'
 
 // GET /api/debug/quiz/[id] - Debug endpoint to check database data
 export async function GET(

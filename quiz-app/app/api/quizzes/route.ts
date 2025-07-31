@@ -36,10 +36,45 @@ export async function POST(req: NextRequest) {
                   })),
                 }
               : undefined,
+            matching_pairs: q.matchingPairs
+              ? {
+                  create: q.matchingPairs.map((pair: any, idx: number) => ({
+                    left_item: pair.left,
+                    right_item: pair.right,
+                    pair_index: idx,
+                  })),
+                }
+              : undefined,
+            drag_drop_items: q.dragDropItems
+              ? {
+                  create: q.dragDropItems.map((item: any, idx: number) => ({
+                    item_text: item.text,
+                    category: item.category,
+                    item_index: idx,
+                  })),
+                }
+              : undefined,
+            ordering_items: q.orderingItems
+              ? {
+                  create: q.orderingItems.map((item: string, idx: number) => ({
+                    item_text: item,
+                    correct_order: idx,
+                  })),
+                }
+              : undefined,
           })),
         },
       },
-      include: { questions: { include: { options: true } } },
+      include: { 
+        questions: { 
+          include: { 
+            options: true,
+            matching_pairs: true,
+            drag_drop_items: true,
+            ordering_items: true
+          } 
+        } 
+      },
     });
     return NextResponse.json({ quiz }, { status: 201 });
   } catch (err) {
@@ -64,7 +99,14 @@ export async function GET(req: NextRequest) {
         user_id: parseInt(userId),
       },
       include: {
-        questions: true,
+        questions: {
+          include: {
+            options: true,
+            matching_pairs: true,
+            drag_drop_items: true,
+            ordering_items: true
+          }
+        },
       },
       orderBy: { created_at: 'desc' },
     });

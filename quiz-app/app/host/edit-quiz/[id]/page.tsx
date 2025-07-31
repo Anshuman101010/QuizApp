@@ -14,13 +14,17 @@ import { toast } from "@/components/ui/use-toast"
 
 interface Question {
   id: string
-  type: "multiple-choice" | "true-false" | "short-answer"
+  type: "multiple-choice" | "true-false" | "matching-pairs" | "drag-drop" | "ordering"
   question: string
   options?: string[]
-  correctAnswer: string | number
+  correctAnswer: string | number | Array<{ left: string; right: string }> | Array<{ text: string; category: string }> | string[]
   timeLimit: number
   points: number
   category?: string
+  // New fields for different question types
+  matchingPairs?: Array<{ left: string; right: string }>
+  dragDropItems?: Array<{ text: string; category: string }>
+  orderingItems?: string[]
 }
 
 interface Quiz {
@@ -64,7 +68,7 @@ export default function EditQuiz() {
         
         // Transform questions from database format to UI format
         const transformedQuestions = (data.questions || []).map((q: any) => {
-          let correctAnswer: string | number = q.correct_answer || '';
+          let correctAnswer: string | number | Array<{ left: string; right: string }> | Array<{ text: string; category: string }> | string[] = q.correct_answer || '';
           
           // For multiple choice, find the correct option index
           if (q.type === 'multiple_choice' && q.options && q.options.length > 0) {
@@ -83,21 +87,50 @@ export default function EditQuiz() {
               correctAnswer = 'false';
             }
           }
-          // For short answer, ensure it's a string
-          else if (q.type === 'short_answer') {
-            correctAnswer = String(q.correct_answer || '');
+          // For matching pairs, parse JSON string
+          else if (q.type === 'matching_pairs') {
+            try {
+              const pairs = JSON.parse(q.correct_answer || '[]');
+              correctAnswer = pairs;
+            } catch {
+              correctAnswer = [];
+            }
+          }
+          // For drag drop, parse JSON string
+          else if (q.type === 'drag_drop') {
+            try {
+              const items = JSON.parse(q.correct_answer || '[]');
+              correctAnswer = items;
+            } catch {
+              correctAnswer = [];
+            }
+          }
+          // For ordering, parse JSON string
+          else if (q.type === 'ordering') {
+            try {
+              const items = JSON.parse(q.correct_answer || '[]');
+              correctAnswer = items;
+            } catch {
+              correctAnswer = [];
+            }
           }
           
           const transformedQuestion = {
             id: q.id.toString(), // Preserve the original database ID
             type: q.type === 'multiple_choice' ? 'multiple-choice' : 
-                  q.type === 'true_false' ? 'true-false' : 'short-answer',
+                  q.type === 'true_false' ? 'true-false' : 
+                  q.type === 'matching_pairs' ? 'matching-pairs' :
+                  q.type === 'drag_drop' ? 'drag-drop' :
+                  'ordering',
             question: q.question || '',
             options: q.options?.map((opt: any) => opt.option_text || '').filter((opt: string) => opt.trim() !== '') || [],
             correctAnswer: correctAnswer,
             timeLimit: q.time_limit || 30,
             points: q.points || 100,
             category: q.category || "General",
+            matchingPairs: q.matching_pairs?.map((pair: any) => ({ left: pair.left_item, right: pair.right_item })) || [],
+            dragDropItems: q.drag_drop_items?.map((item: any) => ({ text: item.item_text, category: item.category })) || [],
+            orderingItems: q.ordering_items?.map((item: any) => item.item_text).sort((a: any, b: any) => a.correct_order - b.correct_order) || [],
           }
           
           console.log('Transformed question:', transformedQuestion)
@@ -141,6 +174,45 @@ export default function EditQuiz() {
     setHasUnsavedChanges(true)
   }
 
+  const handleQuestionTypeChange = (id: string, newType: string) => {
+    const question = questions.find(q => q.id === id)
+    if (!question) return
+
+    let updates: Partial<Question> = { type: newType as any }
+    
+    // Initialize appropriate data structure based on question type
+    if (newType === "matching-pairs") {
+      updates.matchingPairs = [{ left: "", right: "" }]
+      updates.options = undefined
+      updates.dragDropItems = undefined
+      updates.orderingItems = undefined
+    } else if (newType === "drag-drop") {
+      updates.dragDropItems = [{ text: "", category: "" }]
+      updates.options = undefined
+      updates.matchingPairs = undefined
+      updates.orderingItems = undefined
+    } else if (newType === "ordering") {
+      updates.orderingItems = [""]
+      updates.options = undefined
+      updates.matchingPairs = undefined
+      updates.dragDropItems = undefined
+    } else if (newType === "multiple-choice") {
+      updates.options = ["", "", "", ""]
+      updates.correctAnswer = 0
+      updates.matchingPairs = undefined
+      updates.dragDropItems = undefined
+      updates.orderingItems = undefined
+    } else if (newType === "true-false") {
+      updates.correctAnswer = "true"
+      updates.options = undefined
+      updates.matchingPairs = undefined
+      updates.dragDropItems = undefined
+      updates.orderingItems = undefined
+    }
+
+    updateQuestion(id, updates)
+  }
+
   const addQuestion = () => {
     const newQuestion: Question = {
       id: Date.now().toString(),
@@ -151,6 +223,9 @@ export default function EditQuiz() {
       timeLimit: 30,
       points: 100,
       category: "General",
+      matchingPairs: [],
+      dragDropItems: [],
+      orderingItems: [],
     }
     setQuestions([...questions, newQuestion])
     setHasUnsavedChanges(true)
@@ -199,8 +274,16 @@ export default function EditQuiz() {
         } else if (q.type === "true-false") {
           // For true/false, ensure it's a boolean
           formattedCorrectAnswer = q.correctAnswer === "true" || q.correctAnswer === true;
+        } else if (q.type === "matching-pairs") {
+          // For matching pairs, store the pairs as JSON string
+          formattedCorrectAnswer = JSON.stringify(q.matchingPairs || []);
+        } else if (q.type === "drag-drop") {
+          // For drag drop, store the items as JSON string
+          formattedCorrectAnswer = JSON.stringify(q.dragDropItems || []);
+        } else if (q.type === "ordering") {
+          // For ordering, store the items as JSON string
+          formattedCorrectAnswer = JSON.stringify(q.orderingItems || []);
         } else {
-          // For short answer, ensure it's a string
           formattedCorrectAnswer = String(q.correctAnswer ?? "");
         }
         
@@ -211,13 +294,20 @@ export default function EditQuiz() {
               ? "multiple_choice"
               : q.type === "true-false"
               ? "true_false"
-              : "short_answer",
+              : q.type === "matching-pairs"
+              ? "matching_pairs"
+              : q.type === "drag-drop"
+              ? "drag_drop"
+              : "ordering",
           question: q.question,
           correctAnswer: formattedCorrectAnswer,
           timeLimit: q.timeLimit,
           points: q.points,
           category: q.category,
           options: q.options,
+          matchingPairs: q.matchingPairs,
+          dragDropItems: q.dragDropItems,
+          orderingItems: q.orderingItems,
         };
       });
 
@@ -464,8 +554,8 @@ export default function EditQuiz() {
                           <Label>Question Type</Label>
                           <Select
                             value={question.type}
-                            onValueChange={(value: "multiple-choice" | "true-false" | "short-answer") =>
-                              updateQuestion(question.id, { type: value })
+                            onValueChange={(value: "multiple-choice" | "true-false" | "matching-pairs" | "drag-drop" | "ordering") =>
+                              handleQuestionTypeChange(question.id, value)
                             }
                           >
                             <SelectTrigger>
@@ -474,7 +564,9 @@ export default function EditQuiz() {
                             <SelectContent>
                               <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
                               <SelectItem value="true-false">True/False</SelectItem>
-                              <SelectItem value="short-answer">Short Answer</SelectItem>
+                              <SelectItem value="matching-pairs">Matching Pairs</SelectItem>
+                              <SelectItem value="drag-drop">Drag & Drop</SelectItem>
+                              <SelectItem value="ordering">Ordering/Sequencing</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -558,16 +650,154 @@ export default function EditQuiz() {
                         </div>
                       )}
 
-                      {question.type === "short-answer" && (
-                        <div className="space-y-2">
-                          <Label>Correct Answer</Label>
-                          <Input
-                            value={String(question.correctAnswer)}
-                            onChange={(e) =>
-                              updateQuestion(question.id, { correctAnswer: e.target.value })
-                            }
-                            placeholder="Enter the correct answer"
-                          />
+                      {question.type === "matching-pairs" && (
+                        <div className="space-y-3">
+                          <Label>Matching Pairs</Label>
+                          <div className="space-y-2">
+                            {(question.matchingPairs || []).map((pair, index) => (
+                              <div key={index} className="flex gap-2 items-center">
+                                <Input
+                                  value={pair.left}
+                                  onChange={(e) => {
+                                    const newPairs = [...(question.matchingPairs || [])]
+                                    newPairs[index] = { ...pair, left: e.target.value }
+                                    updateQuestion(question.id, { matchingPairs: newPairs })
+                                  }}
+                                  placeholder="Left item"
+                                  className="flex-1"
+                                />
+                                <span className="text-gray-500">→</span>
+                                <Input
+                                  value={pair.right}
+                                  onChange={(e) => {
+                                    const newPairs = [...(question.matchingPairs || [])]
+                                    newPairs[index] = { ...pair, right: e.target.value }
+                                    updateQuestion(question.id, { matchingPairs: newPairs })
+                                  }}
+                                  placeholder="Right item"
+                                  className="flex-1"
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newPairs = (question.matchingPairs || []).filter((_, i) => i !== index)
+                                    updateQuestion(question.id, { matchingPairs: newPairs })
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newPairs = [...(question.matchingPairs || []), { left: "", right: "" }]
+                                updateQuestion(question.id, { matchingPairs: newPairs })
+                              }}
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              Add Pair
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {question.type === "drag-drop" && (
+                        <div className="space-y-3">
+                          <Label>Drag & Drop Items</Label>
+                          <div className="space-y-2">
+                            {(question.dragDropItems || []).map((item, index) => (
+                              <div key={index} className="flex gap-2 items-center">
+                                <Input
+                                  value={item.text}
+                                  onChange={(e) => {
+                                    const newItems = [...(question.dragDropItems || [])]
+                                    newItems[index] = { ...item, text: e.target.value }
+                                    updateQuestion(question.id, { dragDropItems: newItems })
+                                  }}
+                                  placeholder="Item text"
+                                  className="flex-1"
+                                />
+                                <Input
+                                  value={item.category}
+                                  onChange={(e) => {
+                                    const newItems = [...(question.dragDropItems || [])]
+                                    newItems[index] = { ...item, category: e.target.value }
+                                    updateQuestion(question.id, { dragDropItems: newItems })
+                                  }}
+                                  placeholder="Category"
+                                  className="flex-1"
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newItems = (question.dragDropItems || []).filter((_, i) => i !== index)
+                                    updateQuestion(question.id, { dragDropItems: newItems })
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newItems = [...(question.dragDropItems || []), { text: "", category: "" }]
+                                updateQuestion(question.id, { dragDropItems: newItems })
+                              }}
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              Add Item
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {question.type === "ordering" && (
+                        <div className="space-y-3">
+                          <Label>Ordering Items</Label>
+                          <div className="space-y-2">
+                            {(question.orderingItems || []).map((item, index) => (
+                              <div key={index} className="flex gap-2 items-center">
+                                <span className="text-sm font-medium text-gray-500 w-6">{index + 1}.</span>
+                                <Input
+                                  value={item}
+                                  onChange={(e) => {
+                                    const newItems = [...(question.orderingItems || [])]
+                                    newItems[index] = e.target.value
+                                    updateQuestion(question.id, { orderingItems: newItems })
+                                  }}
+                                  placeholder={`Item ${index + 1}`}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newItems = (question.orderingItems || []).filter((_, i) => i !== index)
+                                    updateQuestion(question.id, { orderingItems: newItems })
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newItems = [...(question.orderingItems || []), ""]
+                                updateQuestion(question.id, { orderingItems: newItems })
+                              }}
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              Add Item
+                            </Button>
+                          </div>
                         </div>
                       )}
 

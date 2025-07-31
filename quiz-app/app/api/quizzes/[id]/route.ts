@@ -19,7 +19,10 @@ export async function GET(
       include: {
         questions: {
           include: {
-            options: true
+            options: true,
+            matching_pairs: true,
+            drag_drop_items: true,
+            ordering_items: true
           }
         }
       }
@@ -171,6 +174,74 @@ export async function PUT(
               }
             }
           }
+
+          // Update matching pairs for matching_pairs questions
+          if (questionData.type === 'matching_pairs' && questionData.matchingPairs && Array.isArray(questionData.matchingPairs)) {
+            // Delete existing matching pairs
+            await tx.matching_pairs.deleteMany({
+              where: { question_id: existingQuestion.id }
+            })
+            
+            // Create new matching pairs
+            for (let j = 0; j < questionData.matchingPairs.length; j++) {
+              const pair = questionData.matchingPairs[j]
+              if (pair.left.trim() && pair.right.trim()) {
+                await tx.matching_pairs.create({
+                  data: {
+                    question_id: existingQuestion.id,
+                    left_item: pair.left,
+                    right_item: pair.right,
+                    pair_index: j
+                  }
+                })
+              }
+            }
+          }
+
+          // Update drag drop items for drag_drop questions
+          if (questionData.type === 'drag_drop' && questionData.dragDropItems && Array.isArray(questionData.dragDropItems)) {
+            // Delete existing drag drop items
+            await tx.drag_drop_items.deleteMany({
+              where: { question_id: existingQuestion.id }
+            })
+            
+            // Create new drag drop items
+            for (let j = 0; j < questionData.dragDropItems.length; j++) {
+              const item = questionData.dragDropItems[j]
+              if (item.text.trim() && item.category.trim()) {
+                await tx.drag_drop_items.create({
+                  data: {
+                    question_id: existingQuestion.id,
+                    item_text: item.text,
+                    category: item.category,
+                    item_index: j
+                  }
+                })
+              }
+            }
+          }
+
+          // Update ordering items for ordering questions
+          if (questionData.type === 'ordering' && questionData.orderingItems && Array.isArray(questionData.orderingItems)) {
+            // Delete existing ordering items
+            await tx.ordering_items.deleteMany({
+              where: { question_id: existingQuestion.id }
+            })
+            
+            // Create new ordering items
+            for (let j = 0; j < questionData.orderingItems.length; j++) {
+              const item = questionData.orderingItems[j]
+              if (item.trim()) {
+                await tx.ordering_items.create({
+                  data: {
+                    question_id: existingQuestion.id,
+                    item_text: item,
+                    correct_order: j
+                  }
+                })
+              }
+            }
+          }
         } else {
           // Create new question
           console.log('Creating new question')
@@ -203,6 +274,56 @@ export async function PUT(
               }
             }
           }
+
+          // Create matching pairs for matching_pairs questions
+          if (questionData.type === 'matching_pairs' && questionData.matchingPairs && Array.isArray(questionData.matchingPairs)) {
+            for (let j = 0; j < questionData.matchingPairs.length; j++) {
+              const pair = questionData.matchingPairs[j]
+              if (pair.left.trim() && pair.right.trim()) {
+                await tx.matching_pairs.create({
+                  data: {
+                    question_id: newQuestion.id,
+                    left_item: pair.left,
+                    right_item: pair.right,
+                    pair_index: j
+                  }
+                })
+              }
+            }
+          }
+
+          // Create drag drop items for drag_drop questions
+          if (questionData.type === 'drag_drop' && questionData.dragDropItems && Array.isArray(questionData.dragDropItems)) {
+            for (let j = 0; j < questionData.dragDropItems.length; j++) {
+              const item = questionData.dragDropItems[j]
+              if (item.text.trim() && item.category.trim()) {
+                await tx.drag_drop_items.create({
+                  data: {
+                    question_id: newQuestion.id,
+                    item_text: item.text,
+                    category: item.category,
+                    item_index: j
+                  }
+                })
+              }
+            }
+          }
+
+          // Create ordering items for ordering questions
+          if (questionData.type === 'ordering' && questionData.orderingItems && Array.isArray(questionData.orderingItems)) {
+            for (let j = 0; j < questionData.orderingItems.length; j++) {
+              const item = questionData.orderingItems[j]
+              if (item.trim()) {
+                await tx.ordering_items.create({
+                  data: {
+                    question_id: newQuestion.id,
+                    item_text: item,
+                    correct_order: j
+                  }
+                })
+              }
+            }
+          }
         }
       }
 
@@ -216,6 +337,21 @@ export async function PUT(
         for (const questionToDelete of questionsToDelete) {
           // Delete options first
           await tx.options.deleteMany({
+            where: { question_id: questionToDelete.id }
+          })
+
+          // Delete matching pairs
+          await tx.matching_pairs.deleteMany({
+            where: { question_id: questionToDelete.id }
+          })
+
+          // Delete drag drop items
+          await tx.drag_drop_items.deleteMany({
+            where: { question_id: questionToDelete.id }
+          })
+
+          // Delete ordering items
+          await tx.ordering_items.deleteMany({
             where: { question_id: questionToDelete.id }
           })
           

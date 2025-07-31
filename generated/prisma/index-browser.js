@@ -139,6 +139,29 @@ exports.Prisma.OptionsScalarFieldEnum = {
   option_index: 'option_index'
 };
 
+exports.Prisma.Matching_pairsScalarFieldEnum = {
+  id: 'id',
+  question_id: 'question_id',
+  left_item: 'left_item',
+  right_item: 'right_item',
+  pair_index: 'pair_index'
+};
+
+exports.Prisma.Drag_drop_itemsScalarFieldEnum = {
+  id: 'id',
+  question_id: 'question_id',
+  item_text: 'item_text',
+  category: 'category',
+  item_index: 'item_index'
+};
+
+exports.Prisma.Ordering_itemsScalarFieldEnum = {
+  id: 'id',
+  question_id: 'question_id',
+  item_text: 'item_text',
+  correct_order: 'correct_order'
+};
+
 exports.Prisma.Participant_historyScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
@@ -223,6 +246,20 @@ exports.Prisma.optionsOrderByRelevanceFieldEnum = {
   option_text: 'option_text'
 };
 
+exports.Prisma.matching_pairsOrderByRelevanceFieldEnum = {
+  left_item: 'left_item',
+  right_item: 'right_item'
+};
+
+exports.Prisma.drag_drop_itemsOrderByRelevanceFieldEnum = {
+  item_text: 'item_text',
+  category: 'category'
+};
+
+exports.Prisma.ordering_itemsOrderByRelevanceFieldEnum = {
+  item_text: 'item_text'
+};
+
 exports.Prisma.questionsOrderByRelevanceFieldEnum = {
   question: 'question',
   correct_answer: 'correct_answer',
@@ -251,7 +288,9 @@ exports.Prisma.usersOrderByRelevanceFieldEnum = {
 exports.questions_type = exports.$Enums.questions_type = {
   multiple_choice: 'multiple_choice',
   true_false: 'true_false',
-  short_answer: 'short_answer'
+  matching_pairs: 'matching_pairs',
+  drag_drop: 'drag_drop',
+  ordering: 'ordering'
 };
 
 exports.questions_media_type = exports.$Enums.questions_media_type = {
@@ -283,6 +322,9 @@ exports.users_role = exports.$Enums.users_role = {
 exports.Prisma.ModelName = {
   answers: 'answers',
   options: 'options',
+  matching_pairs: 'matching_pairs',
+  drag_drop_items: 'drag_drop_items',
+  ordering_items: 'ordering_items',
   participant_history: 'participant_history',
   questions: 'questions',
   quiz_sessions: 'quiz_sessions',

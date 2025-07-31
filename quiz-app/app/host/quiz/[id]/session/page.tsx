@@ -79,6 +79,35 @@ export default function QuizSession() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
+  // Function to format correct answers for display
+  const formatCorrectAnswer = (correctAnswer: string | number, questionType: string) => {
+    if (typeof correctAnswer === 'string') {
+      try {
+        // Try to parse JSON for complex question types
+        const parsed = JSON.parse(correctAnswer)
+        
+        if (Array.isArray(parsed)) {
+          if (parsed.length > 0 && typeof parsed[0] === 'object' && 'left' in parsed[0] && 'right' in parsed[0]) {
+            // Matching pairs
+            return parsed.map((pair, index) => `${pair.left} → ${pair.right}`).join(', ')
+          } else if (parsed.length > 0 && typeof parsed[0] === 'object' && 'text' in parsed[0] && 'category' in parsed[0]) {
+            // Drag and drop
+            return parsed.map((item, index) => `${item.text} (${item.category})`).join(', ')
+          } else if (Array.isArray(parsed) && parsed.every(item => typeof item === 'string')) {
+            // Ordering
+            return parsed.join(' → ')
+          }
+        }
+      } catch (e) {
+        // If parsing fails, return as is
+        return correctAnswer
+      }
+    }
+    
+    // For simple types, return as is
+    return correctAnswer
+  }
+
   // Fetch session, participants, and questions on mount
   useEffect(() => {
     async function fetchSession() {
@@ -774,7 +803,7 @@ export default function QuizSession() {
                       <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
                         <span>Time Limit: {question.timeLimit}s</span>
                         {question.correctAnswer && (
-                          <span className="ml-4">Correct Answer: {question.correctAnswer}</span>
+                          <span className="ml-4">Correct Answer: {formatCorrectAnswer(question.correctAnswer, question.type)}</span>
                         )}
                       </div>
                     </div>

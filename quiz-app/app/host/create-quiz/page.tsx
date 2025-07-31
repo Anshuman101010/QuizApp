@@ -8,12 +8,12 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Plus, Trash2, ImageIcon, VideoIcon, ArrowLeftIcon } from "lucide-react"
+import { Plus, Trash2, ArrowLeftIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface Question {
   id: string
-  type: "multiple-choice" | "true-false" | "short-answer"
+  type: "multiple-choice" | "true-false" | "matching-pairs" | "ordering"
   question: string
   options?: string[]
   correctAnswer: string | number
@@ -24,6 +24,9 @@ interface Question {
     type: "image" | "video"
     url: string
   }
+  // New fields for different question types
+  matchingPairs?: Array<{ left: string; right: string }>
+  orderingItems?: string[]
 }
 
 export default function CreateQuiz() {
@@ -42,6 +45,8 @@ export default function CreateQuiz() {
       timeLimit: 30,
       points: 100,
       category: "General",
+      matchingPairs: [],
+      orderingItems: [],
     },
   ])
 
@@ -55,6 +60,8 @@ export default function CreateQuiz() {
       timeLimit: 30,
       points: 100,
       category: "General",
+      matchingPairs: [],
+      orderingItems: [],
     }
     setQuestions([...questions, newQuestion])
   }
@@ -65,6 +72,36 @@ export default function CreateQuiz() {
 
   const updateQuestion = (id: string, updates: Partial<Question>) => {
     setQuestions(questions.map((q) => (q.id === id ? { ...q, ...updates } : q)))
+  }
+
+  const handleQuestionTypeChange = (id: string, newType: string) => {
+    const question = questions.find(q => q.id === id)
+    if (!question) return
+
+    let updates: Partial<Question> = { type: newType as any }
+    
+    // Initialize appropriate data structure based on question type
+    if (newType === "matching-pairs") {
+      updates.matchingPairs = [{ left: "", right: "" }]
+      updates.options = undefined
+      updates.orderingItems = undefined
+    } else if (newType === "ordering") {
+      updates.orderingItems = [""]
+      updates.options = undefined
+      updates.matchingPairs = undefined
+    } else if (newType === "multiple-choice") {
+      updates.options = ["", "", "", ""]
+      updates.correctAnswer = 0
+      updates.matchingPairs = undefined
+      updates.orderingItems = undefined
+    } else if (newType === "true-false") {
+      updates.correctAnswer = "true"
+      updates.options = undefined
+      updates.matchingPairs = undefined
+      updates.orderingItems = undefined
+    }
+
+    updateQuestion(id, updates)
   }
 
   const handleSaveQuiz = async () => {
@@ -83,8 +120,13 @@ export default function CreateQuiz() {
         } else if (q.type === "true-false") {
           // Convert string 'true'/'false' to boolean
           formattedCorrectAnswer = q.correctAnswer === "true";
+        } else if (q.type === "matching-pairs") {
+          // For matching pairs, store the pairs as JSON string
+          formattedCorrectAnswer = JSON.stringify(q.matchingPairs || []);
+        } else if (q.type === "ordering") {
+          // For ordering, store the items as JSON string
+          formattedCorrectAnswer = JSON.stringify(q.orderingItems || []);
         } else {
-          // Short answer: use as string
           formattedCorrectAnswer = String(q.correctAnswer ?? "");
         }
         return {
@@ -94,7 +136,11 @@ export default function CreateQuiz() {
               ? "multiple_choice"
               : q.type === "true-false"
               ? "true_false"
-              : "short_answer",
+              : q.type === "matching-pairs"
+              ? "matching_pairs"
+              : q.type === "ordering"
+              ? "ordering"
+              : "ordering",
           correctAnswer: formattedCorrectAnswer,
         };
       });
@@ -199,12 +245,6 @@ export default function CreateQuiz() {
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">Question {index + 1}</CardTitle>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon">
-                          <ImageIcon className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <VideoIcon className="w-4 h-4" />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -222,7 +262,7 @@ export default function CreateQuiz() {
                         <Label>Question Type</Label>
                         <Select
                           value={question.type}
-                          onValueChange={(value: any) => updateQuestion(question.id, { type: value })}
+                          onValueChange={(value: any) => handleQuestionTypeChange(question.id, value)}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -230,7 +270,8 @@ export default function CreateQuiz() {
                           <SelectContent>
                             <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
                             <SelectItem value="true-false">True/False</SelectItem>
-                            <SelectItem value="short-answer">Short Answer</SelectItem>
+                            <SelectItem value="matching-pairs">Matching Pairs</SelectItem>
+                            <SelectItem value="ordering">Ordering/Sequencing</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -317,14 +358,101 @@ export default function CreateQuiz() {
                       </div>
                     )}
 
-                    {question.type === "short-answer" && (
-                      <div className="space-y-2">
-                        <Label>Correct Answer</Label>
-                        <Input
-                          value={question.correctAnswer as string}
-                          onChange={(e) => updateQuestion(question.id, { correctAnswer: e.target.value })}
-                          placeholder="Enter the correct answer"
-                        />
+                    {question.type === "matching-pairs" && (
+                      <div className="space-y-3">
+                        <Label>Matching Pairs</Label>
+                        <div className="space-y-2">
+                          {(question.matchingPairs || []).map((pair, index) => (
+                            <div key={index} className="flex gap-2 items-center">
+                              <Input
+                                value={pair.left}
+                                onChange={(e) => {
+                                  const newPairs = [...(question.matchingPairs || [])]
+                                  newPairs[index] = { ...pair, left: e.target.value }
+                                  updateQuestion(question.id, { matchingPairs: newPairs })
+                                }}
+                                placeholder="Left item"
+                                className="flex-1"
+                              />
+                              <span className="text-gray-500">→</span>
+                              <Input
+                                value={pair.right}
+                                onChange={(e) => {
+                                  const newPairs = [...(question.matchingPairs || [])]
+                                  newPairs[index] = { ...pair, right: e.target.value }
+                                  updateQuestion(question.id, { matchingPairs: newPairs })
+                                }}
+                                placeholder="Right item"
+                                className="flex-1"
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const newPairs = (question.matchingPairs || []).filter((_, i) => i !== index)
+                                  updateQuestion(question.id, { matchingPairs: newPairs })
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newPairs = [...(question.matchingPairs || []), { left: "", right: "" }]
+                              updateQuestion(question.id, { matchingPairs: newPairs })
+                            }}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Pair
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {question.type === "ordering" && (
+                      <div className="space-y-3">
+                        <Label>Ordering Items</Label>
+                        <div className="space-y-2">
+                          {(question.orderingItems || []).map((item, index) => (
+                            <div key={index} className="flex gap-2 items-center">
+                              <span className="text-sm font-medium text-gray-500 w-6">{index + 1}.</span>
+                              <Input
+                                value={item}
+                                onChange={(e) => {
+                                  const newItems = [...(question.orderingItems || [])]
+                                  newItems[index] = e.target.value
+                                  updateQuestion(question.id, { orderingItems: newItems })
+                                }}
+                                placeholder={`Item ${index + 1}`}
+                                className="flex-1"
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const newItems = (question.orderingItems || []).filter((_, i) => i !== index)
+                                  updateQuestion(question.id, { orderingItems: newItems })
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newItems = [...(question.orderingItems || []), ""]
+                              updateQuestion(question.id, { orderingItems: newItems })
+                            }}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Item
+                          </Button>
+                        </div>
                       </div>
                     )}
 

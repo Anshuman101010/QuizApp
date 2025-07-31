@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -13,11 +13,14 @@ import { toast } from "@/hooks/use-toast"
 interface Question {
   id: string
   question: string
-  type: "multiple-choice" | "true-false" | "short-answer"
+  type: "multiple-choice" | "true-false" | "matching-pairs" | "ordering"
   options?: string[]
   timeLimit: number
   points: number
   correct_answer?: string | number
+  // New fields for different question types
+  matchingPairs?: Array<{ left: string; right: string }>
+  orderingItems?: string[]
 }
 
 interface PlayerStats {
@@ -46,6 +49,16 @@ export default function ParticipantQuiz() {
   const [activePowerUp, setActivePowerUp] = useState<string | null>(null)
   // State to track which options are hidden by fiftyFifty
   const [hiddenOptions, setHiddenOptions] = useState<number[]>([])
+  
+  // State for new question types
+  const [matchingAnswers, setMatchingAnswers] = useState<{[key: number]: number}>({})
+  const [orderingAnswers, setOrderingAnswers] = useState<string[]>([])
+  const [selectedLeftItem, setSelectedLeftItem] = useState<number | null>(null)
+
+  // Optimized reverse lookup for matching answers to improve performance
+  const matchedRightItems = useMemo(() => {
+    return new Set(Object.values(matchingAnswers))
+  }, [matchingAnswers])
 
   const [playerStats, setPlayerStats] = useState<PlayerStats>({
     score: 0,
@@ -143,9 +156,13 @@ export default function ParticipantQuiz() {
               options: sortedOptions.map((opt: any) => opt.option_text),
               timeLimit: q.time_limit || 30,
               points: q.points || 100,
-              correct_answer: q.correct_answer
+              correct_answer: q.correct_answer,
+              // Add new question type data
+              matchingPairs: q.matching_pairs?.map((pair: any) => ({ left: pair.left_item, right: pair.right_item })) || [],
+              orderingItems: q.ordering_items?.map((item: any) => item.item_text) || [],
             }
             
+            console.log("Raw question type from DB:", q.type)
             console.log("Processed question:", processedQuestion)
             return processedQuestion
           })
@@ -399,6 +416,11 @@ export default function ParticipantQuiz() {
       setShowFeedback(false)
       setIsCorrect(false)
       
+      // Reset new question type state
+      setMatchingAnswers({})
+      setOrderingAnswers([])
+      setSelectedLeftItem(null)
+      
       // Save progress for proctoring
       saveQuestionProgress(nextIndex)
       
@@ -448,6 +470,11 @@ export default function ParticipantQuiz() {
       setCurrentQuestion(null)
       setShowFeedback(false)
       setIsCorrect(false)
+      
+      // Reset new question type state
+      setMatchingAnswers({})
+      setOrderingAnswers([])
+      setSelectedLeftItem(null)
       
       // Save progress for proctoring
       saveQuestionProgress(nextIndex)
@@ -525,7 +552,114 @@ export default function ParticipantQuiz() {
     handleSubmitAnswer(answer)
   }
 
-  const handleSubmitAnswer = (answer?: string | number) => {
+  // Handlers for new question types
+  const handleMatchingPairSelect = (leftIndex: number, rightIndex: number) => {
+    if (gameState !== "active") return
+    
+    setMatchingAnswers(prev => {
+      const newAnswers = { ...prev }
+      
+      // If this left item is already matched, clear it
+      if (leftIndex in newAnswers) {
+        delete newAnswers[leftIndex]
+      }
+      
+      // If this right item is already matched to another left item, clear that match
+      // Optimized: Use direct property access instead of Object.keys().find()
+      const existingLeftIndex = Object.entries(newAnswers).find(([_, rightIdx]) => rightIdx === rightIndex)?.[0]
+      if (existingLeftIndex !== undefined) {
+        delete newAnswers[parseInt(existingLeftIndex)]
+      }
+      
+      // Set the new match
+      newAnswers[leftIndex] = rightIndex
+      return newAnswers
+    })
+    
+    // Clear the selected left item after matching
+    setSelectedLeftItem(null)
+  }
+
+  const handleOrderingSelect = (itemIndex: number, newPosition: number) => {
+    if (gameState !== "active") return
+    setOrderingAnswers(prev => {
+      const newOrder = [...prev]
+      // Remove item from current position if it exists
+      const currentIndex = newOrder.findIndex(item => item === currentQuestion?.orderingItems?.[itemIndex])
+      if (currentIndex !== -1) {
+        newOrder.splice(currentIndex, 1)
+      }
+      // Add item to new position
+      newOrder.splice(newPosition, 0, currentQuestion?.orderingItems?.[itemIndex] || '')
+      return newOrder
+    })
+  }
+
+  const handleSubmitNewQuestionType = () => {
+    if (gameState !== "active") return
+    
+    let answer: any = null
+    let isCorrect = false
+    
+    if (currentQuestion?.type === "matching-pairs" || currentQuestion?.type === "matching_pairs") {
+      // Optimized: Check if all pairs are matched using the Set size
+      const allMatched = matchedRightItems.size === currentQuestion.matchingPairs?.length
+      if (allMatched) {
+        answer = matchingAnswers
+        
+        // Check against the correct answer from the database
+        try {
+          const correctPairs = JSON.parse(currentQuestion.correct_answer || '[]')
+          if (Array.isArray(correctPairs) && correctPairs.length > 0) {
+            // For matching pairs, we need to check if the user's matches align with the correct pairs
+            // The correct_answer contains the original pairs, so we need to verify the matching logic
+            isCorrect = currentQuestion.matchingPairs?.every((pair, index) => {
+              const userMatch = matchingAnswers[index]
+              if (userMatch === undefined) return false
+              
+              // Check if the user matched this left item with the correct right item
+              const userRightItem = currentQuestion.matchingPairs?.[userMatch]?.right
+              return userRightItem === pair.right
+            }) || false
+          } else {
+            // Fallback: assume correct if all pairs are matched
+            isCorrect = true
+          }
+        } catch (error) {
+          console.error("Error parsing correct pairs:", error)
+          // Fallback: assume correct if all pairs are matched
+          isCorrect = true
+        }
+      }
+    } else if (currentQuestion?.type === "ordering") {
+      // Check if all items are ordered
+      if (orderingAnswers.length === currentQuestion.orderingItems?.length) {
+        answer = orderingAnswers
+        
+        // Check against the correct answer from the database
+        try {
+          const correctOrder = JSON.parse(currentQuestion.correct_answer || '[]')
+          if (Array.isArray(correctOrder) && correctOrder.length === orderingAnswers.length) {
+            // Compare the user's order with the correct order
+            isCorrect = orderingAnswers.every((item, index) => item === correctOrder[index])
+          } else {
+            // Fallback: assume correct if all items are ordered
+            isCorrect = true
+          }
+        } catch (error) {
+          console.error("Error parsing correct order:", error)
+          // Fallback: assume correct if all items are ordered
+          isCorrect = true
+        }
+      }
+    }
+    
+    if (answer !== null) {
+      handleSubmitAnswer(answer, isCorrect)
+    }
+  }
+
+  const handleSubmitAnswer = (answer?: string | number, isCorrect?: boolean) => {
     const answerToUse = answer !== undefined ? answer : selectedAnswer
     if (answerToUse === null || gameState !== "active") return
     setGameState("answered")
@@ -540,27 +674,25 @@ export default function ParticipantQuiz() {
       correct = answerToUse === currentQuestion.correct_answer
     } else if (currentQuestion?.type === "short-answer" || currentQuestion?.type === "short_answer") {
       correct = String(answerToUse).trim().toLowerCase() === String(currentQuestion.correct_answer).trim().toLowerCase()
+    } else if (currentQuestion?.type === "matching-pairs" || currentQuestion?.type === "matching_pairs") {
+      // Use the passed isCorrect flag for matching pairs
+      correct = isCorrect || false
+    } else if (currentQuestion?.type === "ordering") {
+      // Use the passed isCorrect flag for ordering
+      correct = isCorrect || false
     }
     
-    console.log("Answer check:", { answerToUse, correct_answer: currentQuestion?.correct_answer, correct })
+    console.log("Answer check:", { answerToUse, correct_answer: currentQuestion?.correct_answer, correct, isCorrect })
     setIsCorrect(correct)
     setShowFeedback(true)
 
-    // Calculate score with bonuses
+    // Calculate score - host controlled points with powerup multipliers only
     let points = 0
     if (correct) {
+      // Start with the exact points set by the host
       points = currentQuestion!.points
 
-      // Time bonus (up to 50% extra points)
-      const timeBonus = Math.floor((timeRemaining / currentQuestion!.timeLimit) * 0.5 * points)
-      points += timeBonus
-
-      // Streak multiplier
-      if (playerStats.streak > 0) {
-        points = Math.floor(points * (1 + playerStats.streak * 0.1))
-      }
-
-      // Double points power-up
+      // Double points power-up (only powerup that affects scoring)
       if (activePowerUp === "doublePoints") {
         points *= 2
         setActivePowerUp(null)
@@ -568,7 +700,7 @@ export default function ParticipantQuiz() {
 
       const newStats = {
         score: playerStats.score + points,
-        streak: playerStats.streak + 1,
+        streak: playerStats.streak + 1, // Keep streak for display purposes only
         correctAnswers: playerStats.correctAnswers + 1,
         totalAnswered: playerStats.totalAnswered + 1,
         accuracy: Math.round(((playerStats.correctAnswers + 1) / (playerStats.totalAnswered + 1)) * 100),
@@ -1108,7 +1240,7 @@ export default function ParticipantQuiz() {
           </Card>
 
           {/* Game Content */}
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {gameState === "waiting" && (
               <Card className="text-center">
                 <CardContent className="p-8">
@@ -1153,45 +1285,66 @@ export default function ParticipantQuiz() {
             )}
 
             {(gameState === "active" || gameState === "answered") && currentQuestion && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 {/* Main Quiz Content */}
-                <div className="lg:col-span-2">
-                  <Card>
-                    <CardHeader>
+                <div className="lg:col-span-3">
+                  <Card className="shadow-xl border-0">
+                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl">Question {questionIndex + 1} of {questions.length}</CardTitle>
+                        <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                          Question {questionIndex + 1} of {questions.length}
+                        </CardTitle>
                         <div className="flex items-center gap-4">
-                          {activePowerUp === "doublePoints" && <Badge className="bg-yellow-500">2x Points Active!</Badge>}
+                          {activePowerUp === "doublePoints" && (
+                            <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1">
+                              2x Points Active!
+                            </Badge>
+                          )}
                           {gameState === "active" && (
-                            <div className="flex items-center gap-2 text-lg font-bold">
-                              <Clock className="w-5 h-5" />
+                            <div className="flex items-center gap-2 text-xl font-bold text-red-600 dark:text-red-400">
+                              <Clock className="w-6 h-6" />
                               {timeRemaining}s
                             </div>
                           )}
                         </div>
                       </div>
                       {gameState === "active" && (
-                        <Progress value={(timeRemaining / currentQuestion.timeLimit) * 100} className="h-2" />
+                        <Progress 
+                          value={(timeRemaining / currentQuestion.timeLimit) * 100} 
+                          className="h-3 bg-gray-200 dark:bg-gray-700" 
+                        />
                       )}
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-8">
                       {!showFeedback ? (
-                        <div className="space-y-6">
-                          <p className="text-lg font-medium">{currentQuestion.question}</p>
+                        <div className="space-y-8">
+                          <div className="bg-white dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700 text-center">
+                            <p className="text-2xl font-semibold text-gray-800 dark:text-gray-200 leading-relaxed">
+                              {currentQuestion.question}
+                            </p>
+                          </div>
+                          
+                          {/* Debug logging */}
+                          {console.log("Rendering question:", {
+                            type: currentQuestion.type,
+                            matchingPairs: currentQuestion.matchingPairs,
+                            dragDropItems: currentQuestion.dragDropItems,
+                            orderingItems: currentQuestion.orderingItems
+                          })}
 
                           {currentQuestion.type === "multiple-choice" || currentQuestion.type === "multiple_choice" ? (
-                            <div className="space-y-3">
+                            <div className="space-y-4 max-w-3xl mx-auto">
                               {currentQuestion.options && currentQuestion.options.length > 0 ? (
                                 currentQuestion.options.map((option, index) => (
                                   hiddenOptions.includes(index) ? null : (
                                     <Button
                                       key={index}
                                       variant={selectedAnswer === index ? "default" : "outline"}
-                                      className="w-full justify-start text-left h-auto p-4"
+                                      className="w-full justify-start text-left h-auto p-6 text-lg"
                                       onClick={() => handleAnswerSelect(index)}
                                       disabled={gameState !== "active"}
                                     >
-                                      <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span>
+                                      <span className="font-bold mr-4 text-xl">{String.fromCharCode(65 + index)}.</span>
                                       {option}
                                     </Button>
                                   )
@@ -1204,10 +1357,10 @@ export default function ParticipantQuiz() {
                               )}
                             </div>
                           ) : currentQuestion.type === "true-false" || currentQuestion.type === "true_false" ? (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
                               <Button
                                 variant={selectedAnswer === "true" ? "default" : "outline"}
-                                className="h-16 text-lg"
+                                className="h-20 text-xl font-semibold"
                                 onClick={() => handleAnswerSelect("true")}
                                 disabled={gameState !== "active"}
                               >
@@ -1215,31 +1368,208 @@ export default function ParticipantQuiz() {
                               </Button>
                               <Button
                                 variant={selectedAnswer === "false" ? "default" : "outline"}
-                                className="h-16 text-lg"
+                                className="h-20 text-xl font-semibold"
                                 onClick={() => handleAnswerSelect("false")}
                                 disabled={gameState !== "active"}
                               >
                                 False
                               </Button>
                             </div>
-                          ) : currentQuestion.type === "short-answer" || currentQuestion.type === "short_answer" ? (
-                            <div className="space-y-3">
-                              <input
-                                type="text"
-                                placeholder="Enter your answer..."
-                                value={selectedAnswer as string || ""}
-                                onChange={(e) => handleAnswerSelect(e.target.value)}
-                                disabled={gameState !== "active"}
-                                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
-                              />
+                          ) : currentQuestion.type === "matching-pairs" || currentQuestion.type === "matching_pairs" ? (
+                            <div className="space-y-6 max-w-4xl mx-auto">
+                              <div className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
+                                Match each item on the left with its corresponding item on the right by clicking them in sequence.
+                              </div>
+                              
+                              <div className="flex justify-center mb-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setMatchingAnswers({})
+                                    setSelectedLeftItem(null)
+                                  }}
+                                  disabled={gameState !== "active"}
+                                  className="text-gray-600 hover:text-gray-800"
+                                >
+                                  Reset All Matches
+                                </Button>
+                              </div>
+                              
+                              <div className="relative bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-8 border border-gray-200 dark:border-gray-600">
+                                <div className="grid grid-cols-2 gap-20 relative">
+                                  <div className="space-y-4">
+                                    <h4 className="font-bold text-center text-gray-800 dark:text-gray-200 mb-6 text-xl">Left Items</h4>
+                                    {currentQuestion.matchingPairs?.map((pair, index) => {
+                                      const isMatched = index in matchingAnswers
+                                      const isSelected = selectedLeftItem === index
+                                      const matchedRightIndex = matchingAnswers[index]
+                                      return (
+                                        <Button
+                                          key={index}
+                                          id={`left-${index}`}
+                                          variant={isMatched ? "default" : isSelected ? "secondary" : "outline"}
+                                          className={`w-full justify-start text-left h-auto p-6 relative transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] text-lg ${
+                                            isMatched ? "bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-300" : 
+                                            isSelected ? "bg-amber-500 text-white shadow-lg ring-2 ring-amber-300" : 
+                                            "hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
+                                          }`}
+                                          onClick={() => {
+                                            // If this left item is already matched, clear it
+                                            if (isMatched) {
+                                              setMatchingAnswers(prev => {
+                                                const newAnswers = { ...prev }
+                                                delete newAnswers[index]
+                                                return newAnswers
+                                              })
+                                              setSelectedLeftItem(null)
+                                            } else {
+                                              // Select this left item for matching
+                                              setSelectedLeftItem(index)
+                                            }
+                                          }}
+                                          disabled={gameState !== "active"}
+                                        >
+                                          <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium bg-white/20 dark:bg-black/20 px-2 py-1 rounded">
+                                              {index + 1}
+                                            </span>
+                                            <span className="font-semibold text-lg">{pair.left}</span>
+                                            {isMatched && (
+                                              <span className="ml-auto text-xs bg-white/30 px-2 py-1 rounded">
+                                                → {matchedRightIndex + 1}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </Button>
+                                      )
+                                    })}
+                                  </div>
+                                  <div className="space-y-4">
+                                    <h4 className="font-bold text-center text-gray-800 dark:text-gray-200 mb-6 text-xl">Right Items</h4>
+                                    {currentQuestion.matchingPairs?.map((rightPair, rightIndex) => {
+                                      // Optimized: Check if this right item is matched using a more efficient approach
+                                      const isMatched = matchedRightItems.has(rightIndex)
+                                      const matchedLeftIndex = Object.keys(matchingAnswers).find(key => matchingAnswers[parseInt(key)] === rightIndex)
+                                      return (
+                                        <Button
+                                          key={rightIndex}
+                                          id={`right-${rightIndex}`}
+                                          variant={isMatched ? "default" : "outline"}
+                                          className={`w-full justify-start text-left h-auto p-6 relative transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] text-lg ${
+                                            isMatched ? "bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-300" : 
+                                            "hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md"
+                                          }`}
+                                          onClick={() => {
+                                            // Only allow matching if a left item is selected and this right item is not already matched
+                                            if (selectedLeftItem !== null && !isMatched) {
+                                              handleMatchingPairSelect(selectedLeftItem, rightIndex)
+                                            }
+                                          }}
+                                          disabled={gameState !== "active"}
+                                        >
+                                          <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium bg-white/20 dark:bg-black/20 px-2 py-1 rounded">
+                                              {rightIndex + 1}
+                                            </span>
+                                            <span className="font-semibold text-lg">{rightPair.right}</span>
+                                            {isMatched && (
+                                              <span className="ml-auto text-xs bg-white/30 px-2 py-1 rounded">
+                                                ← {parseInt(matchedLeftIndex!) + 1}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </Button>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Progress indicator */}
+                              <div className="text-center">
+                                <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full">
+                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Matched: {matchedRightItems.size} / {currentQuestion.matchingPairs?.length}
+                                  </span>
+                                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                </div>
+                              </div>
+                              
+                              <div className="text-center pt-4">
+                                <Button
+                                  onClick={handleSubmitNewQuestionType}
+                                  disabled={gameState !== "active" || matchedRightItems.size !== currentQuestion.matchingPairs?.length}
+                                  className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                                  size="lg"
+                                >
+                                  Submit Answer
+                                </Button>
+                              </div>
+                            </div>
+                          ) : currentQuestion.type === "ordering" ? (
+                            <div className="space-y-4 max-w-3xl mx-auto">
+                              <div className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
+                                Arrange the items in the correct order by clicking them in sequence.
+                              </div>
+                              <div className="space-y-3">
+                                {currentQuestion.orderingItems?.map((item, index) => (
+                                  <Button
+                                    key={index}
+                                    variant={orderingAnswers.includes(item) ? "default" : "outline"}
+                                    className="w-full justify-start text-left h-auto p-4 text-lg"
+                                    onClick={() => {
+                                      if (!orderingAnswers.includes(item)) {
+                                        setOrderingAnswers(prev => [...prev, item])
+                                      }
+                                    }}
+                                    disabled={gameState !== "active"}
+                                  >
+                                    <span className="text-sm font-medium text-gray-500 w-8">{index + 1}.</span>
+                                    <span className="flex-1">{item}</span>
+                                  </Button>
+                                ))}
+                              </div>
+                              {orderingAnswers.length > 0 && (
+                                <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                  <h4 className="font-medium mb-3 text-center">Your Order:</h4>
+                                  <div className="space-y-2">
+                                    {orderingAnswers.map((item, index) => (
+                                      <div key={index} className="flex items-center gap-3">
+                                        <span className="text-sm font-medium text-gray-500 w-8">{index + 1}.</span>
+                                        <span className="flex-1">{item}</span>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => setOrderingAnswers(prev => prev.filter((_, i) => i !== index))}
+                                          disabled={gameState !== "active"}
+                                          className="ml-auto h-8 px-3 text-xs"
+                                        >
+                                          Remove
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              <div className="text-center">
+                                <Button
+                                  onClick={handleSubmitNewQuestionType}
+                                  disabled={gameState !== "active" || orderingAnswers.length !== currentQuestion.orderingItems?.length}
+                                  className="mt-6 px-8 py-4 text-lg"
+                                >
+                                  Submit Answer
+                                </Button>
+                              </div>
                             </div>
                           ) : (
                             <div className="text-center py-4 text-gray-500">
-                              <p>Unknown question type: {currentQuestion.type}</p>
+                              <p>Question type not supported: {currentQuestion.type}</p>
+                              <p className="text-sm">Please contact the host.</p>
                             </div>
                           )}
 
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between max-w-3xl mx-auto">
                             <div className="text-sm text-gray-600 dark:text-gray-400">
                               Points: {currentQuestion.points}
                               {activePowerUp === "doublePoints" && " × 2"}
@@ -1281,11 +1611,8 @@ export default function ParticipantQuiz() {
                           {isCorrect && (
                             <div className="space-y-2">
                               <p className="text-lg">
-                                +{Math.floor(currentQuestion.points * (1 + playerStats.streak * 0.1))} points
+                                +{currentQuestion.points} points
                               </p>
-                              {playerStats.streak > 1 && (
-                                <p className="text-sm text-orange-600">🔥 Streak bonus: {playerStats.streak}x</p>
-                              )}
                             </div>
                           )}
                           <p className="text-gray-600 dark:text-gray-400">Moving to next question...</p>
@@ -1296,33 +1623,40 @@ export default function ParticipantQuiz() {
                 </div>
 
                 {/* Participants Sidebar */}
-                <div className="lg:col-span-1">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Participants ({participants.length})</CardTitle>
+                <div className="lg:col-span-2">
+                  <Card className="shadow-lg border-0 h-fit sticky top-8">
+                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+                      <CardTitle className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                        Participants ({participants.length})
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 max-h-80 overflow-y-auto">
+                    <CardContent className="p-6">
+                      <div className="space-y-4 max-h-[600px] overflow-y-auto">
                         {participants.length > 0 ? (
                           participants.map((participant, index) => (
                             <div
                               key={participant.id}
-                              className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                              className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow"
                             >
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-base font-bold shadow-md">
                                   {index + 1}
                                 </div>
-                                <span className="text-sm font-medium truncate">{participant.name}</span>
+                                <span className="text-base font-semibold text-gray-800 dark:text-gray-200 truncate">
+                                  {participant.name}
+                                </span>
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
+                              <div className="text-base font-bold text-blue-600 dark:text-blue-400">
                                 {participant.score} pts
                               </div>
                             </div>
                           ))
                         ) : (
-                          <div className="text-gray-500 dark:text-gray-400 py-4 text-center text-sm">
-                            No participants yet...
+                          <div className="text-gray-500 dark:text-gray-400 py-6 text-center">
+                            <div className="w-10 h-10 mx-auto mb-2 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                              <span className="text-gray-400">👥</span>
+                            </div>
+                            <p className="text-sm">No participants yet...</p>
                           </div>
                         )}
                       </div>

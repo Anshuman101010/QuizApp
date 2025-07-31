@@ -24,6 +24,21 @@ export type answers = $Result.DefaultSelection<Prisma.$answersPayload>
  */
 export type options = $Result.DefaultSelection<Prisma.$optionsPayload>
 /**
+ * Model matching_pairs
+ * 
+ */
+export type matching_pairs = $Result.DefaultSelection<Prisma.$matching_pairsPayload>
+/**
+ * Model drag_drop_items
+ * 
+ */
+export type drag_drop_items = $Result.DefaultSelection<Prisma.$drag_drop_itemsPayload>
+/**
+ * Model ordering_items
+ * 
+ */
+export type ordering_items = $Result.DefaultSelection<Prisma.$ordering_itemsPayload>
+/**
  * Model participant_history
  * 
  */
@@ -61,7 +76,9 @@ export namespace $Enums {
   export const questions_type: {
   multiple_choice: 'multiple_choice',
   true_false: 'true_false',
-  short_answer: 'short_answer'
+  matching_pairs: 'matching_pairs',
+  drag_drop: 'drag_drop',
+  ordering: 'ordering'
 };
 
 export type questions_type = (typeof questions_type)[keyof typeof questions_type]
@@ -270,6 +287,36 @@ export class PrismaClient<
     * ```
     */
   get options(): Prisma.optionsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.matching_pairs`: Exposes CRUD operations for the **matching_pairs** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Matching_pairs
+    * const matching_pairs = await prisma.matching_pairs.findMany()
+    * ```
+    */
+  get matching_pairs(): Prisma.matching_pairsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.drag_drop_items`: Exposes CRUD operations for the **drag_drop_items** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Drag_drop_items
+    * const drag_drop_items = await prisma.drag_drop_items.findMany()
+    * ```
+    */
+  get drag_drop_items(): Prisma.drag_drop_itemsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.ordering_items`: Exposes CRUD operations for the **ordering_items** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Ordering_items
+    * const ordering_items = await prisma.ordering_items.findMany()
+    * ```
+    */
+  get ordering_items(): Prisma.ordering_itemsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.participant_history`: Exposes CRUD operations for the **participant_history** model.
@@ -772,6 +819,9 @@ export namespace Prisma {
   export const ModelName: {
     answers: 'answers',
     options: 'options',
+    matching_pairs: 'matching_pairs',
+    drag_drop_items: 'drag_drop_items',
+    ordering_items: 'ordering_items',
     participant_history: 'participant_history',
     questions: 'questions',
     quiz_sessions: 'quiz_sessions',
@@ -796,7 +846,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "answers" | "options" | "participant_history" | "questions" | "quiz_sessions" | "quizzes" | "session_participants" | "users"
+      modelProps: "answers" | "options" | "matching_pairs" | "drag_drop_items" | "ordering_items" | "participant_history" | "questions" | "quiz_sessions" | "quizzes" | "session_participants" | "users"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -929,6 +979,204 @@ export namespace Prisma {
           count: {
             args: Prisma.optionsCountArgs<ExtArgs>
             result: $Utils.Optional<OptionsCountAggregateOutputType> | number
+          }
+        }
+      }
+      matching_pairs: {
+        payload: Prisma.$matching_pairsPayload<ExtArgs>
+        fields: Prisma.matching_pairsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.matching_pairsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.matching_pairsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>
+          }
+          findFirst: {
+            args: Prisma.matching_pairsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.matching_pairsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>
+          }
+          findMany: {
+            args: Prisma.matching_pairsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>[]
+          }
+          create: {
+            args: Prisma.matching_pairsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>
+          }
+          createMany: {
+            args: Prisma.matching_pairsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.matching_pairsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>
+          }
+          update: {
+            args: Prisma.matching_pairsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>
+          }
+          deleteMany: {
+            args: Prisma.matching_pairsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.matching_pairsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.matching_pairsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$matching_pairsPayload>
+          }
+          aggregate: {
+            args: Prisma.Matching_pairsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMatching_pairs>
+          }
+          groupBy: {
+            args: Prisma.matching_pairsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Matching_pairsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.matching_pairsCountArgs<ExtArgs>
+            result: $Utils.Optional<Matching_pairsCountAggregateOutputType> | number
+          }
+        }
+      }
+      drag_drop_items: {
+        payload: Prisma.$drag_drop_itemsPayload<ExtArgs>
+        fields: Prisma.drag_drop_itemsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.drag_drop_itemsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.drag_drop_itemsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>
+          }
+          findFirst: {
+            args: Prisma.drag_drop_itemsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.drag_drop_itemsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>
+          }
+          findMany: {
+            args: Prisma.drag_drop_itemsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>[]
+          }
+          create: {
+            args: Prisma.drag_drop_itemsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>
+          }
+          createMany: {
+            args: Prisma.drag_drop_itemsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.drag_drop_itemsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>
+          }
+          update: {
+            args: Prisma.drag_drop_itemsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>
+          }
+          deleteMany: {
+            args: Prisma.drag_drop_itemsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.drag_drop_itemsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.drag_drop_itemsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$drag_drop_itemsPayload>
+          }
+          aggregate: {
+            args: Prisma.Drag_drop_itemsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDrag_drop_items>
+          }
+          groupBy: {
+            args: Prisma.drag_drop_itemsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Drag_drop_itemsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.drag_drop_itemsCountArgs<ExtArgs>
+            result: $Utils.Optional<Drag_drop_itemsCountAggregateOutputType> | number
+          }
+        }
+      }
+      ordering_items: {
+        payload: Prisma.$ordering_itemsPayload<ExtArgs>
+        fields: Prisma.ordering_itemsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ordering_itemsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ordering_itemsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>
+          }
+          findFirst: {
+            args: Prisma.ordering_itemsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ordering_itemsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>
+          }
+          findMany: {
+            args: Prisma.ordering_itemsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>[]
+          }
+          create: {
+            args: Prisma.ordering_itemsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>
+          }
+          createMany: {
+            args: Prisma.ordering_itemsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ordering_itemsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>
+          }
+          update: {
+            args: Prisma.ordering_itemsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>
+          }
+          deleteMany: {
+            args: Prisma.ordering_itemsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ordering_itemsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ordering_itemsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ordering_itemsPayload>
+          }
+          aggregate: {
+            args: Prisma.Ordering_itemsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrdering_items>
+          }
+          groupBy: {
+            args: Prisma.ordering_itemsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Ordering_itemsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ordering_itemsCountArgs<ExtArgs>
+            result: $Utils.Optional<Ordering_itemsCountAggregateOutputType> | number
           }
         }
       }
@@ -1414,6 +1662,9 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     answers?: answersOmit
     options?: optionsOmit
+    matching_pairs?: matching_pairsOmit
+    drag_drop_items?: drag_drop_itemsOmit
+    ordering_items?: ordering_itemsOmit
     participant_history?: participant_historyOmit
     questions?: questionsOmit
     quiz_sessions?: quiz_sessionsOmit
@@ -1516,11 +1767,17 @@ export namespace Prisma {
   export type QuestionsCountOutputType = {
     answers: number
     options: number
+    matching_pairs: number
+    drag_drop_items: number
+    ordering_items: number
   }
 
   export type QuestionsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     answers?: boolean | QuestionsCountOutputTypeCountAnswersArgs
     options?: boolean | QuestionsCountOutputTypeCountOptionsArgs
+    matching_pairs?: boolean | QuestionsCountOutputTypeCountMatching_pairsArgs
+    drag_drop_items?: boolean | QuestionsCountOutputTypeCountDrag_drop_itemsArgs
+    ordering_items?: boolean | QuestionsCountOutputTypeCountOrdering_itemsArgs
   }
 
   // Custom InputTypes
@@ -1546,6 +1803,27 @@ export namespace Prisma {
    */
   export type QuestionsCountOutputTypeCountOptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: optionsWhereInput
+  }
+
+  /**
+   * QuestionsCountOutputType without action
+   */
+  export type QuestionsCountOutputTypeCountMatching_pairsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: matching_pairsWhereInput
+  }
+
+  /**
+   * QuestionsCountOutputType without action
+   */
+  export type QuestionsCountOutputTypeCountDrag_drop_itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: drag_drop_itemsWhereInput
+  }
+
+  /**
+   * QuestionsCountOutputType without action
+   */
+  export type QuestionsCountOutputTypeCountOrdering_itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ordering_itemsWhereInput
   }
 
 
@@ -3714,6 +3992,2908 @@ export namespace Prisma {
 
 
   /**
+   * Model matching_pairs
+   */
+
+  export type AggregateMatching_pairs = {
+    _count: Matching_pairsCountAggregateOutputType | null
+    _avg: Matching_pairsAvgAggregateOutputType | null
+    _sum: Matching_pairsSumAggregateOutputType | null
+    _min: Matching_pairsMinAggregateOutputType | null
+    _max: Matching_pairsMaxAggregateOutputType | null
+  }
+
+  export type Matching_pairsAvgAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    pair_index: number | null
+  }
+
+  export type Matching_pairsSumAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    pair_index: number | null
+  }
+
+  export type Matching_pairsMinAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    left_item: string | null
+    right_item: string | null
+    pair_index: number | null
+  }
+
+  export type Matching_pairsMaxAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    left_item: string | null
+    right_item: string | null
+    pair_index: number | null
+  }
+
+  export type Matching_pairsCountAggregateOutputType = {
+    id: number
+    question_id: number
+    left_item: number
+    right_item: number
+    pair_index: number
+    _all: number
+  }
+
+
+  export type Matching_pairsAvgAggregateInputType = {
+    id?: true
+    question_id?: true
+    pair_index?: true
+  }
+
+  export type Matching_pairsSumAggregateInputType = {
+    id?: true
+    question_id?: true
+    pair_index?: true
+  }
+
+  export type Matching_pairsMinAggregateInputType = {
+    id?: true
+    question_id?: true
+    left_item?: true
+    right_item?: true
+    pair_index?: true
+  }
+
+  export type Matching_pairsMaxAggregateInputType = {
+    id?: true
+    question_id?: true
+    left_item?: true
+    right_item?: true
+    pair_index?: true
+  }
+
+  export type Matching_pairsCountAggregateInputType = {
+    id?: true
+    question_id?: true
+    left_item?: true
+    right_item?: true
+    pair_index?: true
+    _all?: true
+  }
+
+  export type Matching_pairsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which matching_pairs to aggregate.
+     */
+    where?: matching_pairsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of matching_pairs to fetch.
+     */
+    orderBy?: matching_pairsOrderByWithRelationInput | matching_pairsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: matching_pairsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` matching_pairs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` matching_pairs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned matching_pairs
+    **/
+    _count?: true | Matching_pairsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Matching_pairsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Matching_pairsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Matching_pairsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Matching_pairsMaxAggregateInputType
+  }
+
+  export type GetMatching_pairsAggregateType<T extends Matching_pairsAggregateArgs> = {
+        [P in keyof T & keyof AggregateMatching_pairs]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMatching_pairs[P]>
+      : GetScalarType<T[P], AggregateMatching_pairs[P]>
+  }
+
+
+
+
+  export type matching_pairsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: matching_pairsWhereInput
+    orderBy?: matching_pairsOrderByWithAggregationInput | matching_pairsOrderByWithAggregationInput[]
+    by: Matching_pairsScalarFieldEnum[] | Matching_pairsScalarFieldEnum
+    having?: matching_pairsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Matching_pairsCountAggregateInputType | true
+    _avg?: Matching_pairsAvgAggregateInputType
+    _sum?: Matching_pairsSumAggregateInputType
+    _min?: Matching_pairsMinAggregateInputType
+    _max?: Matching_pairsMaxAggregateInputType
+  }
+
+  export type Matching_pairsGroupByOutputType = {
+    id: number
+    question_id: number
+    left_item: string
+    right_item: string
+    pair_index: number
+    _count: Matching_pairsCountAggregateOutputType | null
+    _avg: Matching_pairsAvgAggregateOutputType | null
+    _sum: Matching_pairsSumAggregateOutputType | null
+    _min: Matching_pairsMinAggregateOutputType | null
+    _max: Matching_pairsMaxAggregateOutputType | null
+  }
+
+  type GetMatching_pairsGroupByPayload<T extends matching_pairsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Matching_pairsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Matching_pairsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Matching_pairsGroupByOutputType[P]>
+            : GetScalarType<T[P], Matching_pairsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type matching_pairsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    question_id?: boolean
+    left_item?: boolean
+    right_item?: boolean
+    pair_index?: boolean
+    questions?: boolean | questionsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["matching_pairs"]>
+
+
+
+  export type matching_pairsSelectScalar = {
+    id?: boolean
+    question_id?: boolean
+    left_item?: boolean
+    right_item?: boolean
+    pair_index?: boolean
+  }
+
+  export type matching_pairsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question_id" | "left_item" | "right_item" | "pair_index", ExtArgs["result"]["matching_pairs"]>
+  export type matching_pairsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    questions?: boolean | questionsDefaultArgs<ExtArgs>
+  }
+
+  export type $matching_pairsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "matching_pairs"
+    objects: {
+      questions: Prisma.$questionsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      question_id: number
+      left_item: string
+      right_item: string
+      pair_index: number
+    }, ExtArgs["result"]["matching_pairs"]>
+    composites: {}
+  }
+
+  type matching_pairsGetPayload<S extends boolean | null | undefined | matching_pairsDefaultArgs> = $Result.GetResult<Prisma.$matching_pairsPayload, S>
+
+  type matching_pairsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<matching_pairsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Matching_pairsCountAggregateInputType | true
+    }
+
+  export interface matching_pairsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['matching_pairs'], meta: { name: 'matching_pairs' } }
+    /**
+     * Find zero or one Matching_pairs that matches the filter.
+     * @param {matching_pairsFindUniqueArgs} args - Arguments to find a Matching_pairs
+     * @example
+     * // Get one Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends matching_pairsFindUniqueArgs>(args: SelectSubset<T, matching_pairsFindUniqueArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Matching_pairs that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {matching_pairsFindUniqueOrThrowArgs} args - Arguments to find a Matching_pairs
+     * @example
+     * // Get one Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends matching_pairsFindUniqueOrThrowArgs>(args: SelectSubset<T, matching_pairsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Matching_pairs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {matching_pairsFindFirstArgs} args - Arguments to find a Matching_pairs
+     * @example
+     * // Get one Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends matching_pairsFindFirstArgs>(args?: SelectSubset<T, matching_pairsFindFirstArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Matching_pairs that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {matching_pairsFindFirstOrThrowArgs} args - Arguments to find a Matching_pairs
+     * @example
+     * // Get one Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends matching_pairsFindFirstOrThrowArgs>(args?: SelectSubset<T, matching_pairsFindFirstOrThrowArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Matching_pairs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {matching_pairsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.findMany()
+     * 
+     * // Get first 10 Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const matching_pairsWithIdOnly = await prisma.matching_pairs.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends matching_pairsFindManyArgs>(args?: SelectSubset<T, matching_pairsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Matching_pairs.
+     * @param {matching_pairsCreateArgs} args - Arguments to create a Matching_pairs.
+     * @example
+     * // Create one Matching_pairs
+     * const Matching_pairs = await prisma.matching_pairs.create({
+     *   data: {
+     *     // ... data to create a Matching_pairs
+     *   }
+     * })
+     * 
+     */
+    create<T extends matching_pairsCreateArgs>(args: SelectSubset<T, matching_pairsCreateArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Matching_pairs.
+     * @param {matching_pairsCreateManyArgs} args - Arguments to create many Matching_pairs.
+     * @example
+     * // Create many Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends matching_pairsCreateManyArgs>(args?: SelectSubset<T, matching_pairsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Matching_pairs.
+     * @param {matching_pairsDeleteArgs} args - Arguments to delete one Matching_pairs.
+     * @example
+     * // Delete one Matching_pairs
+     * const Matching_pairs = await prisma.matching_pairs.delete({
+     *   where: {
+     *     // ... filter to delete one Matching_pairs
+     *   }
+     * })
+     * 
+     */
+    delete<T extends matching_pairsDeleteArgs>(args: SelectSubset<T, matching_pairsDeleteArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Matching_pairs.
+     * @param {matching_pairsUpdateArgs} args - Arguments to update one Matching_pairs.
+     * @example
+     * // Update one Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends matching_pairsUpdateArgs>(args: SelectSubset<T, matching_pairsUpdateArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Matching_pairs.
+     * @param {matching_pairsDeleteManyArgs} args - Arguments to filter Matching_pairs to delete.
+     * @example
+     * // Delete a few Matching_pairs
+     * const { count } = await prisma.matching_pairs.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends matching_pairsDeleteManyArgs>(args?: SelectSubset<T, matching_pairsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Matching_pairs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {matching_pairsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends matching_pairsUpdateManyArgs>(args: SelectSubset<T, matching_pairsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Matching_pairs.
+     * @param {matching_pairsUpsertArgs} args - Arguments to update or create a Matching_pairs.
+     * @example
+     * // Update or create a Matching_pairs
+     * const matching_pairs = await prisma.matching_pairs.upsert({
+     *   create: {
+     *     // ... data to create a Matching_pairs
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Matching_pairs we want to update
+     *   }
+     * })
+     */
+    upsert<T extends matching_pairsUpsertArgs>(args: SelectSubset<T, matching_pairsUpsertArgs<ExtArgs>>): Prisma__matching_pairsClient<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Matching_pairs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {matching_pairsCountArgs} args - Arguments to filter Matching_pairs to count.
+     * @example
+     * // Count the number of Matching_pairs
+     * const count = await prisma.matching_pairs.count({
+     *   where: {
+     *     // ... the filter for the Matching_pairs we want to count
+     *   }
+     * })
+    **/
+    count<T extends matching_pairsCountArgs>(
+      args?: Subset<T, matching_pairsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Matching_pairsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Matching_pairs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Matching_pairsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Matching_pairsAggregateArgs>(args: Subset<T, Matching_pairsAggregateArgs>): Prisma.PrismaPromise<GetMatching_pairsAggregateType<T>>
+
+    /**
+     * Group by Matching_pairs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {matching_pairsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends matching_pairsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: matching_pairsGroupByArgs['orderBy'] }
+        : { orderBy?: matching_pairsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, matching_pairsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMatching_pairsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the matching_pairs model
+   */
+  readonly fields: matching_pairsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for matching_pairs.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__matching_pairsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    questions<T extends questionsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, questionsDefaultArgs<ExtArgs>>): Prisma__questionsClient<$Result.GetResult<Prisma.$questionsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the matching_pairs model
+   */
+  interface matching_pairsFieldRefs {
+    readonly id: FieldRef<"matching_pairs", 'Int'>
+    readonly question_id: FieldRef<"matching_pairs", 'Int'>
+    readonly left_item: FieldRef<"matching_pairs", 'String'>
+    readonly right_item: FieldRef<"matching_pairs", 'String'>
+    readonly pair_index: FieldRef<"matching_pairs", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * matching_pairs findUnique
+   */
+  export type matching_pairsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * Filter, which matching_pairs to fetch.
+     */
+    where: matching_pairsWhereUniqueInput
+  }
+
+  /**
+   * matching_pairs findUniqueOrThrow
+   */
+  export type matching_pairsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * Filter, which matching_pairs to fetch.
+     */
+    where: matching_pairsWhereUniqueInput
+  }
+
+  /**
+   * matching_pairs findFirst
+   */
+  export type matching_pairsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * Filter, which matching_pairs to fetch.
+     */
+    where?: matching_pairsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of matching_pairs to fetch.
+     */
+    orderBy?: matching_pairsOrderByWithRelationInput | matching_pairsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for matching_pairs.
+     */
+    cursor?: matching_pairsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` matching_pairs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` matching_pairs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of matching_pairs.
+     */
+    distinct?: Matching_pairsScalarFieldEnum | Matching_pairsScalarFieldEnum[]
+  }
+
+  /**
+   * matching_pairs findFirstOrThrow
+   */
+  export type matching_pairsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * Filter, which matching_pairs to fetch.
+     */
+    where?: matching_pairsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of matching_pairs to fetch.
+     */
+    orderBy?: matching_pairsOrderByWithRelationInput | matching_pairsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for matching_pairs.
+     */
+    cursor?: matching_pairsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` matching_pairs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` matching_pairs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of matching_pairs.
+     */
+    distinct?: Matching_pairsScalarFieldEnum | Matching_pairsScalarFieldEnum[]
+  }
+
+  /**
+   * matching_pairs findMany
+   */
+  export type matching_pairsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * Filter, which matching_pairs to fetch.
+     */
+    where?: matching_pairsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of matching_pairs to fetch.
+     */
+    orderBy?: matching_pairsOrderByWithRelationInput | matching_pairsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing matching_pairs.
+     */
+    cursor?: matching_pairsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` matching_pairs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` matching_pairs.
+     */
+    skip?: number
+    distinct?: Matching_pairsScalarFieldEnum | Matching_pairsScalarFieldEnum[]
+  }
+
+  /**
+   * matching_pairs create
+   */
+  export type matching_pairsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a matching_pairs.
+     */
+    data: XOR<matching_pairsCreateInput, matching_pairsUncheckedCreateInput>
+  }
+
+  /**
+   * matching_pairs createMany
+   */
+  export type matching_pairsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many matching_pairs.
+     */
+    data: matching_pairsCreateManyInput | matching_pairsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * matching_pairs update
+   */
+  export type matching_pairsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a matching_pairs.
+     */
+    data: XOR<matching_pairsUpdateInput, matching_pairsUncheckedUpdateInput>
+    /**
+     * Choose, which matching_pairs to update.
+     */
+    where: matching_pairsWhereUniqueInput
+  }
+
+  /**
+   * matching_pairs updateMany
+   */
+  export type matching_pairsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update matching_pairs.
+     */
+    data: XOR<matching_pairsUpdateManyMutationInput, matching_pairsUncheckedUpdateManyInput>
+    /**
+     * Filter which matching_pairs to update
+     */
+    where?: matching_pairsWhereInput
+    /**
+     * Limit how many matching_pairs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * matching_pairs upsert
+   */
+  export type matching_pairsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the matching_pairs to update in case it exists.
+     */
+    where: matching_pairsWhereUniqueInput
+    /**
+     * In case the matching_pairs found by the `where` argument doesn't exist, create a new matching_pairs with this data.
+     */
+    create: XOR<matching_pairsCreateInput, matching_pairsUncheckedCreateInput>
+    /**
+     * In case the matching_pairs was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<matching_pairsUpdateInput, matching_pairsUncheckedUpdateInput>
+  }
+
+  /**
+   * matching_pairs delete
+   */
+  export type matching_pairsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    /**
+     * Filter which matching_pairs to delete.
+     */
+    where: matching_pairsWhereUniqueInput
+  }
+
+  /**
+   * matching_pairs deleteMany
+   */
+  export type matching_pairsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which matching_pairs to delete
+     */
+    where?: matching_pairsWhereInput
+    /**
+     * Limit how many matching_pairs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * matching_pairs without action
+   */
+  export type matching_pairsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model drag_drop_items
+   */
+
+  export type AggregateDrag_drop_items = {
+    _count: Drag_drop_itemsCountAggregateOutputType | null
+    _avg: Drag_drop_itemsAvgAggregateOutputType | null
+    _sum: Drag_drop_itemsSumAggregateOutputType | null
+    _min: Drag_drop_itemsMinAggregateOutputType | null
+    _max: Drag_drop_itemsMaxAggregateOutputType | null
+  }
+
+  export type Drag_drop_itemsAvgAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    item_index: number | null
+  }
+
+  export type Drag_drop_itemsSumAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    item_index: number | null
+  }
+
+  export type Drag_drop_itemsMinAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    item_text: string | null
+    category: string | null
+    item_index: number | null
+  }
+
+  export type Drag_drop_itemsMaxAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    item_text: string | null
+    category: string | null
+    item_index: number | null
+  }
+
+  export type Drag_drop_itemsCountAggregateOutputType = {
+    id: number
+    question_id: number
+    item_text: number
+    category: number
+    item_index: number
+    _all: number
+  }
+
+
+  export type Drag_drop_itemsAvgAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_index?: true
+  }
+
+  export type Drag_drop_itemsSumAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_index?: true
+  }
+
+  export type Drag_drop_itemsMinAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_text?: true
+    category?: true
+    item_index?: true
+  }
+
+  export type Drag_drop_itemsMaxAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_text?: true
+    category?: true
+    item_index?: true
+  }
+
+  export type Drag_drop_itemsCountAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_text?: true
+    category?: true
+    item_index?: true
+    _all?: true
+  }
+
+  export type Drag_drop_itemsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which drag_drop_items to aggregate.
+     */
+    where?: drag_drop_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of drag_drop_items to fetch.
+     */
+    orderBy?: drag_drop_itemsOrderByWithRelationInput | drag_drop_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: drag_drop_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` drag_drop_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` drag_drop_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned drag_drop_items
+    **/
+    _count?: true | Drag_drop_itemsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Drag_drop_itemsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Drag_drop_itemsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Drag_drop_itemsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Drag_drop_itemsMaxAggregateInputType
+  }
+
+  export type GetDrag_drop_itemsAggregateType<T extends Drag_drop_itemsAggregateArgs> = {
+        [P in keyof T & keyof AggregateDrag_drop_items]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDrag_drop_items[P]>
+      : GetScalarType<T[P], AggregateDrag_drop_items[P]>
+  }
+
+
+
+
+  export type drag_drop_itemsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: drag_drop_itemsWhereInput
+    orderBy?: drag_drop_itemsOrderByWithAggregationInput | drag_drop_itemsOrderByWithAggregationInput[]
+    by: Drag_drop_itemsScalarFieldEnum[] | Drag_drop_itemsScalarFieldEnum
+    having?: drag_drop_itemsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Drag_drop_itemsCountAggregateInputType | true
+    _avg?: Drag_drop_itemsAvgAggregateInputType
+    _sum?: Drag_drop_itemsSumAggregateInputType
+    _min?: Drag_drop_itemsMinAggregateInputType
+    _max?: Drag_drop_itemsMaxAggregateInputType
+  }
+
+  export type Drag_drop_itemsGroupByOutputType = {
+    id: number
+    question_id: number
+    item_text: string
+    category: string
+    item_index: number
+    _count: Drag_drop_itemsCountAggregateOutputType | null
+    _avg: Drag_drop_itemsAvgAggregateOutputType | null
+    _sum: Drag_drop_itemsSumAggregateOutputType | null
+    _min: Drag_drop_itemsMinAggregateOutputType | null
+    _max: Drag_drop_itemsMaxAggregateOutputType | null
+  }
+
+  type GetDrag_drop_itemsGroupByPayload<T extends drag_drop_itemsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Drag_drop_itemsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Drag_drop_itemsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Drag_drop_itemsGroupByOutputType[P]>
+            : GetScalarType<T[P], Drag_drop_itemsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type drag_drop_itemsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    question_id?: boolean
+    item_text?: boolean
+    category?: boolean
+    item_index?: boolean
+    questions?: boolean | questionsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["drag_drop_items"]>
+
+
+
+  export type drag_drop_itemsSelectScalar = {
+    id?: boolean
+    question_id?: boolean
+    item_text?: boolean
+    category?: boolean
+    item_index?: boolean
+  }
+
+  export type drag_drop_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question_id" | "item_text" | "category" | "item_index", ExtArgs["result"]["drag_drop_items"]>
+  export type drag_drop_itemsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    questions?: boolean | questionsDefaultArgs<ExtArgs>
+  }
+
+  export type $drag_drop_itemsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "drag_drop_items"
+    objects: {
+      questions: Prisma.$questionsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      question_id: number
+      item_text: string
+      category: string
+      item_index: number
+    }, ExtArgs["result"]["drag_drop_items"]>
+    composites: {}
+  }
+
+  type drag_drop_itemsGetPayload<S extends boolean | null | undefined | drag_drop_itemsDefaultArgs> = $Result.GetResult<Prisma.$drag_drop_itemsPayload, S>
+
+  type drag_drop_itemsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<drag_drop_itemsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Drag_drop_itemsCountAggregateInputType | true
+    }
+
+  export interface drag_drop_itemsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['drag_drop_items'], meta: { name: 'drag_drop_items' } }
+    /**
+     * Find zero or one Drag_drop_items that matches the filter.
+     * @param {drag_drop_itemsFindUniqueArgs} args - Arguments to find a Drag_drop_items
+     * @example
+     * // Get one Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends drag_drop_itemsFindUniqueArgs>(args: SelectSubset<T, drag_drop_itemsFindUniqueArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Drag_drop_items that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {drag_drop_itemsFindUniqueOrThrowArgs} args - Arguments to find a Drag_drop_items
+     * @example
+     * // Get one Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends drag_drop_itemsFindUniqueOrThrowArgs>(args: SelectSubset<T, drag_drop_itemsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Drag_drop_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {drag_drop_itemsFindFirstArgs} args - Arguments to find a Drag_drop_items
+     * @example
+     * // Get one Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends drag_drop_itemsFindFirstArgs>(args?: SelectSubset<T, drag_drop_itemsFindFirstArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Drag_drop_items that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {drag_drop_itemsFindFirstOrThrowArgs} args - Arguments to find a Drag_drop_items
+     * @example
+     * // Get one Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends drag_drop_itemsFindFirstOrThrowArgs>(args?: SelectSubset<T, drag_drop_itemsFindFirstOrThrowArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Drag_drop_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {drag_drop_itemsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.findMany()
+     * 
+     * // Get first 10 Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const drag_drop_itemsWithIdOnly = await prisma.drag_drop_items.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends drag_drop_itemsFindManyArgs>(args?: SelectSubset<T, drag_drop_itemsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Drag_drop_items.
+     * @param {drag_drop_itemsCreateArgs} args - Arguments to create a Drag_drop_items.
+     * @example
+     * // Create one Drag_drop_items
+     * const Drag_drop_items = await prisma.drag_drop_items.create({
+     *   data: {
+     *     // ... data to create a Drag_drop_items
+     *   }
+     * })
+     * 
+     */
+    create<T extends drag_drop_itemsCreateArgs>(args: SelectSubset<T, drag_drop_itemsCreateArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Drag_drop_items.
+     * @param {drag_drop_itemsCreateManyArgs} args - Arguments to create many Drag_drop_items.
+     * @example
+     * // Create many Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends drag_drop_itemsCreateManyArgs>(args?: SelectSubset<T, drag_drop_itemsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Drag_drop_items.
+     * @param {drag_drop_itemsDeleteArgs} args - Arguments to delete one Drag_drop_items.
+     * @example
+     * // Delete one Drag_drop_items
+     * const Drag_drop_items = await prisma.drag_drop_items.delete({
+     *   where: {
+     *     // ... filter to delete one Drag_drop_items
+     *   }
+     * })
+     * 
+     */
+    delete<T extends drag_drop_itemsDeleteArgs>(args: SelectSubset<T, drag_drop_itemsDeleteArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Drag_drop_items.
+     * @param {drag_drop_itemsUpdateArgs} args - Arguments to update one Drag_drop_items.
+     * @example
+     * // Update one Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends drag_drop_itemsUpdateArgs>(args: SelectSubset<T, drag_drop_itemsUpdateArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Drag_drop_items.
+     * @param {drag_drop_itemsDeleteManyArgs} args - Arguments to filter Drag_drop_items to delete.
+     * @example
+     * // Delete a few Drag_drop_items
+     * const { count } = await prisma.drag_drop_items.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends drag_drop_itemsDeleteManyArgs>(args?: SelectSubset<T, drag_drop_itemsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Drag_drop_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {drag_drop_itemsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends drag_drop_itemsUpdateManyArgs>(args: SelectSubset<T, drag_drop_itemsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Drag_drop_items.
+     * @param {drag_drop_itemsUpsertArgs} args - Arguments to update or create a Drag_drop_items.
+     * @example
+     * // Update or create a Drag_drop_items
+     * const drag_drop_items = await prisma.drag_drop_items.upsert({
+     *   create: {
+     *     // ... data to create a Drag_drop_items
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Drag_drop_items we want to update
+     *   }
+     * })
+     */
+    upsert<T extends drag_drop_itemsUpsertArgs>(args: SelectSubset<T, drag_drop_itemsUpsertArgs<ExtArgs>>): Prisma__drag_drop_itemsClient<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Drag_drop_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {drag_drop_itemsCountArgs} args - Arguments to filter Drag_drop_items to count.
+     * @example
+     * // Count the number of Drag_drop_items
+     * const count = await prisma.drag_drop_items.count({
+     *   where: {
+     *     // ... the filter for the Drag_drop_items we want to count
+     *   }
+     * })
+    **/
+    count<T extends drag_drop_itemsCountArgs>(
+      args?: Subset<T, drag_drop_itemsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Drag_drop_itemsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Drag_drop_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Drag_drop_itemsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Drag_drop_itemsAggregateArgs>(args: Subset<T, Drag_drop_itemsAggregateArgs>): Prisma.PrismaPromise<GetDrag_drop_itemsAggregateType<T>>
+
+    /**
+     * Group by Drag_drop_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {drag_drop_itemsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends drag_drop_itemsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: drag_drop_itemsGroupByArgs['orderBy'] }
+        : { orderBy?: drag_drop_itemsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, drag_drop_itemsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDrag_drop_itemsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the drag_drop_items model
+   */
+  readonly fields: drag_drop_itemsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for drag_drop_items.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__drag_drop_itemsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    questions<T extends questionsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, questionsDefaultArgs<ExtArgs>>): Prisma__questionsClient<$Result.GetResult<Prisma.$questionsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the drag_drop_items model
+   */
+  interface drag_drop_itemsFieldRefs {
+    readonly id: FieldRef<"drag_drop_items", 'Int'>
+    readonly question_id: FieldRef<"drag_drop_items", 'Int'>
+    readonly item_text: FieldRef<"drag_drop_items", 'String'>
+    readonly category: FieldRef<"drag_drop_items", 'String'>
+    readonly item_index: FieldRef<"drag_drop_items", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * drag_drop_items findUnique
+   */
+  export type drag_drop_itemsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which drag_drop_items to fetch.
+     */
+    where: drag_drop_itemsWhereUniqueInput
+  }
+
+  /**
+   * drag_drop_items findUniqueOrThrow
+   */
+  export type drag_drop_itemsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which drag_drop_items to fetch.
+     */
+    where: drag_drop_itemsWhereUniqueInput
+  }
+
+  /**
+   * drag_drop_items findFirst
+   */
+  export type drag_drop_itemsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which drag_drop_items to fetch.
+     */
+    where?: drag_drop_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of drag_drop_items to fetch.
+     */
+    orderBy?: drag_drop_itemsOrderByWithRelationInput | drag_drop_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for drag_drop_items.
+     */
+    cursor?: drag_drop_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` drag_drop_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` drag_drop_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of drag_drop_items.
+     */
+    distinct?: Drag_drop_itemsScalarFieldEnum | Drag_drop_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * drag_drop_items findFirstOrThrow
+   */
+  export type drag_drop_itemsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which drag_drop_items to fetch.
+     */
+    where?: drag_drop_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of drag_drop_items to fetch.
+     */
+    orderBy?: drag_drop_itemsOrderByWithRelationInput | drag_drop_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for drag_drop_items.
+     */
+    cursor?: drag_drop_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` drag_drop_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` drag_drop_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of drag_drop_items.
+     */
+    distinct?: Drag_drop_itemsScalarFieldEnum | Drag_drop_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * drag_drop_items findMany
+   */
+  export type drag_drop_itemsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which drag_drop_items to fetch.
+     */
+    where?: drag_drop_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of drag_drop_items to fetch.
+     */
+    orderBy?: drag_drop_itemsOrderByWithRelationInput | drag_drop_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing drag_drop_items.
+     */
+    cursor?: drag_drop_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` drag_drop_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` drag_drop_items.
+     */
+    skip?: number
+    distinct?: Drag_drop_itemsScalarFieldEnum | Drag_drop_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * drag_drop_items create
+   */
+  export type drag_drop_itemsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a drag_drop_items.
+     */
+    data: XOR<drag_drop_itemsCreateInput, drag_drop_itemsUncheckedCreateInput>
+  }
+
+  /**
+   * drag_drop_items createMany
+   */
+  export type drag_drop_itemsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many drag_drop_items.
+     */
+    data: drag_drop_itemsCreateManyInput | drag_drop_itemsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * drag_drop_items update
+   */
+  export type drag_drop_itemsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a drag_drop_items.
+     */
+    data: XOR<drag_drop_itemsUpdateInput, drag_drop_itemsUncheckedUpdateInput>
+    /**
+     * Choose, which drag_drop_items to update.
+     */
+    where: drag_drop_itemsWhereUniqueInput
+  }
+
+  /**
+   * drag_drop_items updateMany
+   */
+  export type drag_drop_itemsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update drag_drop_items.
+     */
+    data: XOR<drag_drop_itemsUpdateManyMutationInput, drag_drop_itemsUncheckedUpdateManyInput>
+    /**
+     * Filter which drag_drop_items to update
+     */
+    where?: drag_drop_itemsWhereInput
+    /**
+     * Limit how many drag_drop_items to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * drag_drop_items upsert
+   */
+  export type drag_drop_itemsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the drag_drop_items to update in case it exists.
+     */
+    where: drag_drop_itemsWhereUniqueInput
+    /**
+     * In case the drag_drop_items found by the `where` argument doesn't exist, create a new drag_drop_items with this data.
+     */
+    create: XOR<drag_drop_itemsCreateInput, drag_drop_itemsUncheckedCreateInput>
+    /**
+     * In case the drag_drop_items was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<drag_drop_itemsUpdateInput, drag_drop_itemsUncheckedUpdateInput>
+  }
+
+  /**
+   * drag_drop_items delete
+   */
+  export type drag_drop_itemsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    /**
+     * Filter which drag_drop_items to delete.
+     */
+    where: drag_drop_itemsWhereUniqueInput
+  }
+
+  /**
+   * drag_drop_items deleteMany
+   */
+  export type drag_drop_itemsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which drag_drop_items to delete
+     */
+    where?: drag_drop_itemsWhereInput
+    /**
+     * Limit how many drag_drop_items to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * drag_drop_items without action
+   */
+  export type drag_drop_itemsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ordering_items
+   */
+
+  export type AggregateOrdering_items = {
+    _count: Ordering_itemsCountAggregateOutputType | null
+    _avg: Ordering_itemsAvgAggregateOutputType | null
+    _sum: Ordering_itemsSumAggregateOutputType | null
+    _min: Ordering_itemsMinAggregateOutputType | null
+    _max: Ordering_itemsMaxAggregateOutputType | null
+  }
+
+  export type Ordering_itemsAvgAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    correct_order: number | null
+  }
+
+  export type Ordering_itemsSumAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    correct_order: number | null
+  }
+
+  export type Ordering_itemsMinAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    item_text: string | null
+    correct_order: number | null
+  }
+
+  export type Ordering_itemsMaxAggregateOutputType = {
+    id: number | null
+    question_id: number | null
+    item_text: string | null
+    correct_order: number | null
+  }
+
+  export type Ordering_itemsCountAggregateOutputType = {
+    id: number
+    question_id: number
+    item_text: number
+    correct_order: number
+    _all: number
+  }
+
+
+  export type Ordering_itemsAvgAggregateInputType = {
+    id?: true
+    question_id?: true
+    correct_order?: true
+  }
+
+  export type Ordering_itemsSumAggregateInputType = {
+    id?: true
+    question_id?: true
+    correct_order?: true
+  }
+
+  export type Ordering_itemsMinAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_text?: true
+    correct_order?: true
+  }
+
+  export type Ordering_itemsMaxAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_text?: true
+    correct_order?: true
+  }
+
+  export type Ordering_itemsCountAggregateInputType = {
+    id?: true
+    question_id?: true
+    item_text?: true
+    correct_order?: true
+    _all?: true
+  }
+
+  export type Ordering_itemsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ordering_items to aggregate.
+     */
+    where?: ordering_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ordering_items to fetch.
+     */
+    orderBy?: ordering_itemsOrderByWithRelationInput | ordering_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ordering_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ordering_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ordering_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ordering_items
+    **/
+    _count?: true | Ordering_itemsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Ordering_itemsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Ordering_itemsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Ordering_itemsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Ordering_itemsMaxAggregateInputType
+  }
+
+  export type GetOrdering_itemsAggregateType<T extends Ordering_itemsAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrdering_items]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrdering_items[P]>
+      : GetScalarType<T[P], AggregateOrdering_items[P]>
+  }
+
+
+
+
+  export type ordering_itemsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ordering_itemsWhereInput
+    orderBy?: ordering_itemsOrderByWithAggregationInput | ordering_itemsOrderByWithAggregationInput[]
+    by: Ordering_itemsScalarFieldEnum[] | Ordering_itemsScalarFieldEnum
+    having?: ordering_itemsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Ordering_itemsCountAggregateInputType | true
+    _avg?: Ordering_itemsAvgAggregateInputType
+    _sum?: Ordering_itemsSumAggregateInputType
+    _min?: Ordering_itemsMinAggregateInputType
+    _max?: Ordering_itemsMaxAggregateInputType
+  }
+
+  export type Ordering_itemsGroupByOutputType = {
+    id: number
+    question_id: number
+    item_text: string
+    correct_order: number
+    _count: Ordering_itemsCountAggregateOutputType | null
+    _avg: Ordering_itemsAvgAggregateOutputType | null
+    _sum: Ordering_itemsSumAggregateOutputType | null
+    _min: Ordering_itemsMinAggregateOutputType | null
+    _max: Ordering_itemsMaxAggregateOutputType | null
+  }
+
+  type GetOrdering_itemsGroupByPayload<T extends ordering_itemsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Ordering_itemsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Ordering_itemsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Ordering_itemsGroupByOutputType[P]>
+            : GetScalarType<T[P], Ordering_itemsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ordering_itemsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    question_id?: boolean
+    item_text?: boolean
+    correct_order?: boolean
+    questions?: boolean | questionsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["ordering_items"]>
+
+
+
+  export type ordering_itemsSelectScalar = {
+    id?: boolean
+    question_id?: boolean
+    item_text?: boolean
+    correct_order?: boolean
+  }
+
+  export type ordering_itemsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question_id" | "item_text" | "correct_order", ExtArgs["result"]["ordering_items"]>
+  export type ordering_itemsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    questions?: boolean | questionsDefaultArgs<ExtArgs>
+  }
+
+  export type $ordering_itemsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ordering_items"
+    objects: {
+      questions: Prisma.$questionsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      question_id: number
+      item_text: string
+      correct_order: number
+    }, ExtArgs["result"]["ordering_items"]>
+    composites: {}
+  }
+
+  type ordering_itemsGetPayload<S extends boolean | null | undefined | ordering_itemsDefaultArgs> = $Result.GetResult<Prisma.$ordering_itemsPayload, S>
+
+  type ordering_itemsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ordering_itemsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Ordering_itemsCountAggregateInputType | true
+    }
+
+  export interface ordering_itemsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ordering_items'], meta: { name: 'ordering_items' } }
+    /**
+     * Find zero or one Ordering_items that matches the filter.
+     * @param {ordering_itemsFindUniqueArgs} args - Arguments to find a Ordering_items
+     * @example
+     * // Get one Ordering_items
+     * const ordering_items = await prisma.ordering_items.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ordering_itemsFindUniqueArgs>(args: SelectSubset<T, ordering_itemsFindUniqueArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Ordering_items that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ordering_itemsFindUniqueOrThrowArgs} args - Arguments to find a Ordering_items
+     * @example
+     * // Get one Ordering_items
+     * const ordering_items = await prisma.ordering_items.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ordering_itemsFindUniqueOrThrowArgs>(args: SelectSubset<T, ordering_itemsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Ordering_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ordering_itemsFindFirstArgs} args - Arguments to find a Ordering_items
+     * @example
+     * // Get one Ordering_items
+     * const ordering_items = await prisma.ordering_items.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ordering_itemsFindFirstArgs>(args?: SelectSubset<T, ordering_itemsFindFirstArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Ordering_items that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ordering_itemsFindFirstOrThrowArgs} args - Arguments to find a Ordering_items
+     * @example
+     * // Get one Ordering_items
+     * const ordering_items = await prisma.ordering_items.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ordering_itemsFindFirstOrThrowArgs>(args?: SelectSubset<T, ordering_itemsFindFirstOrThrowArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Ordering_items that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ordering_itemsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Ordering_items
+     * const ordering_items = await prisma.ordering_items.findMany()
+     * 
+     * // Get first 10 Ordering_items
+     * const ordering_items = await prisma.ordering_items.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ordering_itemsWithIdOnly = await prisma.ordering_items.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ordering_itemsFindManyArgs>(args?: SelectSubset<T, ordering_itemsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Ordering_items.
+     * @param {ordering_itemsCreateArgs} args - Arguments to create a Ordering_items.
+     * @example
+     * // Create one Ordering_items
+     * const Ordering_items = await prisma.ordering_items.create({
+     *   data: {
+     *     // ... data to create a Ordering_items
+     *   }
+     * })
+     * 
+     */
+    create<T extends ordering_itemsCreateArgs>(args: SelectSubset<T, ordering_itemsCreateArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Ordering_items.
+     * @param {ordering_itemsCreateManyArgs} args - Arguments to create many Ordering_items.
+     * @example
+     * // Create many Ordering_items
+     * const ordering_items = await prisma.ordering_items.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ordering_itemsCreateManyArgs>(args?: SelectSubset<T, ordering_itemsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Ordering_items.
+     * @param {ordering_itemsDeleteArgs} args - Arguments to delete one Ordering_items.
+     * @example
+     * // Delete one Ordering_items
+     * const Ordering_items = await prisma.ordering_items.delete({
+     *   where: {
+     *     // ... filter to delete one Ordering_items
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ordering_itemsDeleteArgs>(args: SelectSubset<T, ordering_itemsDeleteArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Ordering_items.
+     * @param {ordering_itemsUpdateArgs} args - Arguments to update one Ordering_items.
+     * @example
+     * // Update one Ordering_items
+     * const ordering_items = await prisma.ordering_items.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ordering_itemsUpdateArgs>(args: SelectSubset<T, ordering_itemsUpdateArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Ordering_items.
+     * @param {ordering_itemsDeleteManyArgs} args - Arguments to filter Ordering_items to delete.
+     * @example
+     * // Delete a few Ordering_items
+     * const { count } = await prisma.ordering_items.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ordering_itemsDeleteManyArgs>(args?: SelectSubset<T, ordering_itemsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ordering_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ordering_itemsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Ordering_items
+     * const ordering_items = await prisma.ordering_items.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ordering_itemsUpdateManyArgs>(args: SelectSubset<T, ordering_itemsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Ordering_items.
+     * @param {ordering_itemsUpsertArgs} args - Arguments to update or create a Ordering_items.
+     * @example
+     * // Update or create a Ordering_items
+     * const ordering_items = await prisma.ordering_items.upsert({
+     *   create: {
+     *     // ... data to create a Ordering_items
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Ordering_items we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ordering_itemsUpsertArgs>(args: SelectSubset<T, ordering_itemsUpsertArgs<ExtArgs>>): Prisma__ordering_itemsClient<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Ordering_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ordering_itemsCountArgs} args - Arguments to filter Ordering_items to count.
+     * @example
+     * // Count the number of Ordering_items
+     * const count = await prisma.ordering_items.count({
+     *   where: {
+     *     // ... the filter for the Ordering_items we want to count
+     *   }
+     * })
+    **/
+    count<T extends ordering_itemsCountArgs>(
+      args?: Subset<T, ordering_itemsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Ordering_itemsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Ordering_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Ordering_itemsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Ordering_itemsAggregateArgs>(args: Subset<T, Ordering_itemsAggregateArgs>): Prisma.PrismaPromise<GetOrdering_itemsAggregateType<T>>
+
+    /**
+     * Group by Ordering_items.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ordering_itemsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ordering_itemsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ordering_itemsGroupByArgs['orderBy'] }
+        : { orderBy?: ordering_itemsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ordering_itemsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrdering_itemsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ordering_items model
+   */
+  readonly fields: ordering_itemsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ordering_items.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ordering_itemsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    questions<T extends questionsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, questionsDefaultArgs<ExtArgs>>): Prisma__questionsClient<$Result.GetResult<Prisma.$questionsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ordering_items model
+   */
+  interface ordering_itemsFieldRefs {
+    readonly id: FieldRef<"ordering_items", 'Int'>
+    readonly question_id: FieldRef<"ordering_items", 'Int'>
+    readonly item_text: FieldRef<"ordering_items", 'String'>
+    readonly correct_order: FieldRef<"ordering_items", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ordering_items findUnique
+   */
+  export type ordering_itemsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which ordering_items to fetch.
+     */
+    where: ordering_itemsWhereUniqueInput
+  }
+
+  /**
+   * ordering_items findUniqueOrThrow
+   */
+  export type ordering_itemsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which ordering_items to fetch.
+     */
+    where: ordering_itemsWhereUniqueInput
+  }
+
+  /**
+   * ordering_items findFirst
+   */
+  export type ordering_itemsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which ordering_items to fetch.
+     */
+    where?: ordering_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ordering_items to fetch.
+     */
+    orderBy?: ordering_itemsOrderByWithRelationInput | ordering_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ordering_items.
+     */
+    cursor?: ordering_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ordering_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ordering_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ordering_items.
+     */
+    distinct?: Ordering_itemsScalarFieldEnum | Ordering_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * ordering_items findFirstOrThrow
+   */
+  export type ordering_itemsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which ordering_items to fetch.
+     */
+    where?: ordering_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ordering_items to fetch.
+     */
+    orderBy?: ordering_itemsOrderByWithRelationInput | ordering_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ordering_items.
+     */
+    cursor?: ordering_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ordering_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ordering_items.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ordering_items.
+     */
+    distinct?: Ordering_itemsScalarFieldEnum | Ordering_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * ordering_items findMany
+   */
+  export type ordering_itemsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * Filter, which ordering_items to fetch.
+     */
+    where?: ordering_itemsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ordering_items to fetch.
+     */
+    orderBy?: ordering_itemsOrderByWithRelationInput | ordering_itemsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ordering_items.
+     */
+    cursor?: ordering_itemsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ordering_items from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ordering_items.
+     */
+    skip?: number
+    distinct?: Ordering_itemsScalarFieldEnum | Ordering_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * ordering_items create
+   */
+  export type ordering_itemsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ordering_items.
+     */
+    data: XOR<ordering_itemsCreateInput, ordering_itemsUncheckedCreateInput>
+  }
+
+  /**
+   * ordering_items createMany
+   */
+  export type ordering_itemsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ordering_items.
+     */
+    data: ordering_itemsCreateManyInput | ordering_itemsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ordering_items update
+   */
+  export type ordering_itemsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ordering_items.
+     */
+    data: XOR<ordering_itemsUpdateInput, ordering_itemsUncheckedUpdateInput>
+    /**
+     * Choose, which ordering_items to update.
+     */
+    where: ordering_itemsWhereUniqueInput
+  }
+
+  /**
+   * ordering_items updateMany
+   */
+  export type ordering_itemsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ordering_items.
+     */
+    data: XOR<ordering_itemsUpdateManyMutationInput, ordering_itemsUncheckedUpdateManyInput>
+    /**
+     * Filter which ordering_items to update
+     */
+    where?: ordering_itemsWhereInput
+    /**
+     * Limit how many ordering_items to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ordering_items upsert
+   */
+  export type ordering_itemsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ordering_items to update in case it exists.
+     */
+    where: ordering_itemsWhereUniqueInput
+    /**
+     * In case the ordering_items found by the `where` argument doesn't exist, create a new ordering_items with this data.
+     */
+    create: XOR<ordering_itemsCreateInput, ordering_itemsUncheckedCreateInput>
+    /**
+     * In case the ordering_items was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ordering_itemsUpdateInput, ordering_itemsUncheckedUpdateInput>
+  }
+
+  /**
+   * ordering_items delete
+   */
+  export type ordering_itemsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    /**
+     * Filter which ordering_items to delete.
+     */
+    where: ordering_itemsWhereUniqueInput
+  }
+
+  /**
+   * ordering_items deleteMany
+   */
+  export type ordering_itemsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ordering_items to delete
+     */
+    where?: ordering_itemsWhereInput
+    /**
+     * Limit how many ordering_items to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ordering_items without action
+   */
+  export type ordering_itemsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model participant_history
    */
 
@@ -5004,6 +8184,9 @@ export namespace Prisma {
     media_url?: boolean
     answers?: boolean | questions$answersArgs<ExtArgs>
     options?: boolean | questions$optionsArgs<ExtArgs>
+    matching_pairs?: boolean | questions$matching_pairsArgs<ExtArgs>
+    drag_drop_items?: boolean | questions$drag_drop_itemsArgs<ExtArgs>
+    ordering_items?: boolean | questions$ordering_itemsArgs<ExtArgs>
     quizzes?: boolean | quizzesDefaultArgs<ExtArgs>
     _count?: boolean | QuestionsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["questions"]>
@@ -5027,6 +8210,9 @@ export namespace Prisma {
   export type questionsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     answers?: boolean | questions$answersArgs<ExtArgs>
     options?: boolean | questions$optionsArgs<ExtArgs>
+    matching_pairs?: boolean | questions$matching_pairsArgs<ExtArgs>
+    drag_drop_items?: boolean | questions$drag_drop_itemsArgs<ExtArgs>
+    ordering_items?: boolean | questions$ordering_itemsArgs<ExtArgs>
     quizzes?: boolean | quizzesDefaultArgs<ExtArgs>
     _count?: boolean | QuestionsCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5036,6 +8222,9 @@ export namespace Prisma {
     objects: {
       answers: Prisma.$answersPayload<ExtArgs>[]
       options: Prisma.$optionsPayload<ExtArgs>[]
+      matching_pairs: Prisma.$matching_pairsPayload<ExtArgs>[]
+      drag_drop_items: Prisma.$drag_drop_itemsPayload<ExtArgs>[]
+      ordering_items: Prisma.$ordering_itemsPayload<ExtArgs>[]
       quizzes: Prisma.$quizzesPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5391,6 +8580,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     answers<T extends questions$answersArgs<ExtArgs> = {}>(args?: Subset<T, questions$answersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$answersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     options<T extends questions$optionsArgs<ExtArgs> = {}>(args?: Subset<T, questions$optionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$optionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    matching_pairs<T extends questions$matching_pairsArgs<ExtArgs> = {}>(args?: Subset<T, questions$matching_pairsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$matching_pairsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    drag_drop_items<T extends questions$drag_drop_itemsArgs<ExtArgs> = {}>(args?: Subset<T, questions$drag_drop_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$drag_drop_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ordering_items<T extends questions$ordering_itemsArgs<ExtArgs> = {}>(args?: Subset<T, questions$ordering_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ordering_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     quizzes<T extends quizzesDefaultArgs<ExtArgs> = {}>(args?: Subset<T, quizzesDefaultArgs<ExtArgs>>): Prisma__quizzesClient<$Result.GetResult<Prisma.$quizzesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5819,6 +9011,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OptionsScalarFieldEnum | OptionsScalarFieldEnum[]
+  }
+
+  /**
+   * questions.matching_pairs
+   */
+  export type questions$matching_pairsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the matching_pairs
+     */
+    select?: matching_pairsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the matching_pairs
+     */
+    omit?: matching_pairsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: matching_pairsInclude<ExtArgs> | null
+    where?: matching_pairsWhereInput
+    orderBy?: matching_pairsOrderByWithRelationInput | matching_pairsOrderByWithRelationInput[]
+    cursor?: matching_pairsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Matching_pairsScalarFieldEnum | Matching_pairsScalarFieldEnum[]
+  }
+
+  /**
+   * questions.drag_drop_items
+   */
+  export type questions$drag_drop_itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the drag_drop_items
+     */
+    select?: drag_drop_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the drag_drop_items
+     */
+    omit?: drag_drop_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: drag_drop_itemsInclude<ExtArgs> | null
+    where?: drag_drop_itemsWhereInput
+    orderBy?: drag_drop_itemsOrderByWithRelationInput | drag_drop_itemsOrderByWithRelationInput[]
+    cursor?: drag_drop_itemsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Drag_drop_itemsScalarFieldEnum | Drag_drop_itemsScalarFieldEnum[]
+  }
+
+  /**
+   * questions.ordering_items
+   */
+  export type questions$ordering_itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ordering_items
+     */
+    select?: ordering_itemsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ordering_items
+     */
+    omit?: ordering_itemsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ordering_itemsInclude<ExtArgs> | null
+    where?: ordering_itemsWhereInput
+    orderBy?: ordering_itemsOrderByWithRelationInput | ordering_itemsOrderByWithRelationInput[]
+    cursor?: ordering_itemsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Ordering_itemsScalarFieldEnum | Ordering_itemsScalarFieldEnum[]
   }
 
   /**
@@ -10126,6 +13390,38 @@ export namespace Prisma {
   export type OptionsScalarFieldEnum = (typeof OptionsScalarFieldEnum)[keyof typeof OptionsScalarFieldEnum]
 
 
+  export const Matching_pairsScalarFieldEnum: {
+    id: 'id',
+    question_id: 'question_id',
+    left_item: 'left_item',
+    right_item: 'right_item',
+    pair_index: 'pair_index'
+  };
+
+  export type Matching_pairsScalarFieldEnum = (typeof Matching_pairsScalarFieldEnum)[keyof typeof Matching_pairsScalarFieldEnum]
+
+
+  export const Drag_drop_itemsScalarFieldEnum: {
+    id: 'id',
+    question_id: 'question_id',
+    item_text: 'item_text',
+    category: 'category',
+    item_index: 'item_index'
+  };
+
+  export type Drag_drop_itemsScalarFieldEnum = (typeof Drag_drop_itemsScalarFieldEnum)[keyof typeof Drag_drop_itemsScalarFieldEnum]
+
+
+  export const Ordering_itemsScalarFieldEnum: {
+    id: 'id',
+    question_id: 'question_id',
+    item_text: 'item_text',
+    correct_order: 'correct_order'
+  };
+
+  export type Ordering_itemsScalarFieldEnum = (typeof Ordering_itemsScalarFieldEnum)[keyof typeof Ordering_itemsScalarFieldEnum]
+
+
   export const Participant_historyScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
@@ -10238,6 +13534,29 @@ export namespace Prisma {
   };
 
   export type optionsOrderByRelevanceFieldEnum = (typeof optionsOrderByRelevanceFieldEnum)[keyof typeof optionsOrderByRelevanceFieldEnum]
+
+
+  export const matching_pairsOrderByRelevanceFieldEnum: {
+    left_item: 'left_item',
+    right_item: 'right_item'
+  };
+
+  export type matching_pairsOrderByRelevanceFieldEnum = (typeof matching_pairsOrderByRelevanceFieldEnum)[keyof typeof matching_pairsOrderByRelevanceFieldEnum]
+
+
+  export const drag_drop_itemsOrderByRelevanceFieldEnum: {
+    item_text: 'item_text',
+    category: 'category'
+  };
+
+  export type drag_drop_itemsOrderByRelevanceFieldEnum = (typeof drag_drop_itemsOrderByRelevanceFieldEnum)[keyof typeof drag_drop_itemsOrderByRelevanceFieldEnum]
+
+
+  export const ordering_itemsOrderByRelevanceFieldEnum: {
+    item_text: 'item_text'
+  };
+
+  export type ordering_itemsOrderByRelevanceFieldEnum = (typeof ordering_itemsOrderByRelevanceFieldEnum)[keyof typeof ordering_itemsOrderByRelevanceFieldEnum]
 
 
   export const questionsOrderByRelevanceFieldEnum: {
@@ -10493,6 +13812,175 @@ export namespace Prisma {
     option_index?: IntWithAggregatesFilter<"options"> | number
   }
 
+  export type matching_pairsWhereInput = {
+    AND?: matching_pairsWhereInput | matching_pairsWhereInput[]
+    OR?: matching_pairsWhereInput[]
+    NOT?: matching_pairsWhereInput | matching_pairsWhereInput[]
+    id?: IntFilter<"matching_pairs"> | number
+    question_id?: IntFilter<"matching_pairs"> | number
+    left_item?: StringFilter<"matching_pairs"> | string
+    right_item?: StringFilter<"matching_pairs"> | string
+    pair_index?: IntFilter<"matching_pairs"> | number
+    questions?: XOR<QuestionsScalarRelationFilter, questionsWhereInput>
+  }
+
+  export type matching_pairsOrderByWithRelationInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    left_item?: SortOrder
+    right_item?: SortOrder
+    pair_index?: SortOrder
+    questions?: questionsOrderByWithRelationInput
+    _relevance?: matching_pairsOrderByRelevanceInput
+  }
+
+  export type matching_pairsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: matching_pairsWhereInput | matching_pairsWhereInput[]
+    OR?: matching_pairsWhereInput[]
+    NOT?: matching_pairsWhereInput | matching_pairsWhereInput[]
+    question_id?: IntFilter<"matching_pairs"> | number
+    left_item?: StringFilter<"matching_pairs"> | string
+    right_item?: StringFilter<"matching_pairs"> | string
+    pair_index?: IntFilter<"matching_pairs"> | number
+    questions?: XOR<QuestionsScalarRelationFilter, questionsWhereInput>
+  }, "id">
+
+  export type matching_pairsOrderByWithAggregationInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    left_item?: SortOrder
+    right_item?: SortOrder
+    pair_index?: SortOrder
+    _count?: matching_pairsCountOrderByAggregateInput
+    _avg?: matching_pairsAvgOrderByAggregateInput
+    _max?: matching_pairsMaxOrderByAggregateInput
+    _min?: matching_pairsMinOrderByAggregateInput
+    _sum?: matching_pairsSumOrderByAggregateInput
+  }
+
+  export type matching_pairsScalarWhereWithAggregatesInput = {
+    AND?: matching_pairsScalarWhereWithAggregatesInput | matching_pairsScalarWhereWithAggregatesInput[]
+    OR?: matching_pairsScalarWhereWithAggregatesInput[]
+    NOT?: matching_pairsScalarWhereWithAggregatesInput | matching_pairsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"matching_pairs"> | number
+    question_id?: IntWithAggregatesFilter<"matching_pairs"> | number
+    left_item?: StringWithAggregatesFilter<"matching_pairs"> | string
+    right_item?: StringWithAggregatesFilter<"matching_pairs"> | string
+    pair_index?: IntWithAggregatesFilter<"matching_pairs"> | number
+  }
+
+  export type drag_drop_itemsWhereInput = {
+    AND?: drag_drop_itemsWhereInput | drag_drop_itemsWhereInput[]
+    OR?: drag_drop_itemsWhereInput[]
+    NOT?: drag_drop_itemsWhereInput | drag_drop_itemsWhereInput[]
+    id?: IntFilter<"drag_drop_items"> | number
+    question_id?: IntFilter<"drag_drop_items"> | number
+    item_text?: StringFilter<"drag_drop_items"> | string
+    category?: StringFilter<"drag_drop_items"> | string
+    item_index?: IntFilter<"drag_drop_items"> | number
+    questions?: XOR<QuestionsScalarRelationFilter, questionsWhereInput>
+  }
+
+  export type drag_drop_itemsOrderByWithRelationInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    category?: SortOrder
+    item_index?: SortOrder
+    questions?: questionsOrderByWithRelationInput
+    _relevance?: drag_drop_itemsOrderByRelevanceInput
+  }
+
+  export type drag_drop_itemsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: drag_drop_itemsWhereInput | drag_drop_itemsWhereInput[]
+    OR?: drag_drop_itemsWhereInput[]
+    NOT?: drag_drop_itemsWhereInput | drag_drop_itemsWhereInput[]
+    question_id?: IntFilter<"drag_drop_items"> | number
+    item_text?: StringFilter<"drag_drop_items"> | string
+    category?: StringFilter<"drag_drop_items"> | string
+    item_index?: IntFilter<"drag_drop_items"> | number
+    questions?: XOR<QuestionsScalarRelationFilter, questionsWhereInput>
+  }, "id">
+
+  export type drag_drop_itemsOrderByWithAggregationInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    category?: SortOrder
+    item_index?: SortOrder
+    _count?: drag_drop_itemsCountOrderByAggregateInput
+    _avg?: drag_drop_itemsAvgOrderByAggregateInput
+    _max?: drag_drop_itemsMaxOrderByAggregateInput
+    _min?: drag_drop_itemsMinOrderByAggregateInput
+    _sum?: drag_drop_itemsSumOrderByAggregateInput
+  }
+
+  export type drag_drop_itemsScalarWhereWithAggregatesInput = {
+    AND?: drag_drop_itemsScalarWhereWithAggregatesInput | drag_drop_itemsScalarWhereWithAggregatesInput[]
+    OR?: drag_drop_itemsScalarWhereWithAggregatesInput[]
+    NOT?: drag_drop_itemsScalarWhereWithAggregatesInput | drag_drop_itemsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"drag_drop_items"> | number
+    question_id?: IntWithAggregatesFilter<"drag_drop_items"> | number
+    item_text?: StringWithAggregatesFilter<"drag_drop_items"> | string
+    category?: StringWithAggregatesFilter<"drag_drop_items"> | string
+    item_index?: IntWithAggregatesFilter<"drag_drop_items"> | number
+  }
+
+  export type ordering_itemsWhereInput = {
+    AND?: ordering_itemsWhereInput | ordering_itemsWhereInput[]
+    OR?: ordering_itemsWhereInput[]
+    NOT?: ordering_itemsWhereInput | ordering_itemsWhereInput[]
+    id?: IntFilter<"ordering_items"> | number
+    question_id?: IntFilter<"ordering_items"> | number
+    item_text?: StringFilter<"ordering_items"> | string
+    correct_order?: IntFilter<"ordering_items"> | number
+    questions?: XOR<QuestionsScalarRelationFilter, questionsWhereInput>
+  }
+
+  export type ordering_itemsOrderByWithRelationInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    correct_order?: SortOrder
+    questions?: questionsOrderByWithRelationInput
+    _relevance?: ordering_itemsOrderByRelevanceInput
+  }
+
+  export type ordering_itemsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ordering_itemsWhereInput | ordering_itemsWhereInput[]
+    OR?: ordering_itemsWhereInput[]
+    NOT?: ordering_itemsWhereInput | ordering_itemsWhereInput[]
+    question_id?: IntFilter<"ordering_items"> | number
+    item_text?: StringFilter<"ordering_items"> | string
+    correct_order?: IntFilter<"ordering_items"> | number
+    questions?: XOR<QuestionsScalarRelationFilter, questionsWhereInput>
+  }, "id">
+
+  export type ordering_itemsOrderByWithAggregationInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    correct_order?: SortOrder
+    _count?: ordering_itemsCountOrderByAggregateInput
+    _avg?: ordering_itemsAvgOrderByAggregateInput
+    _max?: ordering_itemsMaxOrderByAggregateInput
+    _min?: ordering_itemsMinOrderByAggregateInput
+    _sum?: ordering_itemsSumOrderByAggregateInput
+  }
+
+  export type ordering_itemsScalarWhereWithAggregatesInput = {
+    AND?: ordering_itemsScalarWhereWithAggregatesInput | ordering_itemsScalarWhereWithAggregatesInput[]
+    OR?: ordering_itemsScalarWhereWithAggregatesInput[]
+    NOT?: ordering_itemsScalarWhereWithAggregatesInput | ordering_itemsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ordering_items"> | number
+    question_id?: IntWithAggregatesFilter<"ordering_items"> | number
+    item_text?: StringWithAggregatesFilter<"ordering_items"> | string
+    correct_order?: IntWithAggregatesFilter<"ordering_items"> | number
+  }
+
   export type participant_historyWhereInput = {
     AND?: participant_historyWhereInput | participant_historyWhereInput[]
     OR?: participant_historyWhereInput[]
@@ -10589,6 +14077,9 @@ export namespace Prisma {
     media_url?: StringNullableFilter<"questions"> | string | null
     answers?: AnswersListRelationFilter
     options?: OptionsListRelationFilter
+    matching_pairs?: Matching_pairsListRelationFilter
+    drag_drop_items?: Drag_drop_itemsListRelationFilter
+    ordering_items?: Ordering_itemsListRelationFilter
     quizzes?: XOR<QuizzesScalarRelationFilter, quizzesWhereInput>
   }
 
@@ -10605,6 +14096,9 @@ export namespace Prisma {
     media_url?: SortOrderInput | SortOrder
     answers?: answersOrderByRelationAggregateInput
     options?: optionsOrderByRelationAggregateInput
+    matching_pairs?: matching_pairsOrderByRelationAggregateInput
+    drag_drop_items?: drag_drop_itemsOrderByRelationAggregateInput
+    ordering_items?: ordering_itemsOrderByRelationAggregateInput
     quizzes?: quizzesOrderByWithRelationInput
     _relevance?: questionsOrderByRelevanceInput
   }
@@ -10625,6 +14119,9 @@ export namespace Prisma {
     media_url?: StringNullableFilter<"questions"> | string | null
     answers?: AnswersListRelationFilter
     options?: OptionsListRelationFilter
+    matching_pairs?: Matching_pairsListRelationFilter
+    drag_drop_items?: Drag_drop_itemsListRelationFilter
+    ordering_items?: Ordering_itemsListRelationFilter
     quizzes?: XOR<QuizzesScalarRelationFilter, quizzesWhereInput>
   }, "id">
 
@@ -11093,6 +14590,155 @@ export namespace Prisma {
     option_index?: IntFieldUpdateOperationsInput | number
   }
 
+  export type matching_pairsCreateInput = {
+    left_item: string
+    right_item: string
+    pair_index: number
+    questions: questionsCreateNestedOneWithoutMatching_pairsInput
+  }
+
+  export type matching_pairsUncheckedCreateInput = {
+    id?: number
+    question_id: number
+    left_item: string
+    right_item: string
+    pair_index: number
+  }
+
+  export type matching_pairsUpdateInput = {
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+    questions?: questionsUpdateOneRequiredWithoutMatching_pairsNestedInput
+  }
+
+  export type matching_pairsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question_id?: IntFieldUpdateOperationsInput | number
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type matching_pairsCreateManyInput = {
+    id?: number
+    question_id: number
+    left_item: string
+    right_item: string
+    pair_index: number
+  }
+
+  export type matching_pairsUpdateManyMutationInput = {
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type matching_pairsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question_id?: IntFieldUpdateOperationsInput | number
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type drag_drop_itemsCreateInput = {
+    item_text: string
+    category: string
+    item_index: number
+    questions: questionsCreateNestedOneWithoutDrag_drop_itemsInput
+  }
+
+  export type drag_drop_itemsUncheckedCreateInput = {
+    id?: number
+    question_id: number
+    item_text: string
+    category: string
+    item_index: number
+  }
+
+  export type drag_drop_itemsUpdateInput = {
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+    questions?: questionsUpdateOneRequiredWithoutDrag_drop_itemsNestedInput
+  }
+
+  export type drag_drop_itemsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question_id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type drag_drop_itemsCreateManyInput = {
+    id?: number
+    question_id: number
+    item_text: string
+    category: string
+    item_index: number
+  }
+
+  export type drag_drop_itemsUpdateManyMutationInput = {
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type drag_drop_itemsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question_id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ordering_itemsCreateInput = {
+    item_text: string
+    correct_order: number
+    questions: questionsCreateNestedOneWithoutOrdering_itemsInput
+  }
+
+  export type ordering_itemsUncheckedCreateInput = {
+    id?: number
+    question_id: number
+    item_text: string
+    correct_order: number
+  }
+
+  export type ordering_itemsUpdateInput = {
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
+    questions?: questionsUpdateOneRequiredWithoutOrdering_itemsNestedInput
+  }
+
+  export type ordering_itemsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question_id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ordering_itemsCreateManyInput = {
+    id?: number
+    question_id: number
+    item_text: string
+    correct_order: number
+  }
+
+  export type ordering_itemsUpdateManyMutationInput = {
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ordering_itemsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question_id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
+  }
+
   export type participant_historyCreateInput = {
     total_sessions?: number | null
     total_score?: number | null
@@ -11183,6 +14829,9 @@ export namespace Prisma {
     media_url?: string | null
     answers?: answersCreateNestedManyWithoutQuestionsInput
     options?: optionsCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsCreateNestedManyWithoutQuestionsInput
     quizzes: quizzesCreateNestedOneWithoutQuestionsInput
   }
 
@@ -11199,6 +14848,9 @@ export namespace Prisma {
     media_url?: string | null
     answers?: answersUncheckedCreateNestedManyWithoutQuestionsInput
     options?: optionsUncheckedCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput
   }
 
   export type questionsUpdateInput = {
@@ -11212,6 +14864,9 @@ export namespace Prisma {
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     answers?: answersUpdateManyWithoutQuestionsNestedInput
     options?: optionsUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUpdateManyWithoutQuestionsNestedInput
     quizzes?: quizzesUpdateOneRequiredWithoutQuestionsNestedInput
   }
 
@@ -11228,6 +14883,9 @@ export namespace Prisma {
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     answers?: answersUncheckedUpdateManyWithoutQuestionsNestedInput
     options?: optionsUncheckedUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
   }
 
   export type questionsCreateManyInput = {
@@ -11845,6 +15503,129 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type matching_pairsOrderByRelevanceInput = {
+    fields: matching_pairsOrderByRelevanceFieldEnum | matching_pairsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type matching_pairsCountOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    left_item?: SortOrder
+    right_item?: SortOrder
+    pair_index?: SortOrder
+  }
+
+  export type matching_pairsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    pair_index?: SortOrder
+  }
+
+  export type matching_pairsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    left_item?: SortOrder
+    right_item?: SortOrder
+    pair_index?: SortOrder
+  }
+
+  export type matching_pairsMinOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    left_item?: SortOrder
+    right_item?: SortOrder
+    pair_index?: SortOrder
+  }
+
+  export type matching_pairsSumOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    pair_index?: SortOrder
+  }
+
+  export type drag_drop_itemsOrderByRelevanceInput = {
+    fields: drag_drop_itemsOrderByRelevanceFieldEnum | drag_drop_itemsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type drag_drop_itemsCountOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    category?: SortOrder
+    item_index?: SortOrder
+  }
+
+  export type drag_drop_itemsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_index?: SortOrder
+  }
+
+  export type drag_drop_itemsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    category?: SortOrder
+    item_index?: SortOrder
+  }
+
+  export type drag_drop_itemsMinOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    category?: SortOrder
+    item_index?: SortOrder
+  }
+
+  export type drag_drop_itemsSumOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_index?: SortOrder
+  }
+
+  export type ordering_itemsOrderByRelevanceInput = {
+    fields: ordering_itemsOrderByRelevanceFieldEnum | ordering_itemsOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type ordering_itemsCountOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    correct_order?: SortOrder
+  }
+
+  export type ordering_itemsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    correct_order?: SortOrder
+  }
+
+  export type ordering_itemsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    correct_order?: SortOrder
+  }
+
+  export type ordering_itemsMinOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    item_text?: SortOrder
+    correct_order?: SortOrder
+  }
+
+  export type ordering_itemsSumOrderByAggregateInput = {
+    id?: SortOrder
+    question_id?: SortOrder
+    correct_order?: SortOrder
+  }
+
   export type UsersScalarRelationFilter = {
     is?: usersWhereInput
     isNot?: usersWhereInput
@@ -11939,11 +15720,41 @@ export namespace Prisma {
     none?: optionsWhereInput
   }
 
+  export type Matching_pairsListRelationFilter = {
+    every?: matching_pairsWhereInput
+    some?: matching_pairsWhereInput
+    none?: matching_pairsWhereInput
+  }
+
+  export type Drag_drop_itemsListRelationFilter = {
+    every?: drag_drop_itemsWhereInput
+    some?: drag_drop_itemsWhereInput
+    none?: drag_drop_itemsWhereInput
+  }
+
+  export type Ordering_itemsListRelationFilter = {
+    every?: ordering_itemsWhereInput
+    some?: ordering_itemsWhereInput
+    none?: ordering_itemsWhereInput
+  }
+
   export type answersOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type optionsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type matching_pairsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type drag_drop_itemsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ordering_itemsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -12428,6 +16239,48 @@ export namespace Prisma {
     update?: XOR<XOR<questionsUpdateToOneWithWhereWithoutOptionsInput, questionsUpdateWithoutOptionsInput>, questionsUncheckedUpdateWithoutOptionsInput>
   }
 
+  export type questionsCreateNestedOneWithoutMatching_pairsInput = {
+    create?: XOR<questionsCreateWithoutMatching_pairsInput, questionsUncheckedCreateWithoutMatching_pairsInput>
+    connectOrCreate?: questionsCreateOrConnectWithoutMatching_pairsInput
+    connect?: questionsWhereUniqueInput
+  }
+
+  export type questionsUpdateOneRequiredWithoutMatching_pairsNestedInput = {
+    create?: XOR<questionsCreateWithoutMatching_pairsInput, questionsUncheckedCreateWithoutMatching_pairsInput>
+    connectOrCreate?: questionsCreateOrConnectWithoutMatching_pairsInput
+    upsert?: questionsUpsertWithoutMatching_pairsInput
+    connect?: questionsWhereUniqueInput
+    update?: XOR<XOR<questionsUpdateToOneWithWhereWithoutMatching_pairsInput, questionsUpdateWithoutMatching_pairsInput>, questionsUncheckedUpdateWithoutMatching_pairsInput>
+  }
+
+  export type questionsCreateNestedOneWithoutDrag_drop_itemsInput = {
+    create?: XOR<questionsCreateWithoutDrag_drop_itemsInput, questionsUncheckedCreateWithoutDrag_drop_itemsInput>
+    connectOrCreate?: questionsCreateOrConnectWithoutDrag_drop_itemsInput
+    connect?: questionsWhereUniqueInput
+  }
+
+  export type questionsUpdateOneRequiredWithoutDrag_drop_itemsNestedInput = {
+    create?: XOR<questionsCreateWithoutDrag_drop_itemsInput, questionsUncheckedCreateWithoutDrag_drop_itemsInput>
+    connectOrCreate?: questionsCreateOrConnectWithoutDrag_drop_itemsInput
+    upsert?: questionsUpsertWithoutDrag_drop_itemsInput
+    connect?: questionsWhereUniqueInput
+    update?: XOR<XOR<questionsUpdateToOneWithWhereWithoutDrag_drop_itemsInput, questionsUpdateWithoutDrag_drop_itemsInput>, questionsUncheckedUpdateWithoutDrag_drop_itemsInput>
+  }
+
+  export type questionsCreateNestedOneWithoutOrdering_itemsInput = {
+    create?: XOR<questionsCreateWithoutOrdering_itemsInput, questionsUncheckedCreateWithoutOrdering_itemsInput>
+    connectOrCreate?: questionsCreateOrConnectWithoutOrdering_itemsInput
+    connect?: questionsWhereUniqueInput
+  }
+
+  export type questionsUpdateOneRequiredWithoutOrdering_itemsNestedInput = {
+    create?: XOR<questionsCreateWithoutOrdering_itemsInput, questionsUncheckedCreateWithoutOrdering_itemsInput>
+    connectOrCreate?: questionsCreateOrConnectWithoutOrdering_itemsInput
+    upsert?: questionsUpsertWithoutOrdering_itemsInput
+    connect?: questionsWhereUniqueInput
+    update?: XOR<XOR<questionsUpdateToOneWithWhereWithoutOrdering_itemsInput, questionsUpdateWithoutOrdering_itemsInput>, questionsUncheckedUpdateWithoutOrdering_itemsInput>
+  }
+
   export type usersCreateNestedOneWithoutParticipant_historyInput = {
     create?: XOR<usersCreateWithoutParticipant_historyInput, usersUncheckedCreateWithoutParticipant_historyInput>
     connectOrCreate?: usersCreateOrConnectWithoutParticipant_historyInput
@@ -12470,6 +16323,27 @@ export namespace Prisma {
     connect?: optionsWhereUniqueInput | optionsWhereUniqueInput[]
   }
 
+  export type matching_pairsCreateNestedManyWithoutQuestionsInput = {
+    create?: XOR<matching_pairsCreateWithoutQuestionsInput, matching_pairsUncheckedCreateWithoutQuestionsInput> | matching_pairsCreateWithoutQuestionsInput[] | matching_pairsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: matching_pairsCreateOrConnectWithoutQuestionsInput | matching_pairsCreateOrConnectWithoutQuestionsInput[]
+    createMany?: matching_pairsCreateManyQuestionsInputEnvelope
+    connect?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+  }
+
+  export type drag_drop_itemsCreateNestedManyWithoutQuestionsInput = {
+    create?: XOR<drag_drop_itemsCreateWithoutQuestionsInput, drag_drop_itemsUncheckedCreateWithoutQuestionsInput> | drag_drop_itemsCreateWithoutQuestionsInput[] | drag_drop_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: drag_drop_itemsCreateOrConnectWithoutQuestionsInput | drag_drop_itemsCreateOrConnectWithoutQuestionsInput[]
+    createMany?: drag_drop_itemsCreateManyQuestionsInputEnvelope
+    connect?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+  }
+
+  export type ordering_itemsCreateNestedManyWithoutQuestionsInput = {
+    create?: XOR<ordering_itemsCreateWithoutQuestionsInput, ordering_itemsUncheckedCreateWithoutQuestionsInput> | ordering_itemsCreateWithoutQuestionsInput[] | ordering_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: ordering_itemsCreateOrConnectWithoutQuestionsInput | ordering_itemsCreateOrConnectWithoutQuestionsInput[]
+    createMany?: ordering_itemsCreateManyQuestionsInputEnvelope
+    connect?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+  }
+
   export type quizzesCreateNestedOneWithoutQuestionsInput = {
     create?: XOR<quizzesCreateWithoutQuestionsInput, quizzesUncheckedCreateWithoutQuestionsInput>
     connectOrCreate?: quizzesCreateOrConnectWithoutQuestionsInput
@@ -12488,6 +16362,27 @@ export namespace Prisma {
     connectOrCreate?: optionsCreateOrConnectWithoutQuestionsInput | optionsCreateOrConnectWithoutQuestionsInput[]
     createMany?: optionsCreateManyQuestionsInputEnvelope
     connect?: optionsWhereUniqueInput | optionsWhereUniqueInput[]
+  }
+
+  export type matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput = {
+    create?: XOR<matching_pairsCreateWithoutQuestionsInput, matching_pairsUncheckedCreateWithoutQuestionsInput> | matching_pairsCreateWithoutQuestionsInput[] | matching_pairsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: matching_pairsCreateOrConnectWithoutQuestionsInput | matching_pairsCreateOrConnectWithoutQuestionsInput[]
+    createMany?: matching_pairsCreateManyQuestionsInputEnvelope
+    connect?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+  }
+
+  export type drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput = {
+    create?: XOR<drag_drop_itemsCreateWithoutQuestionsInput, drag_drop_itemsUncheckedCreateWithoutQuestionsInput> | drag_drop_itemsCreateWithoutQuestionsInput[] | drag_drop_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: drag_drop_itemsCreateOrConnectWithoutQuestionsInput | drag_drop_itemsCreateOrConnectWithoutQuestionsInput[]
+    createMany?: drag_drop_itemsCreateManyQuestionsInputEnvelope
+    connect?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+  }
+
+  export type ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput = {
+    create?: XOR<ordering_itemsCreateWithoutQuestionsInput, ordering_itemsUncheckedCreateWithoutQuestionsInput> | ordering_itemsCreateWithoutQuestionsInput[] | ordering_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: ordering_itemsCreateOrConnectWithoutQuestionsInput | ordering_itemsCreateOrConnectWithoutQuestionsInput[]
+    createMany?: ordering_itemsCreateManyQuestionsInputEnvelope
+    connect?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
   }
 
   export type Enumquestions_typeFieldUpdateOperationsInput = {
@@ -12526,6 +16421,48 @@ export namespace Prisma {
     deleteMany?: optionsScalarWhereInput | optionsScalarWhereInput[]
   }
 
+  export type matching_pairsUpdateManyWithoutQuestionsNestedInput = {
+    create?: XOR<matching_pairsCreateWithoutQuestionsInput, matching_pairsUncheckedCreateWithoutQuestionsInput> | matching_pairsCreateWithoutQuestionsInput[] | matching_pairsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: matching_pairsCreateOrConnectWithoutQuestionsInput | matching_pairsCreateOrConnectWithoutQuestionsInput[]
+    upsert?: matching_pairsUpsertWithWhereUniqueWithoutQuestionsInput | matching_pairsUpsertWithWhereUniqueWithoutQuestionsInput[]
+    createMany?: matching_pairsCreateManyQuestionsInputEnvelope
+    set?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    disconnect?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    delete?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    connect?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    update?: matching_pairsUpdateWithWhereUniqueWithoutQuestionsInput | matching_pairsUpdateWithWhereUniqueWithoutQuestionsInput[]
+    updateMany?: matching_pairsUpdateManyWithWhereWithoutQuestionsInput | matching_pairsUpdateManyWithWhereWithoutQuestionsInput[]
+    deleteMany?: matching_pairsScalarWhereInput | matching_pairsScalarWhereInput[]
+  }
+
+  export type drag_drop_itemsUpdateManyWithoutQuestionsNestedInput = {
+    create?: XOR<drag_drop_itemsCreateWithoutQuestionsInput, drag_drop_itemsUncheckedCreateWithoutQuestionsInput> | drag_drop_itemsCreateWithoutQuestionsInput[] | drag_drop_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: drag_drop_itemsCreateOrConnectWithoutQuestionsInput | drag_drop_itemsCreateOrConnectWithoutQuestionsInput[]
+    upsert?: drag_drop_itemsUpsertWithWhereUniqueWithoutQuestionsInput | drag_drop_itemsUpsertWithWhereUniqueWithoutQuestionsInput[]
+    createMany?: drag_drop_itemsCreateManyQuestionsInputEnvelope
+    set?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    disconnect?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    delete?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    connect?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    update?: drag_drop_itemsUpdateWithWhereUniqueWithoutQuestionsInput | drag_drop_itemsUpdateWithWhereUniqueWithoutQuestionsInput[]
+    updateMany?: drag_drop_itemsUpdateManyWithWhereWithoutQuestionsInput | drag_drop_itemsUpdateManyWithWhereWithoutQuestionsInput[]
+    deleteMany?: drag_drop_itemsScalarWhereInput | drag_drop_itemsScalarWhereInput[]
+  }
+
+  export type ordering_itemsUpdateManyWithoutQuestionsNestedInput = {
+    create?: XOR<ordering_itemsCreateWithoutQuestionsInput, ordering_itemsUncheckedCreateWithoutQuestionsInput> | ordering_itemsCreateWithoutQuestionsInput[] | ordering_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: ordering_itemsCreateOrConnectWithoutQuestionsInput | ordering_itemsCreateOrConnectWithoutQuestionsInput[]
+    upsert?: ordering_itemsUpsertWithWhereUniqueWithoutQuestionsInput | ordering_itemsUpsertWithWhereUniqueWithoutQuestionsInput[]
+    createMany?: ordering_itemsCreateManyQuestionsInputEnvelope
+    set?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    disconnect?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    delete?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    connect?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    update?: ordering_itemsUpdateWithWhereUniqueWithoutQuestionsInput | ordering_itemsUpdateWithWhereUniqueWithoutQuestionsInput[]
+    updateMany?: ordering_itemsUpdateManyWithWhereWithoutQuestionsInput | ordering_itemsUpdateManyWithWhereWithoutQuestionsInput[]
+    deleteMany?: ordering_itemsScalarWhereInput | ordering_itemsScalarWhereInput[]
+  }
+
   export type quizzesUpdateOneRequiredWithoutQuestionsNestedInput = {
     create?: XOR<quizzesCreateWithoutQuestionsInput, quizzesUncheckedCreateWithoutQuestionsInput>
     connectOrCreate?: quizzesCreateOrConnectWithoutQuestionsInput
@@ -12560,6 +16497,48 @@ export namespace Prisma {
     update?: optionsUpdateWithWhereUniqueWithoutQuestionsInput | optionsUpdateWithWhereUniqueWithoutQuestionsInput[]
     updateMany?: optionsUpdateManyWithWhereWithoutQuestionsInput | optionsUpdateManyWithWhereWithoutQuestionsInput[]
     deleteMany?: optionsScalarWhereInput | optionsScalarWhereInput[]
+  }
+
+  export type matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput = {
+    create?: XOR<matching_pairsCreateWithoutQuestionsInput, matching_pairsUncheckedCreateWithoutQuestionsInput> | matching_pairsCreateWithoutQuestionsInput[] | matching_pairsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: matching_pairsCreateOrConnectWithoutQuestionsInput | matching_pairsCreateOrConnectWithoutQuestionsInput[]
+    upsert?: matching_pairsUpsertWithWhereUniqueWithoutQuestionsInput | matching_pairsUpsertWithWhereUniqueWithoutQuestionsInput[]
+    createMany?: matching_pairsCreateManyQuestionsInputEnvelope
+    set?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    disconnect?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    delete?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    connect?: matching_pairsWhereUniqueInput | matching_pairsWhereUniqueInput[]
+    update?: matching_pairsUpdateWithWhereUniqueWithoutQuestionsInput | matching_pairsUpdateWithWhereUniqueWithoutQuestionsInput[]
+    updateMany?: matching_pairsUpdateManyWithWhereWithoutQuestionsInput | matching_pairsUpdateManyWithWhereWithoutQuestionsInput[]
+    deleteMany?: matching_pairsScalarWhereInput | matching_pairsScalarWhereInput[]
+  }
+
+  export type drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput = {
+    create?: XOR<drag_drop_itemsCreateWithoutQuestionsInput, drag_drop_itemsUncheckedCreateWithoutQuestionsInput> | drag_drop_itemsCreateWithoutQuestionsInput[] | drag_drop_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: drag_drop_itemsCreateOrConnectWithoutQuestionsInput | drag_drop_itemsCreateOrConnectWithoutQuestionsInput[]
+    upsert?: drag_drop_itemsUpsertWithWhereUniqueWithoutQuestionsInput | drag_drop_itemsUpsertWithWhereUniqueWithoutQuestionsInput[]
+    createMany?: drag_drop_itemsCreateManyQuestionsInputEnvelope
+    set?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    disconnect?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    delete?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    connect?: drag_drop_itemsWhereUniqueInput | drag_drop_itemsWhereUniqueInput[]
+    update?: drag_drop_itemsUpdateWithWhereUniqueWithoutQuestionsInput | drag_drop_itemsUpdateWithWhereUniqueWithoutQuestionsInput[]
+    updateMany?: drag_drop_itemsUpdateManyWithWhereWithoutQuestionsInput | drag_drop_itemsUpdateManyWithWhereWithoutQuestionsInput[]
+    deleteMany?: drag_drop_itemsScalarWhereInput | drag_drop_itemsScalarWhereInput[]
+  }
+
+  export type ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput = {
+    create?: XOR<ordering_itemsCreateWithoutQuestionsInput, ordering_itemsUncheckedCreateWithoutQuestionsInput> | ordering_itemsCreateWithoutQuestionsInput[] | ordering_itemsUncheckedCreateWithoutQuestionsInput[]
+    connectOrCreate?: ordering_itemsCreateOrConnectWithoutQuestionsInput | ordering_itemsCreateOrConnectWithoutQuestionsInput[]
+    upsert?: ordering_itemsUpsertWithWhereUniqueWithoutQuestionsInput | ordering_itemsUpsertWithWhereUniqueWithoutQuestionsInput[]
+    createMany?: ordering_itemsCreateManyQuestionsInputEnvelope
+    set?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    disconnect?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    delete?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    connect?: ordering_itemsWhereUniqueInput | ordering_itemsWhereUniqueInput[]
+    update?: ordering_itemsUpdateWithWhereUniqueWithoutQuestionsInput | ordering_itemsUpdateWithWhereUniqueWithoutQuestionsInput[]
+    updateMany?: ordering_itemsUpdateManyWithWhereWithoutQuestionsInput | ordering_itemsUpdateManyWithWhereWithoutQuestionsInput[]
+    deleteMany?: ordering_itemsScalarWhereInput | ordering_itemsScalarWhereInput[]
   }
 
   export type quizzesCreateNestedOneWithoutQuiz_sessionsInput = {
@@ -13347,6 +17326,9 @@ export namespace Prisma {
     media_type?: $Enums.questions_media_type | null
     media_url?: string | null
     options?: optionsCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsCreateNestedManyWithoutQuestionsInput
     quizzes: quizzesCreateNestedOneWithoutQuestionsInput
   }
 
@@ -13362,6 +17344,9 @@ export namespace Prisma {
     media_type?: $Enums.questions_media_type | null
     media_url?: string | null
     options?: optionsUncheckedCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput
   }
 
   export type questionsCreateOrConnectWithoutAnswersInput = {
@@ -13422,6 +17407,9 @@ export namespace Prisma {
     media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     options?: optionsUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUpdateManyWithoutQuestionsNestedInput
     quizzes?: quizzesUpdateOneRequiredWithoutQuestionsNestedInput
   }
 
@@ -13437,6 +17425,9 @@ export namespace Prisma {
     media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     options?: optionsUncheckedUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
   }
 
   export type questionsCreateWithoutOptionsInput = {
@@ -13449,6 +17440,9 @@ export namespace Prisma {
     media_type?: $Enums.questions_media_type | null
     media_url?: string | null
     answers?: answersCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsCreateNestedManyWithoutQuestionsInput
     quizzes: quizzesCreateNestedOneWithoutQuestionsInput
   }
 
@@ -13464,6 +17458,9 @@ export namespace Prisma {
     media_type?: $Enums.questions_media_type | null
     media_url?: string | null
     answers?: answersUncheckedCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput
   }
 
   export type questionsCreateOrConnectWithoutOptionsInput = {
@@ -13492,6 +17489,9 @@ export namespace Prisma {
     media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     answers?: answersUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUpdateManyWithoutQuestionsNestedInput
     quizzes?: quizzesUpdateOneRequiredWithoutQuestionsNestedInput
   }
 
@@ -13507,6 +17507,255 @@ export namespace Prisma {
     media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     answers?: answersUncheckedUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+  }
+
+  export type questionsCreateWithoutMatching_pairsInput = {
+    type: $Enums.questions_type
+    question: string
+    correct_answer?: string | null
+    time_limit?: number | null
+    points?: number | null
+    category?: string | null
+    media_type?: $Enums.questions_media_type | null
+    media_url?: string | null
+    answers?: answersCreateNestedManyWithoutQuestionsInput
+    options?: optionsCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsCreateNestedManyWithoutQuestionsInput
+    quizzes: quizzesCreateNestedOneWithoutQuestionsInput
+  }
+
+  export type questionsUncheckedCreateWithoutMatching_pairsInput = {
+    id?: number
+    quiz_id: number
+    type: $Enums.questions_type
+    question: string
+    correct_answer?: string | null
+    time_limit?: number | null
+    points?: number | null
+    category?: string | null
+    media_type?: $Enums.questions_media_type | null
+    media_url?: string | null
+    answers?: answersUncheckedCreateNestedManyWithoutQuestionsInput
+    options?: optionsUncheckedCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+  }
+
+  export type questionsCreateOrConnectWithoutMatching_pairsInput = {
+    where: questionsWhereUniqueInput
+    create: XOR<questionsCreateWithoutMatching_pairsInput, questionsUncheckedCreateWithoutMatching_pairsInput>
+  }
+
+  export type questionsUpsertWithoutMatching_pairsInput = {
+    update: XOR<questionsUpdateWithoutMatching_pairsInput, questionsUncheckedUpdateWithoutMatching_pairsInput>
+    create: XOR<questionsCreateWithoutMatching_pairsInput, questionsUncheckedCreateWithoutMatching_pairsInput>
+    where?: questionsWhereInput
+  }
+
+  export type questionsUpdateToOneWithWhereWithoutMatching_pairsInput = {
+    where?: questionsWhereInput
+    data: XOR<questionsUpdateWithoutMatching_pairsInput, questionsUncheckedUpdateWithoutMatching_pairsInput>
+  }
+
+  export type questionsUpdateWithoutMatching_pairsInput = {
+    type?: Enumquestions_typeFieldUpdateOperationsInput | $Enums.questions_type
+    question?: StringFieldUpdateOperationsInput | string
+    correct_answer?: NullableStringFieldUpdateOperationsInput | string | null
+    time_limit?: NullableIntFieldUpdateOperationsInput | number | null
+    points?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
+    media_url?: NullableStringFieldUpdateOperationsInput | string | null
+    answers?: answersUpdateManyWithoutQuestionsNestedInput
+    options?: optionsUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUpdateManyWithoutQuestionsNestedInput
+    quizzes?: quizzesUpdateOneRequiredWithoutQuestionsNestedInput
+  }
+
+  export type questionsUncheckedUpdateWithoutMatching_pairsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quiz_id?: IntFieldUpdateOperationsInput | number
+    type?: Enumquestions_typeFieldUpdateOperationsInput | $Enums.questions_type
+    question?: StringFieldUpdateOperationsInput | string
+    correct_answer?: NullableStringFieldUpdateOperationsInput | string | null
+    time_limit?: NullableIntFieldUpdateOperationsInput | number | null
+    points?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
+    media_url?: NullableStringFieldUpdateOperationsInput | string | null
+    answers?: answersUncheckedUpdateManyWithoutQuestionsNestedInput
+    options?: optionsUncheckedUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+  }
+
+  export type questionsCreateWithoutDrag_drop_itemsInput = {
+    type: $Enums.questions_type
+    question: string
+    correct_answer?: string | null
+    time_limit?: number | null
+    points?: number | null
+    category?: string | null
+    media_type?: $Enums.questions_media_type | null
+    media_url?: string | null
+    answers?: answersCreateNestedManyWithoutQuestionsInput
+    options?: optionsCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsCreateNestedManyWithoutQuestionsInput
+    quizzes: quizzesCreateNestedOneWithoutQuestionsInput
+  }
+
+  export type questionsUncheckedCreateWithoutDrag_drop_itemsInput = {
+    id?: number
+    quiz_id: number
+    type: $Enums.questions_type
+    question: string
+    correct_answer?: string | null
+    time_limit?: number | null
+    points?: number | null
+    category?: string | null
+    media_type?: $Enums.questions_media_type | null
+    media_url?: string | null
+    answers?: answersUncheckedCreateNestedManyWithoutQuestionsInput
+    options?: optionsUncheckedCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+  }
+
+  export type questionsCreateOrConnectWithoutDrag_drop_itemsInput = {
+    where: questionsWhereUniqueInput
+    create: XOR<questionsCreateWithoutDrag_drop_itemsInput, questionsUncheckedCreateWithoutDrag_drop_itemsInput>
+  }
+
+  export type questionsUpsertWithoutDrag_drop_itemsInput = {
+    update: XOR<questionsUpdateWithoutDrag_drop_itemsInput, questionsUncheckedUpdateWithoutDrag_drop_itemsInput>
+    create: XOR<questionsCreateWithoutDrag_drop_itemsInput, questionsUncheckedCreateWithoutDrag_drop_itemsInput>
+    where?: questionsWhereInput
+  }
+
+  export type questionsUpdateToOneWithWhereWithoutDrag_drop_itemsInput = {
+    where?: questionsWhereInput
+    data: XOR<questionsUpdateWithoutDrag_drop_itemsInput, questionsUncheckedUpdateWithoutDrag_drop_itemsInput>
+  }
+
+  export type questionsUpdateWithoutDrag_drop_itemsInput = {
+    type?: Enumquestions_typeFieldUpdateOperationsInput | $Enums.questions_type
+    question?: StringFieldUpdateOperationsInput | string
+    correct_answer?: NullableStringFieldUpdateOperationsInput | string | null
+    time_limit?: NullableIntFieldUpdateOperationsInput | number | null
+    points?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
+    media_url?: NullableStringFieldUpdateOperationsInput | string | null
+    answers?: answersUpdateManyWithoutQuestionsNestedInput
+    options?: optionsUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUpdateManyWithoutQuestionsNestedInput
+    quizzes?: quizzesUpdateOneRequiredWithoutQuestionsNestedInput
+  }
+
+  export type questionsUncheckedUpdateWithoutDrag_drop_itemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quiz_id?: IntFieldUpdateOperationsInput | number
+    type?: Enumquestions_typeFieldUpdateOperationsInput | $Enums.questions_type
+    question?: StringFieldUpdateOperationsInput | string
+    correct_answer?: NullableStringFieldUpdateOperationsInput | string | null
+    time_limit?: NullableIntFieldUpdateOperationsInput | number | null
+    points?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
+    media_url?: NullableStringFieldUpdateOperationsInput | string | null
+    answers?: answersUncheckedUpdateManyWithoutQuestionsNestedInput
+    options?: optionsUncheckedUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+  }
+
+  export type questionsCreateWithoutOrdering_itemsInput = {
+    type: $Enums.questions_type
+    question: string
+    correct_answer?: string | null
+    time_limit?: number | null
+    points?: number | null
+    category?: string | null
+    media_type?: $Enums.questions_media_type | null
+    media_url?: string | null
+    answers?: answersCreateNestedManyWithoutQuestionsInput
+    options?: optionsCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsCreateNestedManyWithoutQuestionsInput
+    quizzes: quizzesCreateNestedOneWithoutQuestionsInput
+  }
+
+  export type questionsUncheckedCreateWithoutOrdering_itemsInput = {
+    id?: number
+    quiz_id: number
+    type: $Enums.questions_type
+    question: string
+    correct_answer?: string | null
+    time_limit?: number | null
+    points?: number | null
+    category?: string | null
+    media_type?: $Enums.questions_media_type | null
+    media_url?: string | null
+    answers?: answersUncheckedCreateNestedManyWithoutQuestionsInput
+    options?: optionsUncheckedCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+  }
+
+  export type questionsCreateOrConnectWithoutOrdering_itemsInput = {
+    where: questionsWhereUniqueInput
+    create: XOR<questionsCreateWithoutOrdering_itemsInput, questionsUncheckedCreateWithoutOrdering_itemsInput>
+  }
+
+  export type questionsUpsertWithoutOrdering_itemsInput = {
+    update: XOR<questionsUpdateWithoutOrdering_itemsInput, questionsUncheckedUpdateWithoutOrdering_itemsInput>
+    create: XOR<questionsCreateWithoutOrdering_itemsInput, questionsUncheckedCreateWithoutOrdering_itemsInput>
+    where?: questionsWhereInput
+  }
+
+  export type questionsUpdateToOneWithWhereWithoutOrdering_itemsInput = {
+    where?: questionsWhereInput
+    data: XOR<questionsUpdateWithoutOrdering_itemsInput, questionsUncheckedUpdateWithoutOrdering_itemsInput>
+  }
+
+  export type questionsUpdateWithoutOrdering_itemsInput = {
+    type?: Enumquestions_typeFieldUpdateOperationsInput | $Enums.questions_type
+    question?: StringFieldUpdateOperationsInput | string
+    correct_answer?: NullableStringFieldUpdateOperationsInput | string | null
+    time_limit?: NullableIntFieldUpdateOperationsInput | number | null
+    points?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
+    media_url?: NullableStringFieldUpdateOperationsInput | string | null
+    answers?: answersUpdateManyWithoutQuestionsNestedInput
+    options?: optionsUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUpdateManyWithoutQuestionsNestedInput
+    quizzes?: quizzesUpdateOneRequiredWithoutQuestionsNestedInput
+  }
+
+  export type questionsUncheckedUpdateWithoutOrdering_itemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    quiz_id?: IntFieldUpdateOperationsInput | number
+    type?: Enumquestions_typeFieldUpdateOperationsInput | $Enums.questions_type
+    question?: StringFieldUpdateOperationsInput | string
+    correct_answer?: NullableStringFieldUpdateOperationsInput | string | null
+    time_limit?: NullableIntFieldUpdateOperationsInput | number | null
+    points?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    media_type?: NullableEnumquestions_media_typeFieldUpdateOperationsInput | $Enums.questions_media_type | null
+    media_url?: NullableStringFieldUpdateOperationsInput | string | null
+    answers?: answersUncheckedUpdateManyWithoutQuestionsNestedInput
+    options?: optionsUncheckedUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
   }
 
   export type usersCreateWithoutParticipant_historyInput = {
@@ -13689,6 +17938,73 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type matching_pairsCreateWithoutQuestionsInput = {
+    left_item: string
+    right_item: string
+    pair_index: number
+  }
+
+  export type matching_pairsUncheckedCreateWithoutQuestionsInput = {
+    id?: number
+    left_item: string
+    right_item: string
+    pair_index: number
+  }
+
+  export type matching_pairsCreateOrConnectWithoutQuestionsInput = {
+    where: matching_pairsWhereUniqueInput
+    create: XOR<matching_pairsCreateWithoutQuestionsInput, matching_pairsUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type matching_pairsCreateManyQuestionsInputEnvelope = {
+    data: matching_pairsCreateManyQuestionsInput | matching_pairsCreateManyQuestionsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type drag_drop_itemsCreateWithoutQuestionsInput = {
+    item_text: string
+    category: string
+    item_index: number
+  }
+
+  export type drag_drop_itemsUncheckedCreateWithoutQuestionsInput = {
+    id?: number
+    item_text: string
+    category: string
+    item_index: number
+  }
+
+  export type drag_drop_itemsCreateOrConnectWithoutQuestionsInput = {
+    where: drag_drop_itemsWhereUniqueInput
+    create: XOR<drag_drop_itemsCreateWithoutQuestionsInput, drag_drop_itemsUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type drag_drop_itemsCreateManyQuestionsInputEnvelope = {
+    data: drag_drop_itemsCreateManyQuestionsInput | drag_drop_itemsCreateManyQuestionsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ordering_itemsCreateWithoutQuestionsInput = {
+    item_text: string
+    correct_order: number
+  }
+
+  export type ordering_itemsUncheckedCreateWithoutQuestionsInput = {
+    id?: number
+    item_text: string
+    correct_order: number
+  }
+
+  export type ordering_itemsCreateOrConnectWithoutQuestionsInput = {
+    where: ordering_itemsWhereUniqueInput
+    create: XOR<ordering_itemsCreateWithoutQuestionsInput, ordering_itemsUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type ordering_itemsCreateManyQuestionsInputEnvelope = {
+    data: ordering_itemsCreateManyQuestionsInput | ordering_itemsCreateManyQuestionsInput[]
+    skipDuplicates?: boolean
+  }
+
   export type quizzesCreateWithoutQuestionsInput = {
     title: string
     description?: string | null
@@ -13774,6 +18090,86 @@ export namespace Prisma {
     question_id?: IntFilter<"options"> | number
     option_text?: StringFilter<"options"> | string
     option_index?: IntFilter<"options"> | number
+  }
+
+  export type matching_pairsUpsertWithWhereUniqueWithoutQuestionsInput = {
+    where: matching_pairsWhereUniqueInput
+    update: XOR<matching_pairsUpdateWithoutQuestionsInput, matching_pairsUncheckedUpdateWithoutQuestionsInput>
+    create: XOR<matching_pairsCreateWithoutQuestionsInput, matching_pairsUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type matching_pairsUpdateWithWhereUniqueWithoutQuestionsInput = {
+    where: matching_pairsWhereUniqueInput
+    data: XOR<matching_pairsUpdateWithoutQuestionsInput, matching_pairsUncheckedUpdateWithoutQuestionsInput>
+  }
+
+  export type matching_pairsUpdateManyWithWhereWithoutQuestionsInput = {
+    where: matching_pairsScalarWhereInput
+    data: XOR<matching_pairsUpdateManyMutationInput, matching_pairsUncheckedUpdateManyWithoutQuestionsInput>
+  }
+
+  export type matching_pairsScalarWhereInput = {
+    AND?: matching_pairsScalarWhereInput | matching_pairsScalarWhereInput[]
+    OR?: matching_pairsScalarWhereInput[]
+    NOT?: matching_pairsScalarWhereInput | matching_pairsScalarWhereInput[]
+    id?: IntFilter<"matching_pairs"> | number
+    question_id?: IntFilter<"matching_pairs"> | number
+    left_item?: StringFilter<"matching_pairs"> | string
+    right_item?: StringFilter<"matching_pairs"> | string
+    pair_index?: IntFilter<"matching_pairs"> | number
+  }
+
+  export type drag_drop_itemsUpsertWithWhereUniqueWithoutQuestionsInput = {
+    where: drag_drop_itemsWhereUniqueInput
+    update: XOR<drag_drop_itemsUpdateWithoutQuestionsInput, drag_drop_itemsUncheckedUpdateWithoutQuestionsInput>
+    create: XOR<drag_drop_itemsCreateWithoutQuestionsInput, drag_drop_itemsUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type drag_drop_itemsUpdateWithWhereUniqueWithoutQuestionsInput = {
+    where: drag_drop_itemsWhereUniqueInput
+    data: XOR<drag_drop_itemsUpdateWithoutQuestionsInput, drag_drop_itemsUncheckedUpdateWithoutQuestionsInput>
+  }
+
+  export type drag_drop_itemsUpdateManyWithWhereWithoutQuestionsInput = {
+    where: drag_drop_itemsScalarWhereInput
+    data: XOR<drag_drop_itemsUpdateManyMutationInput, drag_drop_itemsUncheckedUpdateManyWithoutQuestionsInput>
+  }
+
+  export type drag_drop_itemsScalarWhereInput = {
+    AND?: drag_drop_itemsScalarWhereInput | drag_drop_itemsScalarWhereInput[]
+    OR?: drag_drop_itemsScalarWhereInput[]
+    NOT?: drag_drop_itemsScalarWhereInput | drag_drop_itemsScalarWhereInput[]
+    id?: IntFilter<"drag_drop_items"> | number
+    question_id?: IntFilter<"drag_drop_items"> | number
+    item_text?: StringFilter<"drag_drop_items"> | string
+    category?: StringFilter<"drag_drop_items"> | string
+    item_index?: IntFilter<"drag_drop_items"> | number
+  }
+
+  export type ordering_itemsUpsertWithWhereUniqueWithoutQuestionsInput = {
+    where: ordering_itemsWhereUniqueInput
+    update: XOR<ordering_itemsUpdateWithoutQuestionsInput, ordering_itemsUncheckedUpdateWithoutQuestionsInput>
+    create: XOR<ordering_itemsCreateWithoutQuestionsInput, ordering_itemsUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type ordering_itemsUpdateWithWhereUniqueWithoutQuestionsInput = {
+    where: ordering_itemsWhereUniqueInput
+    data: XOR<ordering_itemsUpdateWithoutQuestionsInput, ordering_itemsUncheckedUpdateWithoutQuestionsInput>
+  }
+
+  export type ordering_itemsUpdateManyWithWhereWithoutQuestionsInput = {
+    where: ordering_itemsScalarWhereInput
+    data: XOR<ordering_itemsUpdateManyMutationInput, ordering_itemsUncheckedUpdateManyWithoutQuestionsInput>
+  }
+
+  export type ordering_itemsScalarWhereInput = {
+    AND?: ordering_itemsScalarWhereInput | ordering_itemsScalarWhereInput[]
+    OR?: ordering_itemsScalarWhereInput[]
+    NOT?: ordering_itemsScalarWhereInput | ordering_itemsScalarWhereInput[]
+    id?: IntFilter<"ordering_items"> | number
+    question_id?: IntFilter<"ordering_items"> | number
+    item_text?: StringFilter<"ordering_items"> | string
+    correct_order?: IntFilter<"ordering_items"> | number
   }
 
   export type quizzesUpsertWithoutQuestionsInput = {
@@ -14043,6 +18439,9 @@ export namespace Prisma {
     media_url?: string | null
     answers?: answersCreateNestedManyWithoutQuestionsInput
     options?: optionsCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsCreateNestedManyWithoutQuestionsInput
   }
 
   export type questionsUncheckedCreateWithoutQuizzesInput = {
@@ -14057,6 +18456,9 @@ export namespace Prisma {
     media_url?: string | null
     answers?: answersUncheckedCreateNestedManyWithoutQuestionsInput
     options?: optionsUncheckedCreateNestedManyWithoutQuestionsInput
+    matching_pairs?: matching_pairsUncheckedCreateNestedManyWithoutQuestionsInput
+    drag_drop_items?: drag_drop_itemsUncheckedCreateNestedManyWithoutQuestionsInput
+    ordering_items?: ordering_itemsUncheckedCreateNestedManyWithoutQuestionsInput
   }
 
   export type questionsCreateOrConnectWithoutQuizzesInput = {
@@ -14636,6 +19038,26 @@ export namespace Prisma {
     option_index: number
   }
 
+  export type matching_pairsCreateManyQuestionsInput = {
+    id?: number
+    left_item: string
+    right_item: string
+    pair_index: number
+  }
+
+  export type drag_drop_itemsCreateManyQuestionsInput = {
+    id?: number
+    item_text: string
+    category: string
+    item_index: number
+  }
+
+  export type ordering_itemsCreateManyQuestionsInput = {
+    id?: number
+    item_text: string
+    correct_order: number
+  }
+
   export type answersUpdateWithoutQuestionsInput = {
     selected_option?: NullableStringFieldUpdateOperationsInput | string | null
     is_correct?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -14683,6 +19105,63 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     option_text?: StringFieldUpdateOperationsInput | string
     option_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type matching_pairsUpdateWithoutQuestionsInput = {
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type matching_pairsUncheckedUpdateWithoutQuestionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type matching_pairsUncheckedUpdateManyWithoutQuestionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    left_item?: StringFieldUpdateOperationsInput | string
+    right_item?: StringFieldUpdateOperationsInput | string
+    pair_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type drag_drop_itemsUpdateWithoutQuestionsInput = {
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type drag_drop_itemsUncheckedUpdateWithoutQuestionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type drag_drop_itemsUncheckedUpdateManyWithoutQuestionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    item_index?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ordering_itemsUpdateWithoutQuestionsInput = {
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ordering_itemsUncheckedUpdateWithoutQuestionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ordering_itemsUncheckedUpdateManyWithoutQuestionsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    item_text?: StringFieldUpdateOperationsInput | string
+    correct_order?: IntFieldUpdateOperationsInput | number
   }
 
   export type session_participantsCreateManyQuiz_sessionsInput = {
@@ -14801,6 +19280,9 @@ export namespace Prisma {
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     answers?: answersUpdateManyWithoutQuestionsNestedInput
     options?: optionsUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUpdateManyWithoutQuestionsNestedInput
   }
 
   export type questionsUncheckedUpdateWithoutQuizzesInput = {
@@ -14815,6 +19297,9 @@ export namespace Prisma {
     media_url?: NullableStringFieldUpdateOperationsInput | string | null
     answers?: answersUncheckedUpdateManyWithoutQuestionsNestedInput
     options?: optionsUncheckedUpdateManyWithoutQuestionsNestedInput
+    matching_pairs?: matching_pairsUncheckedUpdateManyWithoutQuestionsNestedInput
+    drag_drop_items?: drag_drop_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
+    ordering_items?: ordering_itemsUncheckedUpdateManyWithoutQuestionsNestedInput
   }
 
   export type questionsUncheckedUpdateManyWithoutQuizzesInput = {

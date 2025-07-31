@@ -17,7 +17,16 @@ export async function GET(req: NextRequest) {
     // Fetch the related quiz and its questions (with options)
     const quiz = await prisma.quizzes.findUnique({
       where: { id: session.quiz_id },
-      include: { questions: { include: { options: true } } },
+      include: { 
+        questions: { 
+          include: { 
+            options: true,
+            matching_pairs: true,
+            drag_drop_items: true,
+            ordering_items: true
+          } 
+        } 
+      },
     })
     if (!quiz) return NextResponse.json({ error: 'Quiz not found' }, { status: 404 })
     

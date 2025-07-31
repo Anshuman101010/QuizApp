@@ -35,7 +35,7 @@ body {
 }
 
 /* Smooth transitions for all interactive elements */
-* {
+.transition-element {
   transition: all 0.2s ease-in-out;
 }
 
@@ -44,15 +44,14 @@ button, a, .transition-element {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Card hover animations */
+/* Card hover effects without animations */
 .card-hover {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 /* Fade in animation for page content */

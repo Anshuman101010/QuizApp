@@ -59,7 +59,9 @@ export default function HostLobby() {
         const quizRes = await fetch(`/api/quizzes/${data.session.quiz_id}`)
         if (quizRes.ok) {
           const quizData = await quizRes.json()
-          setQuizTitle(quizData.quiz.title)
+          // Handle both formats: direct quiz object or wrapped in quiz property
+          const quiz = quizData.quiz || quizData
+          setQuizTitle(quiz?.title || 'Quiz')
         }
         
         // Fetch participants
@@ -89,8 +91,8 @@ export default function HostLobby() {
     }
     
     fetchSession()
-    // Poll for new participants every 2 seconds
-    const interval = setInterval(fetchSession, 2000)
+    // Poll for new participants every 8 seconds (reduced frequency)
+    const interval = setInterval(fetchSession, 8000)
     return () => clearInterval(interval)
   }, [searchParams])
 
@@ -217,6 +219,7 @@ export default function HostLobby() {
         toast({
           title: "Code copied!",
           description: "Join code has been copied to clipboard.",
+          variant: "success",
         })
       } else {
         // Fallback for older browsers or non-HTTPS
@@ -234,6 +237,7 @@ export default function HostLobby() {
           toast({
             title: "Code copied!",
             description: "Join code has been copied to clipboard.",
+            variant: "success",
           })
         } catch (err) {
           console.error('Fallback copy failed:', err)

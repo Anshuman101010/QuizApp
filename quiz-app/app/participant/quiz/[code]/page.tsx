@@ -426,6 +426,11 @@ export default function ParticipantQuiz() {
       setPlayerStats(newStats)
       updateParticipantStats(newStats)
       
+      // Save skipped answer to database
+      if (currentQuestion) {
+        saveAnswer(currentQuestion.id, null, false, currentQuestion.timeLimit - timeRemaining, 0, playerStats.streak)
+      }
+      
       // Move to next question
       setQuestionIndex(nextIndex)
       setGameState("waiting")
@@ -564,6 +569,9 @@ export default function ParticipantQuiz() {
 
       // Save updated stats to database
       updateParticipantStats(newStats)
+
+      // Save individual answer to database
+      saveAnswer(currentQuestion!.id, answerToUse, correct, currentQuestion!.timeLimit - timeRemaining, points, playerStats.streak)
     } else {
       const newStats = {
         score: playerStats.score,
@@ -578,6 +586,9 @@ export default function ParticipantQuiz() {
 
       // Save updated stats to database
       updateParticipantStats(newStats)
+
+      // Save individual answer to database
+      saveAnswer(currentQuestion!.id, answerToUse, correct, currentQuestion!.timeLimit - timeRemaining, 0, playerStats.streak)
     }
 
     // Show feedback for 1 second then automatically move to next question
@@ -616,6 +627,34 @@ export default function ParticipantQuiz() {
       }
     } catch (error) {
       console.error('Error updating participant stats:', error)
+    }
+  }
+
+  // Function to save individual answer to database
+  const saveAnswer = async (questionId: string, selectedOption: string | number | null, isCorrect: boolean, timeTaken: number, pointsAwarded: number, streakAtTime: number) => {
+    try {
+      const response = await fetch('/api/sessions/answers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionCode: quizCode,
+          username: playerName,
+          questionId: parseInt(questionId),
+          selectedOption: selectedOption?.toString() || null,
+          isCorrect,
+          timeTaken,
+          pointsAwarded,
+          streakAtTime,
+        }),
+      })
+
+      if (!response.ok) {
+        console.error('Failed to save answer:', response.statusText)
+      } else {
+        console.log('Answer saved successfully')
+      }
+    } catch (error) {
+      console.error('Error saving answer:', error)
     }
   }
 
@@ -672,6 +711,9 @@ export default function ParticipantQuiz() {
 
     // Save updated stats to database
     updateParticipantStats(newStats)
+
+    // Save individual answer to database
+    saveAnswer(currentQuestion!.id, null, false, currentQuestion!.timeLimit - timeRemaining, 0, playerStats.streak)
 
     // Show feedback for 1 second then automatically move to next question
     setTimeout(() => {

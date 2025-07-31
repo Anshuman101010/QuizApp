@@ -262,6 +262,7 @@ exports.questions_media_type = exports.$Enums.questions_media_type = {
 exports.quiz_sessions_status = exports.$Enums.quiz_sessions_status = {
   waiting: 'waiting',
   active: 'active',
+  paused: 'paused',
   completed: 'completed'
 };
 

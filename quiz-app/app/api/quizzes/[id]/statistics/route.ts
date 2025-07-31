@@ -4,10 +4,11 @@ import { prisma } from '../../../../../lib/db'
 // GET /api/quizzes/[id]/statistics - Get quiz statistics
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const quizId = parseInt(params.id)
+    const { id } = await params
+    const quizId = parseInt(id)
     if (!quizId) {
       return NextResponse.json({ error: 'Invalid quiz ID' }, { status: 400 })
     }

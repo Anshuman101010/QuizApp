@@ -52,9 +52,9 @@ export default function ParticipantLobby() {
         const data = await res.json()
         console.log("Session data:", data)
         
-        if (data.session.status === "completed") {
-          setError("This quiz session has already ended")
-          setLoading(false)
+        if (data.session.status === "completed" || data.session.status === "paused") {
+          // Redirect to review page if session is completed or paused
+          router.push(`/participant/review/${joinCode}?name=${encodeURIComponent(playerName)}`)
           return
         }
         
@@ -100,6 +100,10 @@ export default function ParticipantLobby() {
           if (sessionData.session.status === "active") {
             // Redirect to quiz page
             router.push(`/participant/quiz/${joinCode}?name=${encodeURIComponent(playerName)}`)
+            return
+          } else if (sessionData.session.status === "completed" || sessionData.session.status === "paused") {
+            // Redirect to review page if session is completed or paused
+            router.push(`/participant/review/${joinCode}?name=${encodeURIComponent(playerName)}`)
             return
           }
         }

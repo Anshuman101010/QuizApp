@@ -22,7 +22,12 @@ import {
   Legend, 
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar
 } from "recharts"
 
 interface QuizStats {
@@ -189,230 +194,301 @@ export default function QuizStatistics() {
           </Card>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Session History */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Session History
-              </CardTitle>
-              <CardDescription>All quiz sessions and their performance</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {stats.sessions.length === 0 ? (
-                <div className="text-center py-8">
-                  <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No sessions found</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {stats.sessions.map((session) => (
-                    <div key={session.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900 dark:text-white">Session {session.code}</h4>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => router.push(`/host/quiz/${params.id}/session?code=${session.code}`)}
-                          className="text-xs"
-                        >
-                          Show Details
-                        </Button>
+        {/* Session History */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              Session History
+            </CardTitle>
+            <CardDescription>All quiz sessions and their performance</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats.sessions.length === 0 ? (
+              <div className="text-center py-8">
+                <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">No sessions found</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {stats.sessions.map((session) => (
+                  <div key={session.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Session {session.code}</h4>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => router.push(`/host/quiz/${params.id}/session?code=${session.code}`)}
+                        className="text-xs"
+                      >
+                        Show Details
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div>
+                        <span className="font-medium">Participants:</span> {session.participantCount}
                       </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
-                        <div>
-                          <span className="font-medium">Participants:</span> {session.participantCount}
-                        </div>
-                        <div>
-                          <span className="font-medium">Avg Score:</span> {session.averageScore.toFixed(1)}
-                        </div>
-                        <div>
-                          <span className="font-medium">Started:</span> {new Date(session.startedAt).toLocaleDateString()}
-                        </div>
-                        <div>
-                          <span className="font-medium">Ended:</span> {session.endedAt ? new Date(session.endedAt).toLocaleDateString() : 'N/A'}
-                        </div>
+                      <div>
+                        <span className="font-medium">Avg Score:</span> {session.averageScore.toFixed(1)}
+                      </div>
+                      <div>
+                        <span className="font-medium">Started:</span> {new Date(session.startedAt).toLocaleDateString()}
+                      </div>
+                      <div>
+                        <span className="font-medium">Ended:</span> {session.endedAt ? new Date(session.endedAt).toLocaleDateString() : 'N/A'}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* Question Performance */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Question Performance
-              </CardTitle>
-              <CardDescription>How each question performed</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {stats.questionStats.length === 0 ? (
-                <div className="text-center py-8">
-                  <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No question data available</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {stats.questionStats.map((question, index) => (
-                    <div key={question.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900 dark:text-white">Question {index + 1}</h4>
-                        <Badge variant="outline">{question.type}</Badge>
+        {/* Question Performance */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Question Performance
+            </CardTitle>
+            <CardDescription>How each question performed</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats.questionStats.length === 0 ? (
+              <div className="text-center py-8">
+                <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">No question data available</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {stats.questionStats.map((question, index) => (
+                  <div key={question.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Question {index + 1}</h4>
+                      <Badge variant="outline">{question.type}</Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      {question.question}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Success Rate:</span>
+                        <span className="ml-2 font-semibold text-gray-900 dark:text-white">
+                          {question.successRate.toFixed(1)}%
+                        </span>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                        {question.question}
-                      </p>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Success Rate:</span>
-                          <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                            {question.successRate.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Avg Time:</span>
-                          <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                            {question.averageTime.toFixed(1)}s
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Attempts:</span>
-                          <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                            {question.totalAttempts}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Correct:</span>
-                          <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                            {question.correctAttempts}
-                          </span>
-                        </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Avg Time:</span>
+                        <span className="ml-2 font-semibold text-gray-900 dark:text-white">
+                          {question.averageTime.toFixed(1)}s
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Attempts:</span>
+                        <span className="ml-2 font-semibold text-gray-900 dark:text-white">
+                          {question.totalAttempts}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Correct:</span>
+                        <span className="ml-2 font-semibold text-gray-900 dark:text-white">
+                          {question.correctAttempts}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Charts and Analytics Section */}
         <div className="mt-8 space-y-8">
           {/* Performance Trends Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Performance Trends
-              </CardTitle>
-              <CardDescription>Session performance over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={stats.sessions.map(session => ({
-                    name: `Session ${session.code}`,
-                    avgScore: session.averageScore || 0, // Use actual score or 0
-                    participants: session.participantCount || 0, // Use actual count or 0
-                    date: new Date(session.startedAt).toLocaleDateString()
-                  }))}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="avgScore" stroke="#8884d8" strokeWidth={2} name="Average Score" />
-                    <Line type="monotone" dataKey="participants" stroke="#82ca9d" strokeWidth={2} name="Participants" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Performance Trends
+                </CardTitle>
+                <CardDescription>Session performance over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={stats.sessions.map(session => ({
+                      name: `Session ${session.code}`,
+                      avgScore: session.averageScore || 0, // Use actual score or 0
+                      participants: session.participantCount || 0, // Use actual count or 0
+                      date: new Date(session.startedAt).toLocaleDateString()
+                    }))}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="avgScore" stroke="#8884d8" strokeWidth={2} name="Average Score" />
+                      <Line type="monotone" dataKey="participants" stroke="#82ca9d" strokeWidth={2} name="Participants" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Question Success Rate Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Question Success Rates
-              </CardTitle>
-              <CardDescription>Success rate comparison across questions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stats.questionStats.map((question, index) => ({
-                    name: `Q${index + 1}`,
-                    successRate: question.successRate || 0, // Use actual success rate or 0
-                    avgTime: question.averageTime || 0, // Use actual average time or 0
-                    attempts: question.totalAttempts || 0 // Use actual attempts or 0
-                  }))}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="successRate" fill="#8884d8" name="Success Rate (%)" />
-                    <Bar dataKey="avgTime" fill="#82ca9d" name="Avg Time (s)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Question Success Rate Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  Question Success Rates
+                </CardTitle>
+                <CardDescription>Success rate comparison across questions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={stats.questionStats.map((question, index) => ({
+                      name: `Q${index + 1}`,
+                      successRate: question.successRate || 0, // Use actual success rate or 0
+                      avgTime: question.averageTime || 0, // Use actual average time or 0
+                      attempts: question.totalAttempts || 0 // Use actual attempts or 0
+                    }))}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="successRate" fill="#8884d8" name="Success Rate (%)" />
+                      <Bar dataKey="avgTime" fill="#82ca9d" name="Avg Time (s)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Question Type Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <PieChart className="w-5 h-5" />
-                Question Type Distribution
-              </CardTitle>
-              <CardDescription>Breakdown of question types</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={(() => {
-                        const typeCount = stats.questionStats.reduce((acc, question) => {
-                          acc[question.type] = (acc[question.type] || 0) + 1
-                          return acc
-                        }, {} as Record<string, number>)
-                        return Object.entries(typeCount).map(([type, count]) => ({
-                          name: type,
-                          value: count
-                        }))
-                      })()}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {(() => {
-                        const typeCount = stats.questionStats.reduce((acc, question) => {
-                          acc[question.type] = (acc[question.type] || 0) + 1
-                          return acc
-                        }, {} as Record<string, number>)
-                        return Object.entries(typeCount).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300'][index % 4]} />
-                        ))
-                      })()}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Question Type Distribution and Radar Chart */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <PieChart className="w-5 h-5" />
+                  Question Type Distribution
+                </CardTitle>
+                <CardDescription>Breakdown of question types</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={(() => {
+                          const typeCount = stats.questionStats.reduce((acc, question) => {
+                            acc[question.type] = (acc[question.type] || 0) + 1
+                            return acc
+                          }, {} as Record<string, number>)
+                          return Object.entries(typeCount).map(([type, count]) => ({
+                            name: type,
+                            value: count
+                          }))
+                        })()}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {(() => {
+                          const typeCount = stats.questionStats.reduce((acc, question) => {
+                            acc[question.type] = (acc[question.type] || 0) + 1
+                            return acc
+                          }, {} as Record<string, number>)
+                          return Object.entries(typeCount).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300'][index % 4]} />
+                          ))
+                        })()}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Participant Performance Radar Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Participant Performance Radar
+                </CardTitle>
+                <CardDescription>Performance comparison across different metrics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={(() => {
+                      // Create radar chart data based on overall quiz performance
+                      const avgSuccessRate = stats.questionStats.length > 0 
+                        ? stats.questionStats.reduce((sum, q) => sum + q.successRate, 0) / stats.questionStats.length 
+                        : 0
+                      const avgTime = stats.questionStats.length > 0 
+                        ? stats.questionStats.reduce((sum, q) => sum + q.averageTime, 0) / stats.questionStats.length 
+                        : 0
+                      const normalizedScore = Math.min((stats.averageScore / 100) * 100, 100) // Normalize to 0-100
+                      const normalizedAccuracy = Math.min(stats.averageAccuracy, 100)
+                      const participationRate = stats.totalSessions > 0 ? Math.min((stats.totalParticipants / (stats.totalSessions * 10)) * 100, 100) : 0
+                      const efficiency = Math.min(((avgSuccessRate / 100) * (100 - avgTime / 60)) * 100, 100) // Efficiency metric
+                      
+                      return [
+                        {
+                          subject: 'Accuracy',
+                          A: normalizedAccuracy,
+                          fullMark: 100,
+                        },
+                        {
+                          subject: 'Speed',
+                          A: Math.max(0, 100 - avgTime),
+                          fullMark: 100,
+                        },
+                        {
+                          subject: 'Score',
+                          A: normalizedScore,
+                          fullMark: 100,
+                        },
+                        {
+                          subject: 'Participation',
+                          A: participationRate,
+                          fullMark: 100,
+                        },
+                        {
+                          subject: 'Efficiency',
+                          A: efficiency,
+                          fullMark: 100,
+                        },
+                        {
+                          subject: 'Success Rate',
+                          A: avgSuccessRate,
+                          fullMark: 100,
+                        },
+                      ]
+                    })()}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="subject" />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      <Radar name="Performance" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                      <Tooltip />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Performance Overview */}
           <div className="grid lg:grid-cols-2 gap-8">

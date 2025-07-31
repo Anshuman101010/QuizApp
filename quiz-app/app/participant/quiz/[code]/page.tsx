@@ -247,13 +247,13 @@ export default function ParticipantQuiz() {
               }
               
               // Check for termination conditions
-              if ((sessionStatus === "completed" || quizStatus === "terminated") && !showTerminationModal) {
-                console.log("Quiz terminated detected via SSE! Showing termination modal...")
+              if ((sessionStatus === "completed" || sessionStatus === "paused" || quizStatus === "terminated" || quizStatus === "stopped") && !showTerminationModal) {
+                console.log("Quiz terminated/stopped detected via SSE! Showing termination modal...")
                 setShowTerminationModal(true)
-                // Redirect to dashboard after 2 seconds
+                // Redirect to review page after 2 seconds
                 setTimeout(() => {
-                  console.log("Redirecting to dashboard...")
-                  router.push("/dashboard")
+                  console.log("Redirecting to review page...")
+                  router.push(`/participant/review/${quizCode}?name=${encodeURIComponent(playerName)}`)
                 }, 2000)
               }
             } else if (data.type === 'error') {
@@ -328,12 +328,12 @@ export default function ParticipantQuiz() {
               console.log("Not starting quiz (polling):", { status, gameState, questionsLength: questions.length })
             }
             
-            if (status === "completed" && !showTerminationModal) {
-              console.log("Quiz terminated detected via polling! Showing termination modal...")
+            if (status === "completed" || status === "paused" && !showTerminationModal) {
+              console.log("Quiz terminated/stopped detected via polling! Showing termination modal...")
               setShowTerminationModal(true)
               setTimeout(() => {
-                console.log("Redirecting to dashboard...")
-                router.push("/dashboard")
+                console.log("Redirecting to review page...")
+                router.push(`/participant/review/${quizCode}?name=${encodeURIComponent(playerName)}`)
               }, 2000)
             }
           }
@@ -360,6 +360,16 @@ export default function ParticipantQuiz() {
       }
     }
   }, [quizCode, showTerminationModal, router, gameState, questions])
+
+  // Auto-redirect when quiz is completed
+  useEffect(() => {
+    if (gameState === "completed") {
+      // Show completion message for 2 seconds, then redirect
+      setTimeout(() => {
+        router.push(`/participant/review/${quizCode}?name=${encodeURIComponent(playerName)}`)
+      }, 2000)
+    }
+  }, [gameState, quizCode, playerName, router])
 
   // When moving to next question, update currentQuestion and reset hidden options
   useEffect(() => {
@@ -1354,9 +1364,12 @@ export default function ParticipantQuiz() {
                     </div>
                     
                     <div className="pt-4">
-                      <Button onClick={() => router.push("/dashboard")}>
-                        Return to Dashboard
-                      </Button>
+                      <p className="text-blue-600 dark:text-blue-400 font-medium">
+                        Redirecting to your detailed results...
+                      </p>
+                      <div className="mt-2">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

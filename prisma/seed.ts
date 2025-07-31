@@ -1,7 +1,9 @@
 console.log('--- SEED SCRIPT STARTED ---')
-import 'dotenv/config'
-import { PrismaClient } from '../generated/prisma'
-import bcrypt from 'bcryptjs'
+
+// Use CommonJS require syntax for macOS compatibility
+const { PrismaClient } = require('../generated/prisma')
+const bcrypt = require('bcryptjs')
+require('dotenv/config')
 
 const prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] })
 
@@ -21,11 +23,11 @@ async function main() {
 
     // Create users with different roles
     const users = [
-      { username: 'Angshuman', email: 'angshuman@example.com', role: 'host' as const },
-      { username: 'Anshuman', email: 'anshuman@example.com', role: 'host' as const },
-      { username: 'Rayyan', email: 'rayyan@example.com', role: 'host' as const },
-      { username: 'Sarah', email: 'sarah@example.com', role: 'participant' as const },
-      { username: 'Mike', email: 'mike@example.com', role: 'participant' as const },
+      { username: 'Angshuman', email: 'angshuman@example.com', role: 'host' },
+      { username: 'Anshuman', email: 'anshuman@example.com', role: 'host' },
+      { username: 'Rayyan', email: 'rayyan@example.com', role: 'host' },
+      { username: 'Sarah', email: 'sarah@example.com', role: 'participant' },
+      { username: 'Mike', email: 'mike@example.com', role: 'participant' },
     ]
 
     const createdUsers = []

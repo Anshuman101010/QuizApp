@@ -87,12 +87,23 @@ export async function PUT(
 
     const { title, description, questions, negativeMarking, teamMode } = await req.json()
     
+    console.log('PUT /api/quizzes/[id] - Received data:', {
+      quizId,
+      title,
+      description,
+      questionsCount: questions?.length,
+      negativeMarking,
+      teamMode
+    })
+    
     if (!title || !questions || !Array.isArray(questions)) {
       return NextResponse.json({ error: 'Title and questions are required' }, { status: 400 })
     }
 
     // Start a transaction to update quiz and questions
     const result = await prisma.$transaction(async (tx) => {
+      console.log('Starting transaction for quiz update')
+      
       // Update quiz basic info
       const updatedQuiz = await tx.quizzes.update({
         where: { id: quizId },
@@ -103,57 +114,122 @@ export async function PUT(
           team_mode: teamMode || false,
         }
       })
+      
+      console.log('Updated quiz basic info:', updatedQuiz)
 
-      // Delete existing questions and options
-      await tx.options.deleteMany({
-        where: {
-          question_id: {
-            in: (await tx.questions.findMany({
-              where: { quiz_id: quizId },
-              select: { id: true }
-            })).map(q => q.id)
-          }
+      // Get existing questions to preserve their IDs and data
+      const existingQuestions = await tx.questions.findMany({
+        where: { quiz_id: quizId },
+        include: {
+          options: true
         }
       })
       
-      await tx.questions.deleteMany({
-        where: { quiz_id: quizId }
-      })
+      console.log('Found existing questions:', existingQuestions.length)
 
-      // Create new questions
-      for (const question of questions) {
-        const newQuestion = await tx.questions.create({
-          data: {
-            quiz_id: quizId,
-            question: question.question,
-            type: question.type,
-            correct_answer: String(question.correctAnswer),
-            time_limit: question.timeLimit || 30,
-            points: question.points || 100,
-            category: question.category || 'General'
-          }
-        })
+      // Update or create questions based on the new data
+      for (let i = 0; i < questions.length; i++) {
+        const questionData = questions[i]
+        
+        // Check if this is an existing question by ID
+        const existingQuestion = existingQuestions.find(q => q.id.toString() === questionData.id?.toString())
+        
+        if (existingQuestion) {
+          // Update existing question
+          console.log('Updating existing question:', existingQuestion.id)
+          
+          await tx.questions.update({
+            where: { id: existingQuestion.id },
+            data: {
+              question: questionData.question,
+              type: questionData.type,
+              correct_answer: String(questionData.correctAnswer),
+              time_limit: questionData.timeLimit || 30,
+              points: questionData.points || 100,
+              category: questionData.category || 'General'
+            }
+          })
 
-        // Create options for multiple choice questions
-        if (question.type === 'multiple_choice' && question.options && Array.isArray(question.options)) {
-          for (let i = 0; i < question.options.length; i++) {
-            const option = question.options[i]
-            if (option.trim()) {
-              await tx.options.create({
-                data: {
-                  question_id: newQuestion.id,
-                  option_text: option,
-                  option_index: i
-                }
-              })
+          // Update options for multiple choice questions
+          if (questionData.type === 'multiple_choice' && questionData.options && Array.isArray(questionData.options)) {
+            // Delete existing options
+            await tx.options.deleteMany({
+              where: { question_id: existingQuestion.id }
+            })
+            
+            // Create new options
+            for (let j = 0; j < questionData.options.length; j++) {
+              const option = questionData.options[j]
+              if (option.trim()) {
+                await tx.options.create({
+                  data: {
+                    question_id: existingQuestion.id,
+                    option_text: option,
+                    option_index: j
+                  }
+                })
+              }
             }
           }
+        } else {
+          // Create new question
+          console.log('Creating new question')
+          const newQuestion = await tx.questions.create({
+            data: {
+              quiz_id: quizId,
+              question: questionData.question,
+              type: questionData.type,
+              correct_answer: String(questionData.correctAnswer),
+              time_limit: questionData.timeLimit || 30,
+              points: questionData.points || 100,
+              category: questionData.category || 'General'
+            }
+          })
+          
+          console.log('Created new question:', newQuestion.id)
+
+          // Create options for multiple choice questions
+          if (questionData.type === 'multiple_choice' && questionData.options && Array.isArray(questionData.options)) {
+            for (let j = 0; j < questionData.options.length; j++) {
+              const option = questionData.options[j]
+              if (option.trim()) {
+                await tx.options.create({
+                  data: {
+                    question_id: newQuestion.id,
+                    option_text: option,
+                    option_index: j
+                  }
+                })
+              }
+            }
+          }
+        }
+      }
+
+      // Delete questions that are no longer in the new data
+      const newQuestionIds = questions.map(q => q.id?.toString()).filter(Boolean)
+      const questionsToDelete = existingQuestions.filter(q => !newQuestionIds.includes(q.id.toString()))
+      
+      if (questionsToDelete.length > 0) {
+        console.log('Deleting removed questions:', questionsToDelete.length)
+        
+        for (const questionToDelete of questionsToDelete) {
+          // Delete options first
+          await tx.options.deleteMany({
+            where: { question_id: questionToDelete.id }
+          })
+          
+          // Delete the question (this will cascade delete answers, but that's expected for removed questions)
+          await tx.questions.delete({
+            where: { id: questionToDelete.id }
+          })
         }
       }
 
       return updatedQuiz
     })
 
+    console.log('Transaction completed successfully')
     return NextResponse.json({ 
       message: 'Quiz updated successfully',
       quiz: result 

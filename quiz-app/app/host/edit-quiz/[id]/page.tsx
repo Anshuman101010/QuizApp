@@ -38,6 +38,7 @@ export default function EditQuiz() {
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [quizTitle, setQuizTitle] = useState("")
   const [quizDescription, setQuizDescription] = useState("")
   const [negativeMarking, setNegativeMarking] = useState(false)
@@ -52,6 +53,8 @@ export default function EditQuiz() {
           throw new Error('Failed to fetch quiz')
         }
         const data = await response.json()
+        
+        console.log('Fetched quiz data:', data)
         
         setQuiz(data)
         setQuizTitle(data.title || "")
@@ -68,19 +71,40 @@ export default function EditQuiz() {
             const correctOptionIndex = q.options.findIndex((opt: any) => opt.option_text === q.correct_answer);
             correctAnswer = correctOptionIndex >= 0 ? correctOptionIndex : 0;
           }
+          // For true/false, handle boolean values properly
+          else if (q.type === 'true_false') {
+            // Handle various boolean representations
+            if (q.correct_answer === true || q.correct_answer === 'true' || q.correct_answer === '1') {
+              correctAnswer = 'true';
+            } else if (q.correct_answer === false || q.correct_answer === 'false' || q.correct_answer === '0') {
+              correctAnswer = 'false';
+            } else {
+              // Default to false if unclear
+              correctAnswer = 'false';
+            }
+          }
+          // For short answer, ensure it's a string
+          else if (q.type === 'short_answer') {
+            correctAnswer = String(q.correct_answer || '');
+          }
           
-          return {
-            id: q.id.toString(),
+          const transformedQuestion = {
+            id: q.id.toString(), // Preserve the original database ID
             type: q.type === 'multiple_choice' ? 'multiple-choice' : 
                   q.type === 'true_false' ? 'true-false' : 'short-answer',
-            question: q.question,
-            options: q.options?.map((opt: any) => opt.option_text) || [],
+            question: q.question || '',
+            options: q.options?.map((opt: any) => opt.option_text || '').filter((opt: string) => opt.trim() !== '') || [],
             correctAnswer: correctAnswer,
             timeLimit: q.time_limit || 30,
             points: q.points || 100,
             category: q.category || "General",
           }
+          
+          console.log('Transformed question:', transformedQuestion)
+          return transformedQuestion
         })
+        
+        console.log('Setting questions:', transformedQuestions)
         setQuestions(transformedQuestions)
       } catch (error) {
         console.error('Error fetching quiz:', error)
@@ -99,6 +123,24 @@ export default function EditQuiz() {
     }
   }, [params.id])
 
+  // Warn user before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (saving) {
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [saving])
+
+  const updateQuestion = (id: string, updates: Partial<Question>) => {
+    setQuestions(questions.map((q) => (q.id === id ? { ...q, ...updates } : q)))
+    setHasUnsavedChanges(true)
+  }
+
   const addQuestion = () => {
     const newQuestion: Question = {
       id: Date.now().toString(),
@@ -111,14 +153,12 @@ export default function EditQuiz() {
       category: "General",
     }
     setQuestions([...questions, newQuestion])
+    setHasUnsavedChanges(true)
   }
 
   const removeQuestion = (id: string) => {
     setQuestions(questions.filter((q) => q.id !== id))
-  }
-
-  const updateQuestion = (id: string, updates: Partial<Question>) => {
-    setQuestions(questions.map((q) => (q.id === id ? { ...q, ...updates } : q)))
+    setHasUnsavedChanges(true)
   }
 
   const handleSaveQuiz = async () => {
@@ -142,39 +182,65 @@ export default function EditQuiz() {
 
     setSaving(true)
     try {
+      console.log('Current questions before formatting:', questions)
+      
       const formattedQuestions = questions.map((q) => {
         let formattedCorrectAnswer: string | boolean;
+        
         if (q.type === "multiple-choice") {
           // For multiple choice, use the option text as correct answer
-          formattedCorrectAnswer = (q.options && typeof q.correctAnswer === "number") ? q.options[q.correctAnswer] : "";
+          if (q.options && typeof q.correctAnswer === "number" && q.options[q.correctAnswer]) {
+            formattedCorrectAnswer = q.options[q.correctAnswer];
+          } else if (typeof q.correctAnswer === "string") {
+            formattedCorrectAnswer = q.correctAnswer;
+          } else {
+            formattedCorrectAnswer = "";
+          }
         } else if (q.type === "true-false") {
-          formattedCorrectAnswer = q.correctAnswer === "true";
+          // For true/false, ensure it's a boolean
+          formattedCorrectAnswer = q.correctAnswer === "true" || q.correctAnswer === true;
         } else {
+          // For short answer, ensure it's a string
           formattedCorrectAnswer = String(q.correctAnswer ?? "");
         }
+        
         return {
-          ...q,
+          id: q.id, // Include the question ID for backend processing
           type:
             q.type === "multiple-choice"
               ? "multiple_choice"
               : q.type === "true-false"
               ? "true_false"
               : "short_answer",
+          question: q.question,
           correctAnswer: formattedCorrectAnswer,
+          timeLimit: q.timeLimit,
+          points: q.points,
+          category: q.category,
+          options: q.options,
         };
       });
+
+      console.log('Formatted questions:', formattedQuestions)
+
+      const requestBody = {
+        title: quizTitle,
+        description: quizDescription,
+        questions: formattedQuestions,
+        negativeMarking,
+        teamMode,
+      }
+      
+      console.log('Sending request body:', requestBody)
 
       const response = await fetch(`/api/quizzes/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: quizTitle,
-          description: quizDescription,
-          questions: formattedQuestions,
-          negativeMarking,
-          teamMode,
-        }),
+        body: JSON.stringify(requestBody),
       })
+
+      console.log('Response status:', response.status)
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
@@ -185,6 +251,7 @@ export default function EditQuiz() {
       const result = await response.json()
       console.log('Update successful:', result)
 
+      setHasUnsavedChanges(false)
       toast({
         title: "Success",
         description: "Quiz updated successfully!",
@@ -234,16 +301,39 @@ export default function EditQuiz() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={() => router.back()} className="transition-element">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (hasUnsavedChanges) {
+                  if (confirm('You have unsaved changes. Are you sure you want to leave?')) {
+                    router.back()
+                  }
+                } else {
+                  router.back()
+                }
+              }} 
+              className="transition-element"
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit Quiz</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">Modify your quiz settings and questions</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                Modify your quiz settings and questions
+                {hasUnsavedChanges && (
+                  <span className="ml-2 text-orange-600 dark:text-orange-400 text-sm">
+                    (Unsaved changes)
+                  </span>
+                )}
+              </p>
             </div>
           </div>
-          <Button onClick={handleSaveQuiz} disabled={saving} className="transition-element">
+          <Button 
+            onClick={handleSaveQuiz} 
+            disabled={saving || !hasUnsavedChanges} 
+            className="transition-element"
+          >
             {saving ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
@@ -267,7 +357,10 @@ export default function EditQuiz() {
                   <Input
                     id="title"
                     value={quizTitle}
-                    onChange={(e) => setQuizTitle(e.target.value)}
+                    onChange={(e) => {
+                      setQuizTitle(e.target.value)
+                      setHasUnsavedChanges(true)
+                    }}
                     placeholder="Enter quiz title"
                   />
                 </div>
@@ -277,7 +370,10 @@ export default function EditQuiz() {
                   <Textarea
                     id="description"
                     value={quizDescription}
-                    onChange={(e) => setQuizDescription(e.target.value)}
+                    onChange={(e) => {
+                      setQuizDescription(e.target.value)
+                      setHasUnsavedChanges(true)
+                    }}
                     placeholder="Enter quiz description"
                     rows={3}
                   />
@@ -292,7 +388,10 @@ export default function EditQuiz() {
                   </div>
                   <Switch
                     checked={negativeMarking}
-                    onCheckedChange={setNegativeMarking}
+                    onCheckedChange={(checked) => {
+                      setNegativeMarking(checked)
+                      setHasUnsavedChanges(true)
+                    }}
                   />
                 </div>
 
@@ -305,7 +404,10 @@ export default function EditQuiz() {
                   </div>
                   <Switch
                     checked={teamMode}
-                    onCheckedChange={setTeamMode}
+                    onCheckedChange={(checked) => {
+                      setTeamMode(checked)
+                      setHasUnsavedChanges(true)
+                    }}
                   />
                 </div>
 

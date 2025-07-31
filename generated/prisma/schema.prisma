@@ -143,6 +143,7 @@ enum questions_type {
 enum quiz_sessions_status {
   waiting
   active
+  paused
   completed
 }
 

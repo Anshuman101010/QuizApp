@@ -70,6 +70,7 @@ export type questions_type = (typeof questions_type)[keyof typeof questions_type
 export const quiz_sessions_status: {
   waiting: 'waiting',
   active: 'active',
+  paused: 'paused',
   completed: 'completed'
 };
 

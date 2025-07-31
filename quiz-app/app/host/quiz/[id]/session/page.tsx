@@ -213,7 +213,7 @@ export default function QuizSession() {
       const sessionRes = await fetch("/api/sessions/status", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: joinCode, status: "completed" })
+        body: JSON.stringify({ code: joinCode, status: "paused" })
       })
       
       if (!sessionRes.ok) {
@@ -716,6 +716,14 @@ export default function QuizSession() {
               {participants.length} Participants
             </Badge>
             <Button 
+              onClick={() => handleStopSession()} 
+              variant="destructive" 
+              className="transition-element"
+              size="sm"
+            >
+              <X className="w-4 h-4 mr-2" />
+              End Quiz
+            </Button>            <Button 
               onClick={() => handleDownloadSessionData()} 
               variant="outline"
               className="border-blue-200 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/30"

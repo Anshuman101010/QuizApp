@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Plus, Trash2, ArrowLeftIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 interface Question {
   id: string
@@ -24,13 +25,13 @@ interface Question {
     type: "image" | "video"
     url: string
   }
-  // New fields for different question types
   matchingPairs?: Array<{ left: string; right: string }>
   orderingItems?: string[]
 }
 
 export default function CreateQuiz() {
   const router = useRouter()
+  const { toast } = useToast()
   const [quizTitle, setQuizTitle] = useState("")
   const [quizDescription, setQuizDescription] = useState("")
   const [negativeMarking, setNegativeMarking] = useState(false)
@@ -79,8 +80,6 @@ export default function CreateQuiz() {
     if (!question) return
 
     let updates: Partial<Question> = { type: newType as any }
-    
-    // Initialize appropriate data structure based on question type
     if (newType === "matching-pairs") {
       updates.matchingPairs = [{ left: "", right: "" }]
       updates.options = undefined
@@ -100,7 +99,6 @@ export default function CreateQuiz() {
       updates.matchingPairs = undefined
       updates.orderingItems = undefined
     }
-
     updateQuestion(id, updates)
   }
 
@@ -115,16 +113,12 @@ export default function CreateQuiz() {
       const formattedQuestions = questions.map((q) => {
         let formattedCorrectAnswer: string | boolean;
         if (q.type === "multiple-choice") {
-          // Use the string value of the selected option
           formattedCorrectAnswer = (q.options && typeof q.correctAnswer === "number") ? q.options[q.correctAnswer] : "";
         } else if (q.type === "true-false") {
-          // Convert string 'true'/'false' to boolean
           formattedCorrectAnswer = q.correctAnswer === "true";
         } else if (q.type === "matching-pairs") {
-          // For matching pairs, store the pairs as JSON string
           formattedCorrectAnswer = JSON.stringify(q.matchingPairs || []);
         } else if (q.type === "ordering") {
-          // For ordering, store the items as JSON string
           formattedCorrectAnswer = JSON.stringify(q.orderingItems || []);
         } else {
           formattedCorrectAnswer = String(q.correctAnswer ?? "");
@@ -150,8 +144,8 @@ export default function CreateQuiz() {
         body: JSON.stringify({
           title: quizTitle,
           description: quizDescription,
-          negativeMarking, // camelCase
-          teamMode,        // camelCase
+          negativeMarking,
+          teamMode,
           questions: formattedQuestions,
           userId,
         }),

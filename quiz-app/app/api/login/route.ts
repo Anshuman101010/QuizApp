@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
     where: { username },
   })
   if (user && user.password && password && await bcrypt.compare(password, user.password)) {
-    // Simulate session creation (for demo, just return success)
-    return NextResponse.json({ success: true, id: user.id })
+    // Return success, id, and role
+    return NextResponse.json({ success: true, id: user.id, role: user.role })
   }
   return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 })
 }
